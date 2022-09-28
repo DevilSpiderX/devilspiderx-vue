@@ -1,3 +1,5 @@
+const $ = jQuery;
+
 export function login(uid, pwd, success, error) {
     let postBody = {
         "uid": uid,
