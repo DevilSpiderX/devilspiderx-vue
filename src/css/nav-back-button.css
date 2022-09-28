@@ -1,0 +1,14 @@
+.nav-back-button {
+    color: white;
+    padding: 0.5rem 0.75rem;
+}
+
+@media (min-width: 768px) {
+    .nav-back-button {
+        margin-right: 1rem;
+    }
+}
+
+.nav-back-button:hover {
+    color: #FFFFFFAA;
+}

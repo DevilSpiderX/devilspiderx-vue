@@ -33,8 +33,9 @@
 </template>
 
 <script>
-import {changeGlobalCss, changeThemeColor} from "@/js/global";
+import {setThemeColor} from "@/js/global";
 import {login} from "@/js/server-api";
+import router from "@/router";
 
 export default {
     name: "login",
@@ -65,13 +66,13 @@ export default {
             let running = this.running;
 
             function start_login() {
-                changeThemeColor("#1A1D20");
+                setThemeColor("#1A1D20");
                 running.style = "";
             }
 
             function stop_login() {
                 running.style = "display:none;";
-                changeThemeColor("#343A40");
+                setThemeColor("#343A40");
             }
 
             start_login();
@@ -79,7 +80,7 @@ export default {
             login(uid, pwd, function (resp) {
                 switch (resp["code"]) {
                     case 0: {
-                        this.$router.push("index.html");
+                        router.push({name: "index"});
                         break;
                     }
                     case 1: {
@@ -102,12 +103,13 @@ export default {
             }
         }
     },
+    beforeMount() {
+        setThemeColor("#DCDCDC");
+    },
     mounted() {
-        changeThemeColor("#DCDCDC");
-        changeGlobalCss("./static/css/login_g.css");
         let loginUid = localStorage.loginUid;
         if (loginUid !== undefined) {
-            this.user = loginUid;
+            this.form.uid = loginUid;
         }
     }
 }

@@ -27,6 +27,7 @@ const router = createRouter({
 });
 
 router.beforeEach(function (to, from, next) {
+    document.body.setAttribute("data-route", to.path);
     if (to.meta.hasOwnProperty("title")) {
         document.title = to.meta.title;
     } else {

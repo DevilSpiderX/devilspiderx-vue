@@ -135,3 +135,9 @@ export function logList(success, error) {
         type: "POST", success: success, error: error
     });
 }
+
+export function user_status(success, error) {
+    $.ajax("/api/user/status", {
+        type: "POST", success: success, error: error
+    });
+}

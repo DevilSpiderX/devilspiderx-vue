@@ -8,31 +8,31 @@
 </template>
 
 <script>
-import {changeThemeColor, changeGlobalCss} from "@/js/global";
+import {setThemeColor} from "@/js/global";
+import {user_status} from "@/js/server-api";
 import router from "@/router";
 
 export default {
     name: "welcome",
     methods: {
         verify() {
-            jQuery.ajax("/api/user/status", {
-                type: "POST", success: (resp) => {
-                    console.log(resp);
-                    let data = resp.data;
-                    if (!data["login"] && data["status"] === 0) {
-                        router.push({name: "login"});
-                    } else {
-                        router.push({name: "index"});
-                    }
-                }, error: () => {
+            user_status((resp) => {
+                console.log(resp);
+                let data = resp.data;
+                if (!data["login"] && data["status"] === 0) {
                     router.push({name: "login"});
+                } else {
+                    router.push({name: "index"});
                 }
-            });
+            }, () => {
+                router.push({name: "login"});
+            })
         }
     },
+    beforeMount() {
+        setThemeColor();
+    },
     mounted() {
-        changeThemeColor("#FFFFFF");
-        changeGlobalCss("./static/css/welcome_g.css");
         setTimeout(this.verify, 400);
     }
 
