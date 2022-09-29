@@ -54,7 +54,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr v-for="data in dataList" :data-id="data.id">
+                    <tr v-for="(data,index) in dataList" :key="index" :data-id="data.id">
                         <td @contextmenu.prevent.stop="tableRow_contextmenu($event,data.name,data)">
                             {{ data.name }}
                         </td>
@@ -92,7 +92,7 @@ import UpdatePasswordModal from "@/components/query/UpdatePasswordModal";
 
 
 export default {
-    name: "query",
+    name: "QueryRoute",
     components: {ContextMenu, AddPasswordModal, UpdatePasswordModal},
     data() {
         return {
@@ -176,7 +176,7 @@ export default {
     mounted() {
         window.queryVue = this;
         let routeQuery = router.currentRoute.value.query;
-        if (routeQuery.hasOwnProperty("key")) {
+        if (Object.hasOwn(routeQuery, "key")) {
             this.key = routeQuery.key;
             window.sessionStorage['history_query_key'] = this.key;
             query(this.key, this.querySucceed);

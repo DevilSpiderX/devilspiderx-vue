@@ -1,10 +1,13 @@
 <template>
-
+    <h1>未完成</h1>
 </template>
 
 <script>
 export default {
-    name: "controller"
+    name: "ControllerRoute",
+    beforeCreate() {
+        window.open("/controller.html", "_self");
+    }
 }
 </script>
 

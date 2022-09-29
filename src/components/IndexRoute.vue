@@ -54,7 +54,7 @@ import {logout} from "@/js/server-api";
 import router from "@/router";
 
 export default {
-    name: "index",
+    name: "IndexRoute",
     methods: {
         on_logoutButton_clicked() {
             logout(function (resp) {

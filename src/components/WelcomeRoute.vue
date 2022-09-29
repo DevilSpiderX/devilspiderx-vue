@@ -13,7 +13,7 @@ import {user_status} from "@/js/server-api";
 import router from "@/router";
 
 export default {
-    name: "welcome",
+    name: "WelcomeRoute",
     methods: {
         verify() {
             user_status((resp) => {

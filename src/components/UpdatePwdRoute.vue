@@ -30,7 +30,7 @@
 import {setThemeColor} from "@/js/global";
 
 export default {
-    name: "updatePwd",
+    name: "UpdatePwdRoute",
     beforeMount() {
         setThemeColor("#343A40");
     }

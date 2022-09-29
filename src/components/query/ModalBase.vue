@@ -7,7 +7,7 @@
 
 <script>
 export default {
-    name: "Modal",
+    name: "ModalBase",
     data() {
         return {
             modal: {

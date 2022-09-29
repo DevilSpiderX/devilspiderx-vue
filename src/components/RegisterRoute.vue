@@ -64,7 +64,7 @@ import {register} from "@/js/server-api";
 import router from "@/router";
 
 export default {
-    name: "register",
+    name: "RegisterRoute",
     data() {
         return {
             form: {

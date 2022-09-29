@@ -1,3 +1,5 @@
+import jQuery from 'jQuery';
+
 const $ = jQuery;
 
 export function login(uid, pwd, success, error) {

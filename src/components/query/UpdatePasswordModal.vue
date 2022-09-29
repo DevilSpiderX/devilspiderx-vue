@@ -59,7 +59,7 @@
 
 <script>
 import {query, updatePasswords} from "@/js/server-api";
-import Modal from "@/components/query/Modal";
+import Modal from "@/components/query/ModalBase";
 
 export default {
     name: "UpdatePasswordModal",

@@ -38,13 +38,13 @@
 </template>
 
 <script>
-import Switch from "@/components/v2ray/Switch";
+import Switch from "@/components/v2ray/MySwitch";
 import {v2rayState, v2rayStart, v2rayStop} from "@/js/server-api";
 import {setThemeColor} from "@/js/global";
 
 let switch$;
 export default {
-    name: "v2ray",
+    name: "V2rayRoute",
     components: {
         Switch
     },

@@ -6,7 +6,7 @@ module.exports = defineConfig({
         externals: {
             CryptoJS: "CryptoJS",
             bootstrap: "bootstrap",
-            jquery: "jQuery"
+            jQuery: "jQuery"
         }
     },
     devServer: {

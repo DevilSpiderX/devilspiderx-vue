@@ -36,9 +36,10 @@
 import {setThemeColor} from "@/js/global";
 import {login} from "@/js/server-api";
 import router from "@/router";
+import CryptoJS from 'CryptoJS';
 
 export default {
-    name: "login",
+    name: "LoginRoute",
     data() {
         return {
             form: {

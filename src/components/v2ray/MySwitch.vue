@@ -14,7 +14,7 @@
 
 <script>
 export default {
-    name: "Switch",
+    name: "MySwitch",
     data() {
         return {
             status: "off",
