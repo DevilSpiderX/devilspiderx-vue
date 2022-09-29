@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import Switch from "@/components/widget/Switch";
+import Switch from "@/components/v2ray/Switch";
 import {v2rayState, v2rayStart, v2rayStop} from "@/js/server-api";
 import {setThemeColor} from "@/js/global";
 
@@ -116,9 +116,9 @@ export default {
 }
 </script>
 
-<style scoped>
-@import "@/css/nav-back-button.css";
+<style scoped src="../css/nav-back-button.css"></style>
 
+<style scoped>
 #card-container {
     margin-top: 5rem;
     align-items: center;

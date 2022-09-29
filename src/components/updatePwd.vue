@@ -37,6 +37,4 @@ export default {
 }
 </script>
 
-<style scoped>
-@import "@/css/nav-back-button.css";
-</style>
+<style scoped src="../css/nav-back-button.css"></style>

@@ -119,9 +119,9 @@ export default {
 }
 </script>
 
-<style scoped>
-@import "@/css/nav-back-button.css";
+<style scoped src="../css/nav-back-button.css"></style>
 
+<style scoped>
 div#center-fa {
     border: #6c757d 5px solid;
     border-radius: 2ex;

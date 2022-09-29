@@ -16,10 +16,10 @@
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="btn btn-success" href="#addPasswordModal" data-toggle="modal">
+                    <button type="button" class="btn btn-success" @click="$refs.addPM.open()">
                         <i class="fas fa-plus fa-fw" style="font-size: 20px;"></i>
                         添加
-                    </a>
+                    </button>
                 </li>
             </ul>
         </div>
@@ -54,145 +54,55 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr v-for="data in dataList" :data-id="data.id" @contextmenu.prevent.stop="tableRow_contextmenu">
-                        <td>{{ data.name }}</td>
-                        <td>{{ data.account }}</td>
-                        <td>{{ data.password }}</td>
-                        <td>{{ data.remark }}</td>
+                    <tr v-for="data in dataList" :data-id="data.id">
+                        <td @contextmenu.prevent.stop="tableRow_contextmenu($event,data.name,data)">
+                            {{ data.name }}
+                        </td>
+                        <td @contextmenu.prevent.stop="tableRow_contextmenu($event,data.account,data)">
+                            {{ data.account }}
+                        </td>
+                        <td @contextmenu.prevent.stop="tableRow_contextmenu($event,data.password,data)">
+                            {{ data.password }}
+                        </td>
+                        <td @contextmenu.prevent.stop="tableRow_contextmenu($event,data.remark,data)">
+                            {{ data.remark }}
+                        </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-    <context-menu ref="rowMenu"></context-menu>
+    <ContextMenu ref="rowMenu" v-if="rowMenuData.show" @updateRecord="open_updatePasswordModal"/>
 
     <!-- 添加密码模态框 -->
-    <div class="modal fade" id="addPasswordModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-
-                <!-- 添加密码模态框头部 -->
-                <div class="modal-header justify-content-center">
-                    <h4 class="modal-title">添加密码记录</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                </div>
-
-                <!-- 添加密码模态框主体 -->
-                <div class="modal-body">
-                    <div class="col-12">
-                        <div class="input-group shadow">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fas fa-tag fa-fw"></i></span>
-                            </div>
-                            <input class="form-control" type="text" id="add_name" placeholder="名称">
-                        </div>
-                        <div class="input-group shadow">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fas fa-user fa-fw"></i></span>
-                            </div>
-                            <input class="form-control" type="text" id="add_account" placeholder="账号">
-                        </div>
-                        <div class="input-group shadow">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fas fa-key fa-fw"></i></span>
-                            </div>
-                            <input class="form-control" type="text" id="add_password" placeholder="密码">
-                        </div>
-                        <div class="input-group shadow">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fas fa-info fa-fw"></i></span>
-                            </div>
-                            <input class="form-control" type="text" id="add_remark" placeholder="备注">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 添加密码模态框底部 -->
-                <div class="modal-footer justify-content-around">
-                    <button type="button" class="btn btn-success btn-lg shadow" onclick="on_addButton_clicked()">
-                        添加
-                    </button>
-                    <button type="button" class="btn btn-danger btn-lg shadow" data-dismiss="modal">关闭</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <AddPasswordModal ref="addPM" @addSuc="add_update_PM_Success" @querySuc="querySucceed"/>
 
     <!-- 修改密码模态框 -->
-    <div class="modal fade" id="updatePasswordModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-
-                <!-- 修改密码模态框头部 -->
-                <div class="modal-header justify-content-center">
-                    <h4 class="modal-title">修改密码记录</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                </div>
-
-                <!-- 修改密码模态框主体 -->
-                <div class="modal-body">
-                    <div class="col-12">
-                        <div class="input-group shadow">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fab fa-orcid fa-fw"></i></span>
-                            </div>
-                            <input class="form-control" type="number" id="update_id" placeholder="ID" disabled>
-                        </div>
-                        <div class="input-group shadow">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fas fa-tag fa-fw"></i></span>
-                            </div>
-                            <input class="form-control" type="text" id="update_name" placeholder="名称">
-                        </div>
-                        <div class="input-group shadow">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fas fa-user fa-fw"></i></span>
-                            </div>
-                            <input class="form-control" type="text" id="update_account" placeholder="账号">
-                        </div>
-                        <div class="input-group shadow">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fas fa-key fa-fw"></i></span>
-                            </div>
-                            <input class="form-control" type="text" id="update_password" placeholder="密码">
-                        </div>
-                        <div class="input-group shadow">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fas fa-info fa-fw"></i></span>
-                            </div>
-                            <input class="form-control" type="text" id="update_remark" placeholder="备注">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 修改密码模态框底部 -->
-                <div class="modal-footer justify-content-around">
-                    <button type="button" class="btn btn-success btn-lg shadow" onclick="on_updateButton_clicked()">
-                        修改
-                    </button>
-                    <button type="button" class="btn btn-danger btn-lg shadow" data-dismiss="modal">关闭</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <UpdatePasswordModal ref="updatePM" @updateSuc="add_update_PM_Success" @querySuc="querySucceed"/>
 </template>
 
 <script>
 import {setThemeColor} from "@/js/global";
 import {query} from "@/js/server-api";
-import contextMenu from "@/components/widget/contextMenu";
 import router from "@/router";
+import ContextMenu from "@/components/query/ContextMenu";
+import AddPasswordModal from "@/components/query/AddPasswordModal";
+import UpdatePasswordModal from "@/components/query/UpdatePasswordModal";
+
 
 export default {
     name: "query",
-    components: {contextMenu},
+    components: {ContextMenu, AddPasswordModal, UpdatePasswordModal},
     data() {
         return {
             key: "",
             dataList: [
-                {id: "-1", name: "无", account: "无", password: "无", remark: "无"}
-            ]
+                // {id: -1, name: "名称", account: "账号", password: "密码", remark: "备注"}
+            ],
+            rowMenuData: {
+                show: false
+            }
         }
     }, methods: {
         on_backA_clicked() {
@@ -212,35 +122,38 @@ export default {
                 }
                 case 1: {
                     console.log("没有查询到任何结果");
-                    this.dataList = [];
+                    this.dataList = [{id: -1, name: "查", account: "无", password: "此", remark: "项"}];
                     break;
                 }
             }
         },
-        tableRow_contextmenu(ev) {
-            let menu = this.$refs.rowMenu;
-            menu.target = ev.target;
-            menu.currentTarget = ev.currentTarget;
-            let x = 0;
-            let y = 0;
-            let rightX = ev.clientX + menu.width;
-            let bottomY = ev.clientY + menu.height;
-            if (rightX >= window.innerWidth - 10) {
-                x = ev.pageX - menu.width;
-            } else {
-                x = ev.pageX;
-            }
-            if (bottomY >= window.innerHeight - 10) {
-                y = ev.pageY - menu.height;
-            } else {
-                y = ev.pageY;
-            }
-            menu.setLocation(x, y);
-            menu.show();
-            this.addEventListener();
+        add_update_PM_Success(key) {
+            this.key = key;
+        },
+        tableRow_contextmenu(ev, value, data) {
+            if (data.id < 0) return;
+            this.rowMenuData.show = true;
+            this.$nextTick(function () {
+                let menu = this.$refs.rowMenu;
+                menu.value = value;
+                menu.values = data;
+                let rightX = ev.clientX + menu.width;
+                let bottomY = ev.clientY + menu.height;
+                if (rightX >= window.innerWidth - 10) {
+                    menu.x = ev.pageX - menu.width;
+                } else {
+                    menu.x = ev.pageX;
+                }
+                if (bottomY >= window.innerHeight - 10) {
+                    menu.y = ev.pageY - menu.height;
+                } else {
+                    menu.y = ev.pageY;
+                }
+                this.addEventListener();
+            });
         },
         windowCloseMenu() {
-            this.$refs.rowMenu.hide();
+            this.rowMenuData.show = false;
             this.removeEventListener();
         },
         addEventListener() {
@@ -253,8 +166,9 @@ export default {
             window.removeEventListener("click", this.windowCloseMenu);
             window.removeEventListener("resize", this.windowCloseMenu);
         },
-        open_updatePasswordModal() {
-            console.log("update");
+        open_updatePasswordModal(values) {
+            this.$refs.updatePM.open();
+            this.$refs.updatePM.values = values;
         }
     }, beforeMount() {
         setThemeColor("#343A40");
@@ -280,9 +194,9 @@ export default {
 }
 </script>
 
-<style scoped>
-@import "@/css/nav-back-button.css";
+<style scoped src="../css/nav-back-button.css"></style>
 
+<style scoped>
 .container {
     margin-top: 10px;
     user-select: none;
@@ -294,5 +208,9 @@ export default {
 
 .my-card-body::-webkit-scrollbar {
     display: none;
+}
+
+tr[data-id] td {
+    min-width: 8em;
 }
 </style>
