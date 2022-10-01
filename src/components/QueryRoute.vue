@@ -83,7 +83,6 @@
 </template>
 
 <script>
-import {setThemeColor} from "@/js/global";
 import {query} from "@/js/server-api";
 import router from "@/router";
 import ContextMenu from "@/components/query/ContextMenu";
@@ -171,7 +170,7 @@ export default {
             this.$refs.updatePM.values = values;
         }
     }, beforeMount() {
-        setThemeColor("#343A40");
+        this.setThemeColor("#343A40");
     },
     mounted() {
         window.queryVue = this;

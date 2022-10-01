@@ -8,7 +8,6 @@
 </template>
 
 <script>
-import {setThemeColor} from "@/js/global";
 import {user_status} from "@/js/server-api";
 import router from "@/router";
 
@@ -30,7 +29,7 @@ export default {
         }
     },
     beforeMount() {
-        setThemeColor();
+        this.setThemeColor();
     },
     mounted() {
         setTimeout(this.verify, 400);

@@ -3,16 +3,26 @@ const AutoImport = require('unplugin-auto-import/webpack')
 const Components = require('unplugin-vue-components/webpack')
 const {ElementPlusResolver} = require('unplugin-vue-components/resolvers')
 
+let objExternals = {
+    vue: "Vue",
+    "element-plus": "ElementPlus",
+    "crypto-js": "CryptoJS",
+    jquery: "jQuery"
+}
+
 module.exports = defineConfig({
     transpileDependencies: true,
     publicPath: './',
+    pages: {
+        index: {
+            entry: "src/main.js",
+            template: "public/index.html",
+            title: "DevilSpiderX",
+            filename: "index.html"
+        }
+    },
     configureWebpack: {
-        externals: {
-            "crypto-js": "CryptoJS",
-            bootstrap: "bootstrap",
-            jquery: "jQuery",
-            "element-plus": "ElementPlus"
-        },
+        externals: process.env.NODE_ENV === 'development' ? {} : objExternals,
         plugins: [
             AutoImport({
                 resolvers: [ElementPlusResolver()],
@@ -26,6 +36,7 @@ module.exports = defineConfig({
         host: "0.0.0.0",
         port: "8080",
         // https: true,
+        // proxy: "https://localhost:10048"
         proxy: "http://localhost:10048"
     }
 })

@@ -44,9 +44,9 @@
 </template>
 
 <script>
-import {setThemeColor} from "@/js/global";
 import {login} from "@/js/server-api";
-import CryptoJS from 'crypto-js';
+import SHA256 from 'crypto-js/sha256';
+import Hex from 'crypto-js/enc-hex';
 import {ElMessage} from "element-plus";
 
 export default {
@@ -78,35 +78,27 @@ export default {
             this.storageAccount(uid, true);
 
             this.running_start()
-            pwd = CryptoJS.SHA256(pwd).toString(CryptoJS.enc.Hex);
+            pwd = SHA256(pwd).toString(Hex);
             login(uid, pwd, function (resp) {
                 switch (resp["code"]) {
                     case 0: {
-                        console.log(vm.$message);
                         vm.$router.push({name: "index"});
                         break;
                     }
                     case 1: {
-                        ElMessage({
-                            type: "error",
-                            message: "密码错误",
-                            "show-close": true,
-                            grouping: true
-                        });
+                        ElMessage.error({message: "密码错误", grouping: true});
                         break;
                     }
                     case 2: {
-                        ElMessage({
-                            type: "error",
-                            message: "账号不存在",
-                            "show-close": true,
-                            grouping: true
-                        });
+                        ElMessage.error({message: "账号不存在", grouping: true});
                         break;
                     }
                 }
                 vm.running_stop();
-            }, vm.running_stop);
+            }, function () {
+                ElMessage.error({message: "服务器错误", grouping: true});
+                vm.running_stop();
+            });
         },
         storageAccount(uid, allow) {
             if (allow) {
@@ -116,22 +108,23 @@ export default {
             }
         },
         running_start() {
-            setThemeColor("#262626");
+            this.setThemeColor("#262626");
             this.running.show = true;
         },
         running_stop() {
             this.running.show = false;
-            setThemeColor("#DCDCDC");
+            this.setThemeColor("#dcdcdc");
         }
     },
     beforeMount() {
-        setThemeColor("#DCDCDC");
+        this.setThemeColor("#dcdcdc");
     },
     mounted() {
         let loginUid = localStorage.loginUid;
         if (loginUid !== undefined) {
             this.form.uid = loginUid;
         }
+
     }
 }
 </script>

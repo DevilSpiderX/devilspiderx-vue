@@ -4,13 +4,12 @@
 </template>
 
 <script>
-import {setThemeColor} from "@/js/global";
 import {ElMessageBox} from "element-plus";
 
 export default {
     name: "UpdatePwdRoute",
     beforeMount() {
-        setThemeColor("#FFFFFF");
+        this.setThemeColor("#FFFFFF");
     }, mounted() {
         let vm = this;
         ElMessageBox.alert("页面未完成", "提示", {

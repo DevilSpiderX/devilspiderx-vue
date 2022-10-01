@@ -1,13 +1,12 @@
 <template>
     <el-container>
-        <el-header style="background-color: #343A40;color:white;border-radius: var(--el-border-radius-round);">
+        <el-header style="border-bottom: 1px solid #84858d55;">
             <el-page-header title=" " @back="this.$router.back()">
                 <template #icon>
-                    &nbsp;&nbsp;
                     <i class="fas fa-arrow-left fa-fw" style="font-size: 1.2rem;"></i>
                 </template>
                 <template #content>
-                    <span style="font-weight:700;color: white;"> DevilSpiderX </span>
+                    <span style="font-weight:700;"> DevilSpiderX </span>
                 </template>
             </el-page-header>
         </el-header>
@@ -71,7 +70,6 @@
 </template>
 
 <script>
-import {setThemeColor} from "@/js/global";
 import {logout} from "@/js/server-api";
 import router from "@/router";
 
@@ -98,7 +96,7 @@ export default {
         }
     },
     beforeMount() {
-        setThemeColor("#dcdcdc");
+        this.setThemeColor("#dcdcdc");
     },
     mounted() {
     }

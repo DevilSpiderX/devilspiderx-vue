@@ -54,7 +54,6 @@
 </template>
 
 <script>
-import {setThemeColor} from "@/js/global";
 import {register} from "@/js/server-api";
 import {ElMessage} from "element-plus";
 
@@ -124,16 +123,16 @@ export default {
             }, vm.running_stop);
         },
         running_start() {
-            setThemeColor("#262626");
+            this.setThemeColor("#262626");
             this.running.show = true;
         },
         running_stop() {
             this.running.show = false;
-            setThemeColor("#DCDCDC");
+            this.setThemeColor("#dcdcdc");
         }
     },
     beforeMount() {
-        setThemeColor("#DCDCDC");
+        this.setThemeColor("#dcdcdc");
     }
 }
 </script>

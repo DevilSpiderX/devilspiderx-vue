@@ -29,7 +29,7 @@ const router = createRouter({
 router.beforeEach(function (to, from, next) {
     document.body.setAttribute("data-route", to.path);
     if (Object.hasOwn(to.meta, "title")) {
-        document.title = to.meta.title;
+        document.title = String(to.meta["title"]);
     } else {
         document.title = "DevilSpiderX";
     }

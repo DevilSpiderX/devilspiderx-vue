@@ -1,8 +1,7 @@
 body[data-route='/'] {
     background-color: white;
     box-sizing: border-box;
-    margin-top: 0;
-    margin-bottom: 0;
+    margin: 0;
 }
 
 body[data-route='/updatePwd'] {
