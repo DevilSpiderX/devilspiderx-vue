@@ -5,13 +5,16 @@ body[data-route='/'] {
     margin-bottom: 0;
 }
 
+body[data-route='/updatePwd'] {
+    background-color: #ffffff;
+}
+
 body[data-route='/login'],
 body[data-route='/register'],
 body[data-route='/index'],
 body[data-route='/query'],
-body[data-route='/v2ray'],
-body[data-route='/updatePwd'] {
-    background-color: #DCDCDC;
+body[data-route='/v2ray'] {
+    background-color: #dcdcdc;
 }
 
 body[data-route='/query']::-webkit-scrollbar {

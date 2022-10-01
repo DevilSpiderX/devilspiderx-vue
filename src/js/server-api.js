@@ -1,6 +1,4 @@
-import jQuery from 'jQuery';
-
-const $ = jQuery;
+import $ from 'jquery';
 
 export function login(uid, pwd, success, error) {
     let postBody = {

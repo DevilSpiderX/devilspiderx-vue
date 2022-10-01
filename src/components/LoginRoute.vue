@@ -1,33 +1,44 @@
 <template>
-    <div class="container">
-        <div class="row justify-content-center ">
-            <div id="center-fa" class="col-sm-10 col-md-7 col-lg-6 col-xl-5 shadow">
-                <form @submit.prevent="form_submit">
-                    <h1 class="text-center">登&nbsp;&nbsp;录</h1>
-                    <div class="input-group height_3rem">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-user fa-fw"></i></span>
-                        </div>
-                        <input class="form-control height_3rem my_form_control" type="text" placeholder="账号"
-                               ref="user" v-model="form.uid">
-                    </div>
-                    <div class="input-group height_3rem">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-key fa-fw"></i></span>
-                        </div>
-                        <input class="form-control height_3rem my_form_control" type="password" placeholder="密码"
-                               ref="password" v-model="form.pwd">
-                    </div>
-                    <div class="row justify-content-around">
-                        <button type="submit" class="btn btn-success btn-lg">登 录</button>
-                        <router-link :to='{name:"register"}' class="btn btn-success btn-lg">注 册</router-link>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    <el-container>
+        <el-main style="padding: 0;overflow: visible;">
+            <el-row justify="center">
+                <el-col class="register-col">
+                    <el-form :model="form" @submit.prevent="form_submit">
+                        <h1 style="text-align: center;font-size: 2rem;">登&nbsp;&nbsp;录</h1>
+                        <el-form-item>
+                            <el-input placeholder="账号" ref="user" v-model="form.uid">
+                                <template #prepend>
+                                        <span style="color: rgb(73,80,87);">
+                                            <i class="fas fa-user fa-fw"></i>
+                                        </span>
+                                </template>
+                            </el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-input type="password" placeholder="密码" ref="password" v-model="form.pwd"
+                                      show-password>
+                                <template #prepend>
+                                        <span style="color: rgb(73,80,87);">
+                                            <i class="fas fa-key fa-fw"></i>
+                                        </span>
+                                </template>
+                            </el-input>
+                        </el-form-item>
+                        <el-row class="button-row" justify="space-around">
+                            <el-button type="primary" size="large" native-type="submit" auto-insert-space>
+                                登录
+                            </el-button>
+                            <el-button type="primary" size="large" native-type="button" auto-insert-space
+                                       @click="this.$router.push({name:'register'})">注册
+                            </el-button>
+                        </el-row>
+                    </el-form>
+                </el-col>
+            </el-row>
+        </el-main>
+    </el-container>
 
-    <div id="running" :style="running.style">
+    <div class="running" v-show="running.show">
         <i class="fas fa-spinner fa-spin"></i>
     </div>
 </template>
@@ -35,8 +46,8 @@
 <script>
 import {setThemeColor} from "@/js/global";
 import {login} from "@/js/server-api";
-import router from "@/router";
-import CryptoJS from 'CryptoJS';
+import CryptoJS from 'crypto-js';
+import {ElMessage} from "element-plus";
 
 export default {
     name: "LoginRoute",
@@ -47,12 +58,13 @@ export default {
                 pwd: ""
             },
             running: {
-                style: "display:none;"
+                show: false
             }
         }
     },
     methods: {
         form_submit() {
+            let vm = this;
             let uid = this.form.uid;
             let pwd = this.form.pwd;
             if (uid === "") {
@@ -64,37 +76,37 @@ export default {
                 return;
             }
             this.storageAccount(uid, true);
-            let running = this.running;
 
-            function start_login() {
-                setThemeColor("#1A1D20");
-                running.style = "";
-            }
-
-            function stop_login() {
-                running.style = "display:none;";
-                setThemeColor("#343A40");
-            }
-
-            start_login();
+            this.running_start()
             pwd = CryptoJS.SHA256(pwd).toString(CryptoJS.enc.Hex);
             login(uid, pwd, function (resp) {
                 switch (resp["code"]) {
                     case 0: {
-                        router.push({name: "index"});
+                        console.log(vm.$message);
+                        vm.$router.push({name: "index"});
                         break;
                     }
                     case 1: {
-                        alert("密码错误");
+                        ElMessage({
+                            type: "error",
+                            message: "密码错误",
+                            "show-close": true,
+                            grouping: true
+                        });
                         break;
                     }
                     case 2: {
-                        alert("账号不存在");
+                        ElMessage({
+                            type: "error",
+                            message: "账号不存在",
+                            "show-close": true,
+                            grouping: true
+                        });
                         break;
                     }
                 }
-                stop_login()
-            }, stop_login);
+                vm.running_stop();
+            }, vm.running_stop);
         },
         storageAccount(uid, allow) {
             if (allow) {
@@ -102,6 +114,14 @@ export default {
             } else {
                 localStorage.removeItem("loginUid");
             }
+        },
+        running_start() {
+            setThemeColor("#262626");
+            this.running.show = true;
+        },
+        running_stop() {
+            this.running.show = false;
+            setThemeColor("#DCDCDC");
         }
     },
     beforeMount() {
@@ -117,11 +137,13 @@ export default {
 </script>
 
 <style scoped>
-div#center-fa {
-    /*border: #6c757d 5px solid;*/
+.register-col {
     border-radius: 2ex;
+    max-width: 500px;
     margin-top: 100px;
     background-color: white;
+    box-shadow: var(--el-box-shadow);
+    padding: 15px;
 }
 
 form > h1,
@@ -129,22 +151,19 @@ form > div {
     margin: 20px 0;
 }
 
-form > div.row > button,
-form > div.row > a {
+.button-row > button {
     margin: 10px 0;
     width: 100px;
+    height: 50px;
+    font-size: 1.25rem;
 }
 
-.height_3rem {
+.el-input {
+    font-size: 1.1rem;
     height: 3rem;
 }
 
-.my_form_control {
-    background-color: #F9F9F9;
-    font-size: 1.1rem;
-}
-
-#running {
+.running {
     width: 100%;
     height: 100%;
     background-color: #0000007f;
@@ -157,7 +176,7 @@ form > div.row > a {
     z-index: 10;
 }
 
-#running > i {
+.running > i {
     font-size: 50px;
     color: white;
 }

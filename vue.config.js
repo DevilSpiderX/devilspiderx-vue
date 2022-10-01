@@ -1,19 +1,31 @@
 const {defineConfig} = require('@vue/cli-service')
+const AutoImport = require('unplugin-auto-import/webpack')
+const Components = require('unplugin-vue-components/webpack')
+const {ElementPlusResolver} = require('unplugin-vue-components/resolvers')
+
 module.exports = defineConfig({
     transpileDependencies: true,
     publicPath: './',
     configureWebpack: {
         externals: {
-            CryptoJS: "CryptoJS",
+            "crypto-js": "CryptoJS",
             bootstrap: "bootstrap",
-            jQuery: "jQuery"
-        }
+            jquery: "jQuery",
+            "element-plus": "ElementPlus"
+        },
+        plugins: [
+            AutoImport({
+                resolvers: [ElementPlusResolver()],
+            }),
+            Components({
+                resolvers: [ElementPlusResolver()],
+            })
+        ]
     },
     devServer: {
-        open: true,
         host: "0.0.0.0",
         port: "8080",
-        https: true,
-        proxy: "https://localhost:10048"
+        // https: true,
+        proxy: "http://localhost:10048"
     }
 })

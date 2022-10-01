@@ -1,46 +1,40 @@
 <template>
-    <!-- 导航栏 -->
-    <nav class="navbar navbar-expand-md bg-dark navbar-dark">
-        <a href="javascript:void(0)" @click="this.$router.back()" class="nav-back-button">
-            <i class="fas fa-arrow-left" style="font-size: 1.2rem;"></i>
-        </a>
-        <!-- 导航栏LOGO -->
-        <a class="navbar-brand font-weight-bold">DevilSpiderX</a>
-
-        <!-- 自适应弹出按钮 -->
-        <button class="navbar-toggler" data-toggle="collapse" data-target="#collapsibleNavbar">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <!-- 导航栏菜单 -->
-        <div class="collapse navbar-collapse" id="collapsibleNavbar">
-            <ul class="navbar-nav">
-                <li class="nav-item"></li>
-            </ul>
-        </div>
-    </nav>
-
-    <!-- 主体 -->
-    <div class="container">
-        <div id="card-container" class="row">
-            <div class="col-12 col-sm-11 col-md-9 col-lg-7 col-xl-6">
-                <div class="card shadow">
-                    <div class="card-header">
-                        <h3 style="text-align: center;">V2Ray开关</h3>
-                    </div>
-                    <div class="card-body ">
-                        <Switch ref="v2Switch" @click="on_switch_clicked"/>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <el-container>
+        <el-header style="background-color: #343A40;color:white;border-radius: var(--el-border-radius-round);">
+            <el-page-header title=" " @back="this.$router.back()">
+                <template #icon>
+                    &nbsp;&nbsp;
+                    <i class="fas fa-arrow-left fa-fw" style="font-size: 1.2rem;"></i>
+                </template>
+                <template #content>
+                    <span style="font-weight:700;color: white;"> DevilSpiderX </span>
+                </template>
+            </el-page-header>
+        </el-header>
+        <el-main>
+            <el-row justify="center">
+                <el-col class="card-container">
+                    <el-card>
+                        <template #header>
+                            <div style="display: flex;justify-content: center;">
+                                <span style="font-weight: 700;font-size: 1.4rem;text-align: center;">V2Ray开关</span>
+                            </div>
+                        </template>
+                        <div class="card-body">
+                            <Switch ref="v2Switch" @click="on_switch_clicked"/>
+                        </div>
+                    </el-card>
+                </el-col>
+            </el-row>
+        </el-main>
+    </el-container>
 </template>
 
 <script>
 import Switch from "@/components/v2ray/MySwitch";
 import {v2rayState, v2rayStart, v2rayStop} from "@/js/server-api";
 import {setThemeColor} from "@/js/global";
+import {ElMessage} from "element-plus";
 
 let switch$;
 export default {
@@ -61,16 +55,16 @@ export default {
                             break;
                         }
                         case 1: {
-                            alert(resp["msg"]);
+                            ElMessage.error({message: resp["msg"]});
                             break;
                         }
                         case 2: {
                             switch$.switch_off();
-                            console.log(resp["msg"]);
+                            ElMessage.error({message: resp["msg"]});
                             break;
                         }
                         case 101: {
-                            alert("没有管理员权限");
+                            ElMessage.error({message: "没有管理员权限"});
                             break;
                         }
                     }
@@ -88,11 +82,11 @@ export default {
                         }
                         case 2: {
                             switch$.switch_on();
-                            console.log(resp["msg"]);
+                            ElMessage.error({message: resp["msg"]});
                             break;
                         }
                         case 101: {
-                            alert("没有管理员权限");
+                            ElMessage.error({message: "没有管理员权限"});
                             break;
                         }
                     }
@@ -101,7 +95,7 @@ export default {
         }
     },
     beforeMount() {
-        setThemeColor("#343A40");
+        setThemeColor("#dcdcdc");
     },
     mounted() {
         switch$ = this.$refs.v2Switch;
@@ -119,10 +113,9 @@ export default {
 <style scoped src="../css/nav-back-button.css"></style>
 
 <style scoped>
-#card-container {
+.card-container {
     margin-top: 5rem;
-    align-items: center;
-    justify-content: center;
+    max-width: 480px;
 }
 
 .card-body {

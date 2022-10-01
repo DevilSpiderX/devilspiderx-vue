@@ -1,51 +1,73 @@
 <template>
-    <!-- 导航栏 -->
-    <nav class="navbar navbar-expand-md bg-dark navbar-dark">
-        <!-- 导航栏LOGO -->
-        <a class="navbar-brand font-weight-bold">DevilSpiderX</a>
-    </nav>
-
-    <!-- 主体 -->
-    <div class="container">
-        <div class="row justify-content-center" style="margin-top: 10px">
-            <router-link class="btn btn-outline-dark my-button col-11 col-sm-10 col-md-9 col-lg-8 col-xl-7 shadow"
-                         to="/controller" @contextmenu.prevent.stop>
-                <i class="fas fa-sliders-h fa-fw"></i>
-                控制中心
-            </router-link>
-            <router-link class="btn btn-outline-dark my-button col-11 col-sm-10 col-md-9 col-lg-8 col-xl-7 shadow"
-                         to="/query" @contextmenu.prevent.stop>
-                <i class="fas fa-search fa-fw"></i>
-                查&nbsp;&nbsp;询
-            </router-link>
-            <router-link class="btn btn-outline-dark my-button col-11 col-sm-10 col-md-9 col-lg-8 col-xl-7 shadow"
-                         to="/v2ray" @contextmenu.prevent.stop>
-                <!--suppress CheckImageSize -->
-                <img src="@/assets/v2rayN.png" alt="v2ray" width="27" height="27">
-                V2Ray
-            </router-link>
-            <router-link class="btn btn-outline-dark my-button col-11 col-sm-10 col-md-9 col-lg-8 col-xl-7 shadow"
-                         to="/log" @contextmenu.prevent.stop>
-                <i class="fas fa-file-alt fa-fw"></i>
-                日&nbsp;&nbsp;志
-            </router-link>
-            <router-link class="btn btn-outline-dark my-button col-11 col-sm-10 col-md-9 col-lg-8 col-xl-7 shadow"
-                         to="/updatePwd" @contextmenu.prevent.stop>
-                <i class="fas fa-edit fa-fw"></i>
-                修改密码
-            </router-link>
-            <button class="btn btn-outline-dark my-button col-11 col-sm-10 col-md-9 col-lg-8 col-xl-7 shadow"
-                    @click="on_logoutButton_clicked" @contextmenu.prevent.stop>
-                <i class="fas fa-sign-out-alt fa-fw"></i>
-                退出登录
-            </button>
-            <button class="btn btn-danger my-button col-11 col-sm-10 col-md-9 col-lg-8 col-xl-7 shadow"
-                    @click="on_exit_clicked" @contextmenu.prevent.stop>
-                <i class="fas fa-power-off fa-fw"></i>
-                退&nbsp;&nbsp;出
-            </button>
-        </div>
-    </div>
+    <el-container>
+        <el-header style="background-color: #343A40;color:white;border-radius: var(--el-border-radius-round);">
+            <el-page-header title=" " @back="this.$router.back()">
+                <template #icon>
+                    &nbsp;&nbsp;
+                    <i class="fas fa-arrow-left fa-fw" style="font-size: 1.2rem;"></i>
+                </template>
+                <template #content>
+                    <span style="font-weight:700;color: white;"> DevilSpiderX </span>
+                </template>
+            </el-page-header>
+        </el-header>
+        <el-main style="padding:20px 15px;">
+            <el-row justify="center">
+                <el-col :sm="16" :md="14" :lg="11" :xl="12" ref="test">
+                    <el-button class="my-button" style="width: 100%" @contextmenu.prevent.stop
+                               @click="this.$router.push({name:'controller'})">
+                        <template #icon>
+                            <i class="fas fa-sliders-h fa-fw"></i>
+                        </template>
+                        控制中心
+                    </el-button>
+                    <el-button class="my-button" style="width: 100%" @contextmenu.prevent.stop
+                               @click="this.$router.push({name:'query'})">
+                        <template #icon>
+                            <i class="fas fa-search fa-fw"></i>
+                        </template>
+                        查&nbsp;&nbsp;询
+                    </el-button>
+                    <el-button class="my-button" style="width: 100%" @contextmenu.prevent.stop
+                               @click="this.$router.push({name:'v2ray'})">
+                        <template #icon>
+                            <!--suppress CheckImageSize -->
+                            <img src="@/assets/v2rayN.png" alt="v2ray" width="27" height="27">
+                        </template>
+                        V2Ray
+                    </el-button>
+                    <el-button class="my-button" style="width: 100%" @contextmenu.prevent.stop
+                               @click="this.$router.push({name:'log'})">
+                        <template #icon>
+                            <i class="fas fa-file-alt fa-fw"></i>
+                        </template>
+                        日&nbsp;&nbsp;志
+                    </el-button>
+                    <el-button class="my-button" style="width: 100%" @contextmenu.prevent.stop
+                               @click="this.$router.push({name:'updatePwd'})">
+                        <template #icon>
+                            <i class="fas fa-edit fa-fw"></i>
+                        </template>
+                        修改密码
+                    </el-button>
+                    <el-button class="my-button" style="width: 100%" @contextmenu.prevent.stop
+                               @click="on_logoutButton_clicked">
+                        <template #icon>
+                            <i class="fas fa-sign-out-alt fa-fw"></i>
+                        </template>
+                        退出登录
+                    </el-button>
+                    <el-button class="my-button" style="width: 100%" @contextmenu.prevent.stop
+                               @click="on_exit_clicked">
+                        <template #icon>
+                            <i class="fas fa-power-off fa-fw"></i>
+                        </template>
+                        退&nbsp;&nbsp;出
+                    </el-button>
+                </el-col>
+            </el-row>
+        </el-main>
+    </el-container>
 </template>
 
 <script>
@@ -76,7 +98,7 @@ export default {
         }
     },
     beforeMount() {
-        setThemeColor("#343A40");
+        setThemeColor("#dcdcdc");
     },
     mounted() {
     }
@@ -84,9 +106,10 @@ export default {
 </script>
 
 <style scoped>
+
 @media (max-width: 768px) {
-    .navbar {
-        justify-content: center;
+    .el-col-24 {
+        max-width: 470px;
     }
 }
 
@@ -95,9 +118,12 @@ export default {
     font-size: 1.5rem;
     line-height: 1.5;
     border-radius: 0.4rem;
-    margin: 12px;
+    margin: 0 0 24px 0;
+    color: black;
     background-color: #f8f9fa;
     border-color: white;
+    height: 60px;
+    box-shadow: var(--el-box-shadow);
 }
 
 .my-button:hover {
@@ -107,6 +133,7 @@ export default {
 }
 
 .my-button:last-child {
+    color: white;
     background-color: #dc3545;
     border-color: #dc3545;
 }
