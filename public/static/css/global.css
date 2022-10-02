@@ -4,6 +4,8 @@ body[data-route='/'] {
     margin: 0;
 }
 
+body[data-route='/controller'],
+body[data-route='/log'],
 body[data-route='/updatePwd'] {
     background-color: #ffffff;
 }

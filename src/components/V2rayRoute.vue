@@ -34,7 +34,6 @@ import Switch from "@/components/v2ray/MySwitch";
 import {v2rayState, v2rayStart, v2rayStop} from "@/js/server-api";
 import {ElMessage} from "element-plus";
 
-let switch$;
 export default {
     name: "V2rayRoute",
     components: {
@@ -45,11 +44,11 @@ export default {
     },
     methods: {
         on_switch_clicked() {
-            if (switch$.is_on()) {
+            if (this.$refs.v2Switch.is_on()) {
                 v2rayStop(function (resp) {
                     switch (resp["code"]) {
                         case 0: {
-                            switch$.switch_off();
+                            this.$refs.v2Switch.switch_off();
                             break;
                         }
                         case 1: {
@@ -57,7 +56,7 @@ export default {
                             break;
                         }
                         case 2: {
-                            switch$.switch_off();
+                            this.$refs.v2Switch.switch_off();
                             ElMessage.error(resp["msg"]);
                             break;
                         }
@@ -66,14 +65,14 @@ export default {
                             break;
                         }
                     }
-                }, () => {
+                }.bind(this), () => {
                     ElMessage.error("服务器错误")
                 });
             } else {
                 v2rayStart(function (resp) {
                     switch (resp["code"]) {
                         case 0: {
-                            switch$.switch_on();
+                            this.$refs.v2Switch.switch_on();
                             break;
                         }
                         case 1: {
@@ -81,7 +80,7 @@ export default {
                             break;
                         }
                         case 2: {
-                            switch$.switch_on();
+                            this.$refs.v2Switch.switch_on();
                             ElMessage.error({message: resp["msg"]});
                             break;
                         }
@@ -90,7 +89,7 @@ export default {
                             break;
                         }
                     }
-                }, () => {
+                }.bind(this), () => {
                     ElMessage.error("服务器错误")
                 });
             }
@@ -100,14 +99,13 @@ export default {
         this.setThemeColor("#dcdcdc");
     },
     mounted() {
-        switch$ = this.$refs.v2Switch;
         v2rayState(function (resp) {
             if (resp["code"] === 1) {
-                switch$.switch_on();
+                this.$refs.v2Switch.switch_on();
             } else {
-                switch$.switch_off();
+                this.$refs.v2Switch.switch_off();
             }
-        });
+        }.bind(this));
     }
 }
 </script>

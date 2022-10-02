@@ -11,14 +11,15 @@ export default {
     beforeMount() {
         this.setThemeColor("#FFFFFF");
     }, mounted() {
-        let vm = this;
         ElMessageBox.alert("页面未完成", "提示", {
             autofocus: false,
             type: "warning ",
-            confirmButtonText: "返回",
+            cancelButtonText: "返回",
+            showCancelButton: true,
+            showConfirmButton: false,
             callback: function () {
-                vm.$router.back();
-            }
+                this.$router.back();
+            }.bind(this)
         });
     }
 }

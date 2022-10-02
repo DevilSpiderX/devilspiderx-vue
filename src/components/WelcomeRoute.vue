@@ -9,23 +9,22 @@
 
 <script>
 import {user_status} from "@/js/server-api";
-import router from "@/router";
 
 export default {
     name: "WelcomeRoute",
     methods: {
         verify() {
-            user_status((resp) => {
+            user_status(function (resp) {
                 console.log(resp);
                 let data = resp.data;
                 if (!data["login"] && data["status"] === 0) {
-                    router.push({name: "login"});
+                    this.$router.push({name: "login"});
                 } else {
-                    router.push({name: "index"});
+                    this.$router.push({name: "index"});
                 }
-            }, () => {
-                router.push({name: "login"});
-            })
+            }.bind(this), function () {
+                this.$router.push({name: "login"});
+            }.bind(this))
         }
     },
     beforeMount() {

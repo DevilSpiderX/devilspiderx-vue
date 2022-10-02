@@ -64,7 +64,6 @@ export default {
     },
     methods: {
         form_submit() {
-            let vm = this;
             let uid = this.form.uid;
             let pwd = this.form.pwd;
             if (uid === "") {
@@ -82,7 +81,7 @@ export default {
             login(uid, pwd, function (resp) {
                 switch (resp["code"]) {
                     case 0: {
-                        vm.$router.push({name: "index"});
+                        this.$router.push({name: "index"});
                         break;
                     }
                     case 1: {
@@ -94,11 +93,11 @@ export default {
                         break;
                     }
                 }
-                vm.running_stop();
-            }, function () {
+                this.running_stop();
+            }.bind(this), function () {
                 ElMessage.error({message: "服务器错误", grouping: true});
-                vm.running_stop();
-            });
+                this.running_stop();
+            }.bind(this));
         },
         storageAccount(uid, allow) {
             if (allow) {

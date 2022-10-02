@@ -84,7 +84,6 @@
 
 <script>
 import {query} from "@/js/server-api";
-import router from "@/router";
 import ContextMenu from "@/components/query/ContextMenu";
 import AddPasswordModal from "@/components/query/AddPasswordModal";
 import UpdatePasswordModal from "@/components/query/UpdatePasswordModal";
@@ -106,12 +105,14 @@ export default {
     }, methods: {
         on_backA_clicked() {
             window.sessionStorage.removeItem('history_query_key');
-            router.back();
+            this.$router.back();
         },
+
         on_searchButton_clicked() {
             window.sessionStorage['history_query_key'] = this.key;
-            query(this.key, this.querySucceed);
+            query(this.key, this.querySucceed.bind(this));
         },
+
         querySucceed(resp) {
             console.log(resp);
             switch (resp["code"]) {
@@ -126,9 +127,11 @@ export default {
                 }
             }
         },
+
         add_update_PM_Success(key) {
             this.key = key;
         },
+
         tableRow_contextmenu(ev, value, data) {
             if (data.id < 0) return;
             this.rowMenuData.show = true;
@@ -149,32 +152,36 @@ export default {
                     menu.y = ev.pageY;
                 }
                 this.addEventListener();
-            });
+            }.bind(this));
         },
+
         windowCloseMenu() {
             this.rowMenuData.show = false;
             this.removeEventListener();
         },
+
         addEventListener() {
             window.addEventListener("scroll", this.windowCloseMenu);
             window.addEventListener("click", this.windowCloseMenu);
             window.addEventListener("resize", this.windowCloseMenu);
         },
+
         removeEventListener() {
             window.removeEventListener("scroll", this.windowCloseMenu);
             window.removeEventListener("click", this.windowCloseMenu);
             window.removeEventListener("resize", this.windowCloseMenu);
         },
+
         open_updatePasswordModal(values) {
             this.$refs.updatePM.open();
             this.$refs.updatePM.values = values;
         }
+
     }, beforeMount() {
         this.setThemeColor("#343A40");
     },
     mounted() {
-        window.queryVue = this;
-        let routeQuery = router.currentRoute.value.query;
+        let routeQuery = this.$router.currentRoute.value.query;
         if (Object.hasOwn(routeQuery, "key")) {
             this.key = routeQuery.key;
             window.sessionStorage['history_query_key'] = this.key;

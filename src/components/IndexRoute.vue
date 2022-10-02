@@ -71,7 +71,6 @@
 
 <script>
 import {logout} from "@/js/server-api";
-import router from "@/router";
 
 export default {
     name: "IndexRoute",
@@ -88,8 +87,8 @@ export default {
                         break;
                     }
                 }
-                router.push({name: "login"});
-            });
+                this.$router.push({name: "login"});
+            }.bind(this));
         },
         on_exit_clicked() {
             window.open("about:blank", "_self").close();

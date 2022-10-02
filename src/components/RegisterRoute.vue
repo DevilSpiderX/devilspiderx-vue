@@ -73,7 +73,6 @@ export default {
     },
     methods: {
         form_submit() {
-            let vm = this;
             let uid = this.form.uid;
             let pwd = this.form.pwd;
             let pwd_a = this.form.pwd_a;
@@ -97,7 +96,7 @@ export default {
             register(uid, pwd, function (resp) {
                 switch (resp["code"]) {
                     case 0: {
-                        vm.$router.push({name: "login"});
+                        this.$router.push({name: "login"});
                         break;
                     }
                     case 1: {
@@ -119,8 +118,8 @@ export default {
                         break;
                     }
                 }
-                vm.running_stop();
-            }, vm.running_stop);
+                this.running_stop();
+            }.bind(this), this.running_stop);
         },
         running_start() {
             this.setThemeColor("#262626");
