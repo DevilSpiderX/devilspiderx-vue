@@ -37,6 +37,13 @@ export default {
 }
 </script>
 
+<style>
+body[data-route='/'] {
+    box-sizing: border-box;
+    margin: 0;
+}
+</style>
+
 <style scoped>
 #main {
     width: 100vw;

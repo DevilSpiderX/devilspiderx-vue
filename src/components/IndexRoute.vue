@@ -105,6 +105,7 @@ export default {
 <style scoped>
 
 @media (max-width: 768px) {
+    /*noinspection CssUnusedSymbol*/
     .el-col-24 {
         max-width: 470px;
     }
@@ -114,11 +115,8 @@ export default {
     padding: 0.7rem 1.2rem;
     font-size: 1.5rem;
     line-height: 1.5;
-    border-radius: 0.4rem;
     margin: 0 0 24px 0;
     color: black;
-    background-color: #f8f9fa;
-    border-color: white;
     height: 60px;
     box-shadow: var(--el-box-shadow);
 }

@@ -19,7 +19,8 @@
     "unplugin-auto-import": "^0.11.2",
     "unplugin-vue-components": "^0.22.7",
     "vue": "^3.2.13",
-    "vue-router": "^4.1.5"
+    "vue-router": "^4.1.5",
+    "vue3-menus": "^1.1.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

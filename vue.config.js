@@ -7,7 +7,8 @@ let objExternals = {
     vue: "Vue",
     "element-plus": "ElementPlus",
     "crypto-js": "CryptoJS",
-    jquery: "jQuery"
+    jquery: "jQuery",
+    "vue3-menus": "Vue3Menus"
 }
 
 module.exports = defineConfig({

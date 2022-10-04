@@ -7,7 +7,7 @@
                         <h1 style="text-align: center;font-size: 2rem;">登&nbsp;&nbsp;录</h1>
                         <el-form-item>
                             <el-input placeholder="账号" ref="user" v-model="form.uid">
-                                <template #prepend>
+                                <template #prefix>
                                         <span style="color: rgb(73,80,87);">
                                             <i class="fas fa-user fa-fw"></i>
                                         </span>
@@ -17,7 +17,7 @@
                         <el-form-item>
                             <el-input type="password" placeholder="密码" ref="password" v-model="form.pwd"
                                       show-password>
-                                <template #prepend>
+                                <template #prefix>
                                         <span style="color: rgb(73,80,87);">
                                             <i class="fas fa-key fa-fw"></i>
                                         </span>
@@ -134,7 +134,7 @@ export default {
     max-width: 500px;
     margin-top: 100px;
     background-color: white;
-    box-shadow: var(--el-box-shadow);
+    box-shadow: var(--el-box-shadow-dark);
     padding: 15px;
 }
 
@@ -150,6 +150,7 @@ form > div {
     font-size: 1.25rem;
 }
 
+/*noinspection CssUnusedSymbol*/
 .el-input {
     font-size: 1.1rem;
     height: 3rem;

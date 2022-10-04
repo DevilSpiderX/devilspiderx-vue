@@ -9,4 +9,8 @@ export default {
 </script>
 
 <style>
+body {
+    background-color: var(--el-bg-color);
+    margin: 0;
+}
 </style>
