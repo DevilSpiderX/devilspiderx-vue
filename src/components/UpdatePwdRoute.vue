@@ -9,8 +9,9 @@ import {ElMessageBox} from "element-plus";
 export default {
     name: "UpdatePwdRoute",
     beforeMount() {
-        this.setThemeColor("#FFFFFF");
-    }, mounted() {
+        this.setThemeColor("#ffffff");
+    },
+    mounted() {
         ElMessageBox.alert("页面未完成", "提示", {
             autofocus: false,
             type: "warning ",

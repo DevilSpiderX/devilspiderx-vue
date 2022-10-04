@@ -122,16 +122,16 @@ export default {
             }.bind(this), this.running_stop);
         },
         running_start() {
-            this.setThemeColor("#262626");
+            this.setThemeColor("#808080");
             this.running.show = true;
         },
         running_stop() {
             this.running.show = false;
-            this.setThemeColor("#dcdcdc");
+            this.setThemeColor("#ffffff");
         }
     },
     beforeMount() {
-        this.setThemeColor("#dcdcdc");
+        this.setThemeColor("#ffffff");
     }
 }
 </script>

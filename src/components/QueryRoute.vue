@@ -1,5 +1,5 @@
 <template>
-    <el-container style="margin-top: 8px;">
+    <el-container style="padding-top: 8px;">
         <el-header>
             <el-row justify="center">
                 <el-col :xs="17" :sm="15" :md="13" :lg="11" :xl="9" class="my-xxs-col">
@@ -28,7 +28,7 @@
         <el-main style="--el-main-padding:0;">
             <el-row justify="center">
                 <el-col :xs="22" :sm="20" :md="18" :lg="16" :xl="14" class="my-xxs-col">
-                    <el-table :data="dataList" border stripe height="calc(100vh - 70px)" size="large"
+                    <el-table :data="dataList" border stripe height="calc(100vh - 80px)" size="large"
                               @cell-contextmenu="table_cell_contextmenu">
                         <el-table-column prop="name" label="名称" header-align="center">
                             <template v-slot="{row}">

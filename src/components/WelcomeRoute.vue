@@ -28,7 +28,7 @@ export default {
         }
     },
     beforeMount() {
-        this.setThemeColor();
+        this.setThemeColor("#ffffff");
     },
     mounted() {
         setTimeout(this.verify, 400);

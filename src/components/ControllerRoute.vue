@@ -8,6 +8,9 @@ import {ElMessageBox} from "element-plus";
 
 export default {
     name: "ControllerRoute",
+    beforeMount() {
+        this.setThemeColor("#ffffff");
+    },
     mounted() {
         ElMessageBox.alert("页面未完成", "提示", {
             autofocus: false,

@@ -13,21 +13,21 @@
         <el-main style="padding:20px 15px;">
             <el-row justify="center">
                 <el-col :sm="16" :md="14" :lg="11" :xl="12" ref="test">
-                    <el-button class="my-button" style="width: 100%" @contextmenu.prevent.stop
+                    <el-button class="my-button" @contextmenu.prevent.stop
                                @click="this.$router.push({name:'controller'})">
                         <template #icon>
                             <i class="fas fa-sliders-h fa-fw"></i>
                         </template>
                         控制中心
                     </el-button>
-                    <el-button class="my-button" style="width: 100%" @contextmenu.prevent.stop
+                    <el-button class="my-button" @contextmenu.prevent.stop
                                @click="this.$router.push({name:'query'})">
                         <template #icon>
                             <i class="fas fa-search fa-fw"></i>
                         </template>
                         查&nbsp;&nbsp;询
                     </el-button>
-                    <el-button class="my-button" style="width: 100%" @contextmenu.prevent.stop
+                    <el-button class="my-button" @contextmenu.prevent.stop
                                @click="this.$router.push({name:'v2ray'})">
                         <template #icon>
                             <!--suppress CheckImageSize -->
@@ -35,28 +35,28 @@
                         </template>
                         V2Ray
                     </el-button>
-                    <el-button class="my-button" style="width: 100%" @contextmenu.prevent.stop
+                    <el-button class="my-button" @contextmenu.prevent.stop
                                @click="this.$router.push({name:'log'})">
                         <template #icon>
                             <i class="fas fa-file-alt fa-fw"></i>
                         </template>
                         日&nbsp;&nbsp;志
                     </el-button>
-                    <el-button class="my-button" style="width: 100%" @contextmenu.prevent.stop
+                    <el-button class="my-button" @contextmenu.prevent.stop
                                @click="this.$router.push({name:'updatePwd'})">
                         <template #icon>
                             <i class="fas fa-edit fa-fw"></i>
                         </template>
                         修改密码
                     </el-button>
-                    <el-button class="my-button" style="width: 100%" @contextmenu.prevent.stop
+                    <el-button class="my-button" @contextmenu.prevent.stop
                                @click="on_logoutButton_clicked">
                         <template #icon>
                             <i class="fas fa-sign-out-alt fa-fw"></i>
                         </template>
                         退出登录
                     </el-button>
-                    <el-button class="my-button" style="width: 100%" @contextmenu.prevent.stop
+                    <el-button class="my-button" @contextmenu.prevent.stop
                                @click="on_exit_clicked">
                         <template #icon>
                             <i class="fas fa-power-off fa-fw"></i>
@@ -95,7 +95,7 @@ export default {
         }
     },
     beforeMount() {
-        this.setThemeColor("#dcdcdc");
+        this.setThemeColor("#ffffff");
     },
     mounted() {
     }
@@ -112,13 +112,14 @@ export default {
 }
 
 .my-button {
+    width: 100%;
     padding: 0.7rem 1.2rem;
     font-size: 1.5rem;
     line-height: 1.5;
     margin: 0 0 24px 0;
     color: black;
     height: 60px;
-    box-shadow: var(--el-box-shadow);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
 }
 
 .my-button:hover {

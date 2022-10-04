@@ -86,7 +86,7 @@ export default {
         }
     },
     beforeMount() {
-        this.setThemeColor("#dcdcdc");
+        this.setThemeColor("#ffffff");
     },
     mounted() {
         v2rayState(function (resp) {
