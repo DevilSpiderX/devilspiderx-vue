@@ -4,7 +4,7 @@
             <el-row justify="center">
                 <el-col class="register-col">
                     <el-form :model="form" @submit.prevent="form_submit">
-                        <h1 style="text-align: center;font-size: 2rem;">登&nbsp;&nbsp;录</h1>
+                        <h1 style="text-align: center;font-size: 2.5rem;">登&nbsp;&nbsp;录</h1>
                         <el-form-item>
                             <el-input placeholder="账号" ref="user" v-model="form.uid">
                                 <template #prefix>

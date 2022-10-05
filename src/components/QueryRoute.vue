@@ -3,7 +3,7 @@
         <el-header>
             <el-row justify="center">
                 <el-col :xs="17" :sm="15" :md="13" :lg="11" :xl="9" class="my-xxs-col">
-                    <el-button size="large" style="margin-right: 10px;" @click="$refs.addPM.open()">
+                    <el-button size="large" style="margin-right: 10px;" @click="addButton_click">
                         <template #icon>
                             <i class="fas fa-plus fa-fw"></i>
                         </template>
@@ -28,11 +28,11 @@
         <el-main style="--el-main-padding:0;">
             <el-row justify="center">
                 <el-col :xs="22" :sm="20" :md="18" :lg="16" :xl="14" class="my-xxs-col">
-                    <el-table :data="dataList" border stripe height="calc(100vh - 80px)" size="large"
+                    <el-table :data="dataList" border stripe max-height="calc(100vh - 80px)" size="large"
                               @cell-contextmenu="table_cell_contextmenu">
                         <el-table-column prop="name" label="名称" header-align="center">
                             <template v-slot="{row}">
-                                <span style="user-select: none">{{ row.name }}</span>
+                                <span style="user-select: none;">{{ row.name }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="account" label="账号" header-align="center" show-overflow-tooltip>
@@ -63,7 +63,7 @@
 <script>
 import {query} from "@/js/server-api";
 import {menusEvent} from 'vue3-menus';
-import {ElMessage} from 'element-plus'
+import {ElMessage} from 'element-plus';
 
 export default {
     name: "QueryRoute",
@@ -118,8 +118,13 @@ export default {
             }
         },
 
+        addButton_click() {
+            ElMessage.error("未完成");
+        },
+
         table_cell_contextmenu(row, column, cell, event) {
             event.preventDefault();
+
             //复制按钮
             this.tableMenu.menus[0].click = function () {
                 try {
@@ -132,13 +137,15 @@ export default {
                     ElMessage.error("剪切板写入错误\n" + e);
                 }
             }.bind(this);
+
             //删除按钮
             this.tableMenu.menus[1].click = function () {
                 this.dataList.splice(this.dataList.indexOf(row), 1);
             }.bind(this);
+
             //修改按钮
             this.tableMenu.menus[2].click = function () {
-
+                ElMessage.error("未完成");
             }.bind(this);
             menusEvent(event, this.tableMenu, {});
         }
@@ -164,12 +171,6 @@ export default {
     }
 }
 </script>
-
-<style>
-body[data-route='/query']::-webkit-scrollbar {
-    display: none;
-}
-</style>
 
 <style scoped>
 @media (max-width: 576px) {

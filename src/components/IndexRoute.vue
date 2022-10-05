@@ -112,36 +112,35 @@ export default {
 }
 
 .my-button {
+    --el-button-text-color: #000000;
+    --el-button-bg-color: #fcfcfc;
     width: 100%;
     padding: 0.7rem 1.2rem;
     font-size: 1.5rem;
+    font-family: MiSans-Regular, serif;
     line-height: 1.5;
     margin: 0 0 24px 0;
-    color: black;
     height: 60px;
-    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
 }
 
+.my-button:focus,
 .my-button:hover {
-    color: #fff;
-    background-color: #343a40;
-    border-color: #343a40;
+    --el-button-hover-text-color: #fff;
+    --el-button-hover-bg-color: #343a40;
+    --el-button-hover-border-color: #343a40;
 }
 
 .my-button:last-child {
-    color: white;
-    background-color: #dc3545;
-    border-color: #dc3545;
+    --el-button-text-color: #ffffff;
+    --el-button-bg-color: #dc3545;
+    --el-button-border-color: #dc3545;
 }
 
+.my-button:last-child:focus,
 .my-button:last-child:hover {
-    background-color: #c82333;
-    border-color: #c82333;
-}
-
-.my-button:last-child:focus {
-    background-color: #c82333;
-    border-color: #c82333;
+    --el-button-hover-bg-color: #c82333;
+    --el-button-hover-border-color: #c82333;
 }
 
 .my-button:hover img {
