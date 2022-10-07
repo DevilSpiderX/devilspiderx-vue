@@ -3,19 +3,19 @@
         <el-header>
             <el-row justify="center">
                 <el-col :xs="17" :sm="15" :md="13" :lg="11" :xl="9" class="my-xxs-col">
-                    <el-button size="large" style="margin-right: 10px;" @click="addButton_click">
+                    <el-button size="large" style="margin-right: 10px;" @click="addModal.visible=true">
                         <template #icon>
                             <i class="fas fa-plus fa-fw"></i>
                         </template>
                         添加
                     </el-button>
                     <el-input v-model="key" size="large" clearable style="max-width: calc(100% - 100px);"
-                              @keydown.enter="search">
+                              @keydown.enter="Search">
                         <template #prefix>
                             <i class="fas fa-terminal fa-fw"></i>
                         </template>
                         <template #append>
-                            <el-button @click="search">
+                            <el-button @click="Search">
                                 <template #icon>
                                     <i class="fas fa-search fa-fw"></i>
                                 </template>
@@ -29,23 +29,26 @@
             <el-row justify="center">
                 <el-col :xs="22" :sm="20" :md="18" :lg="16" :xl="14" class="my-xxs-col">
                     <el-table :data="dataList" border stripe max-height="calc(100vh - 80px)" size="large"
-                              @cell-contextmenu="table_cell_contextmenu">
-                        <el-table-column prop="name" label="名称" header-align="center">
+                              @cell-contextmenu="table_cell_contextmenu" @sort-change="table_sort_change">
+                        <el-table-column prop="name" label="名称" header-align="center" sortable="custom">
                             <template v-slot="{row}">
                                 <span style="user-select: none;">{{ row.name }}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="account" label="账号" header-align="center" show-overflow-tooltip>
+                        <el-table-column prop="account" label="账号" header-align="center"
+                                         show-overflow-tooltip sortable="custom">
                             <template v-slot="{row}">
                                 <span style="user-select: none">{{ row.account }}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="password" label="密码" header-align="center" show-overflow-tooltip>
+                        <el-table-column prop="password" label="密码" header-align="center"
+                                         show-overflow-tooltip sortable="custom">
                             <template v-slot="{row}">
                                 <span style="user-select: none">{{ row.password }}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="remark" label="备注" header-align="center" show-overflow-tooltip>
+                        <el-table-column prop="remark" label="备注" header-align="center"
+                                         show-overflow-tooltip sortable="custom">
                             <template v-slot="{row}">
                                 <span style="user-select: none">{{ row.remark }}</span>
                             </template>
@@ -60,49 +63,67 @@
     </el-container>
 
     <vue3-menus v-model:open="tableMenu.open" :event="tableMenu.event" :menus="tableMenu.menus" minWidth="100"/>
+    <add-modal v-model:open="addModal.visible" :clean="addModal.clean" @submit="add_submit"/>
 </template>
 
 <script>
-import {query} from "@/js/server-api";
+import {addPasswords, query} from "@/js/server-api";
 import {ElMessage} from 'element-plus';
 import {Vue3Menus} from 'vue3-menus';
+import AddModal from "./query/AddModal";
 
 export default {
     name: "QueryRoute",
-    components: {Vue3Menus},
+    components: {Vue3Menus, AddModal},
     data() {
         return {
             key: "",
-            dataList: [
-                // {id: -1, name: "名称", account: "账号", password: "密码", remark: "备注"}
-            ],
+            dataList: [],
             tableMenu: {
                 open: false,
                 event: {},
                 menus: [
-                    {
-                        label: "复制",
-                        click: null
-                    },
-                    {
-                        label: "删除",
-                        click: null
-                    },
-                    {
-                        label: "修改",
-                        click: null
-                    }
+                    {label: "复制", click: null},
+                    {label: "删除", click: null},
+                    {label: "修改", click: null}
                 ]
+            },
+            addModal: {
+                visible: false,
+                clean: false
+            },
+            updateModal: {
+                visible: false
             }
         }
     },
-    methods: {
-        search() {
+    beforeMount() {
+        this.setThemeColor("#ffffff");
+    },
+    mounted() {
+        let routeQuery = this.$router.currentRoute.value.query;
+        if (Object.hasOwn(routeQuery, "key")) {
+            this.key = routeQuery.key;
             window.sessionStorage['history_query_key'] = this.key;
-            query(this.key, this.querySucceed.bind(this));
+            query(this.key, this.QuerySucceed.bind(this));
+        } else {
+            let hQKey = window.sessionStorage['history_query_key'];
+            if (hQKey !== undefined) {
+                query(hQKey, this.QuerySucceed.bind(this));
+                this.key = hQKey;
+            }
+        }
+    },
+    unmounted() {
+        window.sessionStorage.removeItem('history_query_key');
+    },
+    methods: {
+        Search() {
+            window.sessionStorage['history_query_key'] = this.key;
+            query(this.key, this.QuerySucceed.bind(this));
         },
 
-        querySucceed(resp) {
+        QuerySucceed(resp) {
             console.log(resp);
             switch (resp["code"]) {
                 case 0: {
@@ -119,10 +140,6 @@ export default {
                     break;
                 }
             }
-        },
-
-        addButton_click() {
-            ElMessage.error("未完成");
         },
 
         table_cell_contextmenu(row, column, cell, event) {
@@ -165,25 +182,64 @@ export default {
             }.bind(this));
         },
 
-    }, beforeMount() {
-        this.setThemeColor("#ffffff");
-    },
-    mounted() {
-        let routeQuery = this.$router.currentRoute.value.query;
-        if (Object.hasOwn(routeQuery, "key")) {
-            this.key = routeQuery.key;
-            window.sessionStorage['history_query_key'] = this.key;
-            query(this.key, this.querySucceed);
-        } else {
-            let hQKey = window.sessionStorage['history_query_key'];
-            if (hQKey !== undefined) {
-                query(hQKey, this.querySucceed);
-                this.key = hQKey;
+        table_sort_change({prop, order}) {
+            switch (order) {
+                case 'ascending': {
+                    this.dataList.sort((a, b) => {
+                        if (a[prop] === b[prop]) return 0;
+                        return a[prop] > b[prop] ? 1 : -1;
+                    });
+                    break;
+                }
+                case 'descending': {
+                    this.dataList.sort((a, b) => {
+                        if (a[prop] === b[prop]) return 0;
+                        return a[prop] > b[prop] ? -1 : 1;
+                    });
+                    break;
+                }
+                default: {
+                    this.dataList.sort((a, b) => {
+                        let i0 = Number(a.id);
+                        let i1 = Number(b.id);
+                        return i0 - i1;
+                    });
+                    break;
+                }
             }
+        },
+
+        add_submit(form_data) {
+            let name = form_data.name;
+            let account = form_data.account;
+            let password = form_data.password;
+            let remark = form_data.remark;
+            addPasswords(name, account, password, remark, function (resp) {
+                switch (resp["code"]) {
+                    case 0: {
+                        let key = window.sessionStorage['history_query_key'];
+                        key = key === undefined || key === '' ? name : `${key} ${name}`;
+                        window.sessionStorage['history_query_key'] = key;
+                        query(key, this.QuerySucceed.bind(this));
+                        this.key = key;
+                        this.addModal.visible = false;
+                        this.addModal.clean = true;
+                        this.$nextTick(function () {
+                            this.addModal.clean = false;
+                        }.bind(this));
+                        break;
+                    }
+                    case 1: {
+                        ElMessage.error({
+                            dangerouslyUseHTMLString: true,
+                            message: "添加失败</br>可能该名称已存在</br>请尝试换一个名称再添加"
+                        });
+                        break;
+                    }
+                }
+            }.bind(this));
         }
-    },
-    unmounted() {
-        window.sessionStorage.removeItem('history_query_key');
+
     }
 }
 </script>
