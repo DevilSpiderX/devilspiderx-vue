@@ -58,15 +58,18 @@
             </el-row>
         </el-main>
     </el-container>
+
+    <vue3-menus v-model:open="tableMenu.open" :event="tableMenu.event" :menus="tableMenu.menus" minWidth="100"/>
 </template>
 
 <script>
 import {query} from "@/js/server-api";
-import {menusEvent} from 'vue3-menus';
 import {ElMessage} from 'element-plus';
+import {Vue3Menus} from 'vue3-menus';
 
 export default {
     name: "QueryRoute",
+    components: {Vue3Menus},
     data() {
         return {
             key: "",
@@ -74,10 +77,11 @@ export default {
                 // {id: -1, name: "名称", account: "账号", password: "密码", remark: "备注"}
             ],
             tableMenu: {
+                open: false,
+                event: {},
                 menus: [
                     {
                         label: "复制",
-                        divided: true,
                         click: null
                     },
                     {
@@ -88,8 +92,7 @@ export default {
                         label: "修改",
                         click: null
                     }
-                ],
-                minWidth: 100
+                ]
             }
         }
     },
@@ -147,8 +150,21 @@ export default {
             this.tableMenu.menus[2].click = function () {
                 ElMessage.error("未完成");
             }.bind(this);
-            menusEvent(event, this.tableMenu, {});
-        }
+
+            let scroller = document.querySelector(".el-table__body-wrapper .el-scrollbar__wrap");
+            let scrollEvent = function () {
+                this.tableMenu.open = false;
+                scroller.removeEventListener("scroll", scrollEvent);
+            }.bind(this);
+            scroller.addEventListener("scroll", scrollEvent);
+
+            this.tableMenu.open = false;
+            this.tableMenu.event = event;
+            this.$nextTick(function () {
+                this.tableMenu.open = true;
+            }.bind(this));
+        },
+
     }, beforeMount() {
         this.setThemeColor("#ffffff");
     },

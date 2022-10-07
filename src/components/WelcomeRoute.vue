@@ -1,5 +1,5 @@
 <template>
-    <div id="main">
+    <div class="main">
         <div>
             <i class="fas fa-spider"></i>
             <p id="logo">DevilSpiderX</p>
@@ -37,15 +37,8 @@ export default {
 }
 </script>
 
-<style>
-body[data-route='/'] {
-    box-sizing: border-box;
-    margin: 0;
-}
-</style>
-
 <style scoped>
-#main {
+.main {
     width: 100vw;
     height: 100vh;
     display: flex;
