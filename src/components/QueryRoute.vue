@@ -230,10 +230,9 @@ export default {
                         break;
                     }
                     case 1: {
-                        ElMessage.error({
-                            dangerouslyUseHTMLString: true,
-                            message: "添加失败</br>可能该名称已存在</br>请尝试换一个名称再添加"
-                        });
+                        ElMessage.error(<p className="el-message__content">
+                            添加失败<br/>可能该名称已存在<br/>请尝试换一个名称再添加
+                        </p>);
                         break;
                     }
                 }
