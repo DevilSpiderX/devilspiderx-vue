@@ -38,6 +38,12 @@ module.exports = defineConfig({
         port: "8080",
         // https: true,
         // proxy: "https://localhost:10048"
-        proxy: "http://localhost:10048"
+        proxy: {
+            "/api": {target: `http://localhost:10048`,},
+            "/websocket": {
+                target: 'ws://localhost:10048',
+                ws: true
+            }
+        }
     }
 })

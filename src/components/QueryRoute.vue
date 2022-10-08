@@ -30,6 +30,9 @@
                 <el-col :xs="22" :sm="20" :md="18" :lg="16" :xl="14" class="my-xxs-col">
                     <el-table :data="dataList" border stripe max-height="calc(100vh - 80px)" size="large"
                               @cell-contextmenu="table_cell_contextmenu" @sort-change="table_sort_change">
+                        <template #empty>
+                            <el-empty image-size="200"/>
+                        </template>
                         <el-table-column prop="name" label="名称" header-align="center" sortable="custom">
                             <template v-slot="{row}">
                                 <span style="user-select: none;">{{ row.name }}</span>

@@ -124,9 +124,9 @@ export function disk_size(async, success, error) {
     });
 }
 
-export function token(async, success, error) {
+export function token(success, error) {
     $.ajax("/api/ServerInfo/token", {
-        type: "POST", async: async, success: success, error: error
+        type: "POST", success: success, error: error
     });
 }
 
