@@ -1,5 +1,5 @@
 <template>
-    <el-dialog v-model="visible" title="添加密码记录" :width="width">
+    <el-dialog v-model="visible" title="修改密码记录" :width="width">
         <el-form :model="form" @submit.prevent="form_submit">
             <el-form-item>
                 <el-input placeholder="名称" ref="name" v-model="form.name" clearable>
@@ -41,7 +41,7 @@
         </el-form>
         <template #footer>
             <el-button type="primary" auto-insert-space @click="form_submit" style="margin-right: 10px;">
-                添加
+                修改
             </el-button>
             <el-button auto-insert-space @click="cancel_click">取消</el-button>
         </template>
@@ -50,11 +50,12 @@
 
 <script>
 export default {
-    name: "AddModal",
+    name: "UpdateModal",
     data() {
         return {
             visible: false,
             form: {
+                id: -1,
                 name: "",
                 account: "",
                 password: "",
@@ -65,7 +66,7 @@ export default {
     },
     props: {
         open: Boolean,
-        clean: Boolean
+        inData: Object
     },
     watch: {
         open(newVal, oldVal) {
@@ -83,10 +84,8 @@ export default {
                 window.removeEventListener("resize", this.window_resize);
             }
         },
-        clean(newVal) {
-            if (newVal) {
-                this.CleanData();
-            }
+        inData(newVal) {
+            Object.assign(this.form, newVal);
         }
     },
     emits: ["submit", "update:open"],
@@ -99,9 +98,6 @@ export default {
         },
         Close() {
             this.visible = false;
-        },
-        CleanData() {
-            this.form = {name: "", account: "", password: "", remark: ""};
         },
         form_submit() {
             if (this.form.name === "") {
@@ -127,11 +123,9 @@ export default {
             }
         },
         cancel_click() {
-            this.CleanData();
             this.Close();
         }
     }
-
 }
 </script>
 

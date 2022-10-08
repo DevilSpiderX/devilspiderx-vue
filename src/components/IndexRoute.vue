@@ -1,9 +1,9 @@
 <template>
     <el-container>
         <el-header style="border-bottom: 1px solid #84858d55;">
-            <el-page-header title=" " @back="this.$router.back()">
+            <el-page-header title=" " @back="el_header_back">
                 <template #icon>
-                    <i class="fas fa-arrow-left fa-fw" style="font-size: 1.2rem;"></i>
+                    <i class="fa-solid fa-bars fa-fw" style="font-size: 1.2rem;"></i>
                 </template>
                 <template #content>
                     <span style="font-weight:700;"> DevilSpiderX </span>
@@ -71,33 +71,41 @@
 
 <script>
 import {logout} from "@/js/server-api";
+import {ElMessage} from "element-plus";
 
 export default {
     name: "IndexRoute",
+    beforeMount() {
+        this.setThemeColor("#ffffff");
+    },
+    mounted() {
+    },
     methods: {
+        el_header_back() {
+            ElMessage.error("未完成");
+        },
         on_logoutButton_clicked() {
             logout(function (resp) {
                 switch (resp["code"]) {
                     case 0: {
                         sessionStorage.setItem("user_status", "0");
+                        ElMessage.success("登出成功");
                         break;
                     }
                     case 1: {
-                        alert("您还未登录过");
+                        ElMessage.error("您还未登录过");
                         break;
                     }
                 }
                 this.$router.push({name: "login"});
-            }.bind(this));
+            }.bind(this), function () {
+                ElMessage.error("服务器错误");
+            });
         },
         on_exit_clicked() {
             window.open("about:blank", "_self").close();
-        }
-    },
-    beforeMount() {
-        this.setThemeColor("#ffffff");
-    },
-    mounted() {
+        },
+
     }
 }
 </script>
@@ -113,7 +121,7 @@ export default {
 
 .my-button {
     --el-button-text-color: #000000;
-    --el-button-bg-color: #fcfcfc;
+    --el-button-bg-color: #ffffff;
     width: 100%;
     padding: 0.7rem 1.2rem;
     font-size: 1.5rem;

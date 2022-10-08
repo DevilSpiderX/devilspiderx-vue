@@ -64,21 +64,27 @@
 
     <vue3-menus v-model:open="tableMenu.open" :event="tableMenu.event" :menus="tableMenu.menus" minWidth="100"/>
     <add-modal v-model:open="addModal.visible" :clean="addModal.clean" @submit="add_submit"/>
+    <update-modal v-model:open="updateModal.visible" :in-data="updateModal.inData" @submit="update_submit"/>
 </template>
 
 <script>
-import {addPasswords, query} from "@/js/server-api";
-import {ElMessage} from 'element-plus';
+import {addPasswords, query, updatePasswords} from "@/js/server-api";
+import {ElMessage, ElMessageBox} from 'element-plus';
 import {Vue3Menus} from 'vue3-menus';
 import AddModal from "./query/AddModal";
+import UpdateModal from "./query/UpdateModal";
 
 export default {
     name: "QueryRoute",
-    components: {Vue3Menus, AddModal},
+    components: {Vue3Menus, AddModal, UpdateModal},
     data() {
         return {
             key: "",
             dataList: [],
+            sortSetting: {
+                prop: "",
+                order: null
+            },
             tableMenu: {
                 open: false,
                 event: {},
@@ -93,7 +99,8 @@ export default {
                 clean: false
             },
             updateModal: {
-                visible: false
+                visible: false,
+                inData: {}
             }
         }
     },
@@ -105,11 +112,11 @@ export default {
         if (Object.hasOwn(routeQuery, "key")) {
             this.key = routeQuery.key;
             window.sessionStorage['history_query_key'] = this.key;
-            query(this.key, this.QuerySucceed.bind(this));
+            query(this.key, this.QuerySucceed);
         } else {
             let hQKey = window.sessionStorage['history_query_key'];
             if (hQKey !== undefined) {
-                query(hQKey, this.QuerySucceed.bind(this));
+                query(hQKey, this.QuerySucceed);
                 this.key = hQKey;
             }
         }
@@ -120,7 +127,7 @@ export default {
     methods: {
         Search() {
             window.sessionStorage['history_query_key'] = this.key;
-            query(this.key, this.QuerySucceed.bind(this));
+            query(this.key, this.QuerySucceed);
         },
 
         QuerySucceed(resp) {
@@ -128,6 +135,7 @@ export default {
             switch (resp["code"]) {
                 case 0: {
                     this.dataList = resp["data"];
+                    this.SortTable(this.sortSetting.prop, this.sortSetting.order);
                     break;
                 }
                 case 1: {
@@ -165,24 +173,41 @@ export default {
 
             //修改按钮
             this.tableMenu.menus[2].click = function () {
-                ElMessage.error("未完成");
+                this.updateModal.visible = true;
+                this.updateModal.inData = {};
+                this.$nextTick(function () {
+                    this.updateModal.inData = row;
+                });
             }.bind(this);
 
+            //滚动表格消除菜单
             let scroller = document.querySelector(".el-table__body-wrapper .el-scrollbar__wrap");
             let scrollEvent = function () {
                 this.tableMenu.open = false;
                 scroller.removeEventListener("scroll", scrollEvent);
             }.bind(this);
             scroller.addEventListener("scroll", scrollEvent);
+            //窗体尺寸变化消除菜单
+            let windowResizeEvent = function () {
+                this.tableMenu.open = false;
+                window.removeEventListener("resize", windowResizeEvent);
+            }.bind(this);
+            window.addEventListener("resize", windowResizeEvent);
 
             this.tableMenu.open = false;
             this.tableMenu.event = event;
             this.$nextTick(function () {
                 this.tableMenu.open = true;
-            }.bind(this));
+            });
         },
 
         table_sort_change({prop, order}) {
+            this.sortSetting.prop = prop;
+            this.sortSetting.order = order;
+            this.SortTable(prop, order);
+        },
+
+        SortTable(prop, order) {
             switch (order) {
                 case 'ascending': {
                     this.dataList.sort((a, b) => {
@@ -220,23 +245,62 @@ export default {
                         let key = window.sessionStorage['history_query_key'];
                         key = key === undefined || key === '' ? name : `${key} ${name}`;
                         window.sessionStorage['history_query_key'] = key;
-                        query(key, this.QuerySucceed.bind(this));
+                        query(key, this.QuerySucceed);
                         this.key = key;
                         this.addModal.visible = false;
                         this.addModal.clean = true;
                         this.$nextTick(function () {
                             this.addModal.clean = false;
-                        }.bind(this));
+                        });
+                        ElMessage.success("添加成功");
                         break;
                     }
                     case 1: {
                         ElMessage.error(<p className="el-message__content">
                             添加失败<br/>可能该名称已存在<br/>请尝试换一个名称再添加
                         </p>);
+                        this.addModal.visible = false;
                         break;
                     }
                 }
             }.bind(this));
+        },
+
+        update_submit(form_data) {
+            ElMessageBox.confirm("确定修改？", "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                callback: function (action) {
+                    if (action === "confirm") {
+                        let id = form_data.id;
+                        let name = form_data.name;
+                        let account = form_data.account;
+                        let password = form_data.password;
+                        let remark = form_data.remark;
+                        updatePasswords(id, name, account, password, remark, function (resp) {
+                            switch (resp["code"]) {
+                                case 0: {
+                                    let key = window.sessionStorage['history_query_key'];
+                                    key = key === undefined || key === '' ? name : key;
+                                    if (key.indexOf(name) === -1) {
+                                        key += ` ${name}`;
+                                    }
+                                    window.sessionStorage['history_query_key'] = key;
+                                    query(key, this.QuerySucceed);
+                                    this.key = key;
+                                    this.updateModal.visible = false;
+                                    ElMessage.success("修改成功");
+                                    break;
+                                }
+                                case 1: {
+                                    ElMessage.error(resp["msg"]);
+                                    break;
+                                }
+                            }
+                        }.bind(this));
+                    }
+                }.bind(this)
+            });
         }
 
     }
