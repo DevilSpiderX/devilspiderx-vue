@@ -16,6 +16,13 @@
                 <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6" class="my-col">
                     <memory-card :value="values.memory"/>
                 </el-col>
+                <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6" class="my-col">
+                    <network-card :value="values.network"/>
+                </el-col>
+                <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6" class="my-col"
+                        v-for="(disk,index) in values.disk">
+                    <disk-card :value="disk" :disk-index="index"/>
+                </el-col>
             </el-row>
         </el-card>
     </el-container>
@@ -25,11 +32,13 @@
 import {ElMessage} from "element-plus";
 import CpuCard from "./controller/CpuCard.vue";
 import MemoryCard from "./controller/MemoryCard.vue";
+import NetworkCard from "./controller/NetworkCard.vue";
+import DiskCard from "./controller/DiskCard.vue";
 import {token} from "/src/js/server-api.js";
 
 export default {
     name: "ControllerRoute",
-    components: {CpuCard, MemoryCard},
+    components: {CpuCard, MemoryCard, NetworkCard, DiskCard},
     data() {
         return {
             cd: 1500,
@@ -114,6 +123,10 @@ export default {
     width: 100vw;
     height: 100vh;
     overflow-y: auto;
+}
+
+.my-col {
+    padding-bottom: 10px;
 }
 
 .my-col > * {

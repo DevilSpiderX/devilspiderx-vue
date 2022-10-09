@@ -1,25 +1,19 @@
 <template>
     <div class="my-card">
         <header>
-            <h3><i class="fa-solid fa-memory fa-fw"></i>内存</h3>
+            <h3><i class="fa-solid fa-rss fa-fw"></i>网络信息</h3>
         </header>
         <transition name="body">
             <div class="my-card-body" v-if="bodyShow">
-                <!-- 已用 -->
-                <div>已 用：&nbsp;&nbsp;{{ memoryData.usedStr }}</div>
-                <!-- 剩余 -->
-                <div>剩 余：&nbsp;&nbsp;{{ memoryData.freeStr }}</div>
-                <!-- 总量 -->
-                <div>总 量：&nbsp;&nbsp;{{ memoryData.totalStr }}</div>
-                <br/>
-                <!-- 使用率 -->
-                <div class="progress-bar">
-                    <div style="width: 4em;">使用率：</div>
-                    <div style="width: calc(100% - 4em)">
-                        <el-progress :stroke-width="22" :percentage="this.memoryData.used / this.memoryData.total * 100"
-                                     :color="progress.colors" v-slot="{percentage}">
-                            <span style="font-size: 1rem;">{{ percentage.toFixed(2) }}%</span>
-                        </el-progress>
+                <div style="min-width: 200px;padding: 10px 0;">
+                    <div>
+                        <i class="fas fa-cloud-upload-alt fa-fw"></i>
+                        <span id="network-upload">上传速度：{{ networkData.uploadSpeedStr }}</span>
+                    </div>
+                    <br>
+                    <div>
+                        <i class="fas fa-cloud-download-alt fa-fw"></i>
+                        <span id="network-download">下载速度：{{ networkData.downloadSpeedStr }}</span>
                     </div>
                 </div>
             </div>
@@ -32,24 +26,14 @@
 
 <script>
 export default {
-    name: "MemoryCard",
+    name: "NetworkCard",
     data() {
         return {
-            memoryData: {
-                total: 1,
-                used: 0,
-                free: 0,
-                totalStr: "0 B",
-                usedStr: "0 B",
-                freeStr: "0 B",
-                usage: "0%"
-            },
-            progress: {
-                colors: [
-                    {color: '#28a745', percentage: 70},
-                    {color: '#ffc107', percentage: 90},
-                    {color: '#dc3545', percentage: 100},
-                ]
+            networkData: {
+                downloadSpeed: 0,
+                downloadSpeedStr: "0 B/s",
+                uploadSpeed: 0,
+                uploadSpeedStr: "0 B/s"
             },
             empty: true,
             bodyShow: false
@@ -60,7 +44,7 @@ export default {
     },
     watch: {
         value(newVal) {
-            Object.assign(this.memoryData, newVal);
+            Object.assign(this.networkData, newVal);
             this.empty = false;
             setTimeout(function () {
                 this.bodyShow = true;
@@ -110,16 +94,13 @@ header > h3 {
 
 .my-card-body {
     height: 100%;
+    min-height: 10px;
     padding: 20px 30px 30px;
     display: -webkit-flex;
     display: flex;
     -webkit-flex-direction: column;
     flex-direction: column;
-    justify-content: space-between;
-}
-
-.progress-bar {
-    display: -webkit-flex;
-    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 </style>

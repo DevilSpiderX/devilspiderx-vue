@@ -1,27 +1,14 @@
 <template>
     <div class="my-card">
         <header>
-            <h3><i class="fa-solid fa-memory fa-fw"></i>内存</h3>
+            <h3><i class="fa-solid fa-hdd fa-fw"></i>硬盘分区 {{ diskIndex }}</h3>
         </header>
         <transition name="body">
             <div class="my-card-body" v-if="bodyShow">
-                <!-- 已用 -->
-                <div>已 用：&nbsp;&nbsp;{{ memoryData.usedStr }}</div>
-                <!-- 剩余 -->
-                <div>剩 余：&nbsp;&nbsp;{{ memoryData.freeStr }}</div>
-                <!-- 总量 -->
-                <div>总 量：&nbsp;&nbsp;{{ memoryData.totalStr }}</div>
-                <br/>
-                <!-- 使用率 -->
-                <div class="progress-bar">
-                    <div style="width: 4em;">使用率：</div>
-                    <div style="width: calc(100% - 4em)">
-                        <el-progress :stroke-width="22" :percentage="this.memoryData.used / this.memoryData.total * 100"
-                                     :color="progress.colors" v-slot="{percentage}">
-                            <span style="font-size: 1rem;">{{ percentage.toFixed(2) }}%</span>
-                        </el-progress>
-                    </div>
-                </div>
+                <div>{{ diskData.label }}({{ diskData.mount }})</div>
+                <el-progress :show-text="false" :stroke-width="22" :color="progress.colors"
+                             :percentage="this.diskData.used / this.diskData.total * 100"/>
+                <div>{{ diskData.freeStr }}可用，共 {{ diskData.totalStr }}</div>
             </div>
         </transition>
         <transition name="empty">
@@ -32,17 +19,21 @@
 
 <script>
 export default {
-    name: "MemoryCard",
+    name: "DiskCard",
     data() {
         return {
-            memoryData: {
-                total: 1,
-                used: 0,
+            diskData: {
+                fSType: "",
                 free: 0,
-                totalStr: "0 B",
-                usedStr: "0 B",
                 freeStr: "0 B",
-                usage: "0%"
+                label: "",
+                mount: "",
+                name: "",
+                total: 1,
+                totalStr: "0 B",
+                usage: "0%",
+                used: 0,
+                usedStr: "0 B"
             },
             progress: {
                 colors: [
@@ -56,11 +47,12 @@ export default {
         }
     },
     props: {
-        value: Object
+        value: Object,
+        diskIndex: Number
     },
     watch: {
         value(newVal) {
-            Object.assign(this.memoryData, newVal);
+            Object.assign(this.diskData, newVal);
             this.empty = false;
             setTimeout(function () {
                 this.bodyShow = true;
@@ -110,16 +102,12 @@ header > h3 {
 
 .my-card-body {
     height: 100%;
+    min-height: 10px;
     padding: 20px 30px 30px;
     display: -webkit-flex;
     display: flex;
     -webkit-flex-direction: column;
     flex-direction: column;
-    justify-content: space-between;
-}
-
-.progress-bar {
-    display: -webkit-flex;
-    display: flex;
+    justify-content: center;
 }
 </style>
