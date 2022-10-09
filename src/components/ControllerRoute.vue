@@ -9,7 +9,7 @@
                     </h1>
                 </div>
             </template>
-            <el-row gutter="10">
+            <el-row :gutter="10">
                 <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6" class="my-col">
                     <cpu-card :value="values.cpu"/>
                 </el-col>

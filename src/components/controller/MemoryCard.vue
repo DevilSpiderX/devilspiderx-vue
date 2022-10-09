@@ -6,11 +6,11 @@
         <transition name="body">
             <div class="my-card-body" v-if="bodyShow">
                 <!-- 已用 -->
-                <div>已 用：&nbsp;&nbsp;{{ memoryData.usedStr }}</div>
+                <div>已 用：&nbsp;&nbsp;{{ memoryData_usedStr }}</div>
                 <!-- 剩余 -->
-                <div>剩 余：&nbsp;&nbsp;{{ memoryData.freeStr }}</div>
+                <div>剩 余：&nbsp;&nbsp;{{ memoryData_freeStr }}</div>
                 <!-- 总量 -->
-                <div>总 量：&nbsp;&nbsp;{{ memoryData.totalStr }}</div>
+                <div>总 量：&nbsp;&nbsp;{{ memoryData_totalStr }}</div>
                 <br/>
                 <!-- 使用率 -->
                 <div class="progress-bar">
@@ -25,7 +25,7 @@
             </div>
         </transition>
         <transition name="empty">
-            <el-empty image-size="100" v-if="empty"/>
+            <el-empty :image-size="100" v-if="empty"/>
         </transition>
     </div>
 </template>
@@ -39,10 +39,11 @@ export default {
                 total: 1,
                 used: 0,
                 free: 0,
-                totalStr: "0 B",
-                usedStr: "0 B",
-                freeStr: "0 B",
-                usage: "0%"
+                format: {
+                    total: {value: 0, unit: "B"},
+                    used: {value: 0, unit: "B"},
+                    free: {value: 0, unit: "B"}
+                }
             },
             progress: {
                 colors: [
@@ -66,6 +67,20 @@ export default {
                 this.bodyShow = true;
             }.bind(this), 300);
         }
+    },
+    computed: {
+        memoryData_usedStr() {
+            let data = this.memoryData.format.used;
+            return `${data.value} ${data.unit}`;
+        },
+        memoryData_freeStr() {
+            let data = this.memoryData.format.free;
+            return `${data.value} ${data.unit}`;
+        },
+        memoryData_totalStr() {
+            let data = this.memoryData.format.total;
+            return `${data.value} ${data.unit}`;
+        },
     }
 }
 </script>

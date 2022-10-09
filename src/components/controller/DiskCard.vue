@@ -8,11 +8,11 @@
                 <div>{{ diskData.label }}({{ diskData.mount }})</div>
                 <el-progress :show-text="false" :stroke-width="22" :color="progress.colors"
                              :percentage="this.diskData.used / this.diskData.total * 100"/>
-                <div>{{ diskData.freeStr }}可用，共 {{ diskData.totalStr }}</div>
+                <div>{{ diskData_freeStr }}可用，共 {{ diskData_totalStr }}</div>
             </div>
         </transition>
         <transition name="empty">
-            <el-empty image-size="100" v-if="empty"/>
+            <el-empty :image-size="100" v-if="empty"/>
         </transition>
     </div>
 </template>
@@ -23,17 +23,18 @@ export default {
     data() {
         return {
             diskData: {
-                fSType: "",
-                free: 0,
-                freeStr: "0 B",
                 label: "",
                 mount: "",
+                fSType: "",
                 name: "",
                 total: 1,
-                totalStr: "0 B",
-                usage: "0%",
+                free: 0,
                 used: 0,
-                usedStr: "0 B"
+                format: {
+                    total: {value: 0, unit: "B"},
+                    free: {value: 0, unit: "B"},
+                    used: {value: 0, unit: "B"}
+                }
             },
             progress: {
                 colors: [
@@ -57,6 +58,16 @@ export default {
             setTimeout(function () {
                 this.bodyShow = true;
             }.bind(this), 300);
+        }
+    },
+    computed: {
+        diskData_freeStr() {
+            let data = this.diskData.format.free;
+            return `${data.value} ${data.unit}`;
+        },
+        diskData_totalStr() {
+            let data = this.diskData.format.total;
+            return `${data.value} ${data.unit}`;
         }
     }
 }

@@ -8,18 +8,18 @@
                 <div style="min-width: 200px;padding: 10px 0;">
                     <div>
                         <i class="fas fa-cloud-upload-alt fa-fw"></i>
-                        <span id="network-upload">上传速度：{{ networkData.uploadSpeedStr }}</span>
+                        <span id="network-upload">上传速度：{{ networkData_uploadSpeedStr }}</span>
                     </div>
                     <br>
                     <div>
                         <i class="fas fa-cloud-download-alt fa-fw"></i>
-                        <span id="network-download">下载速度：{{ networkData.downloadSpeedStr }}</span>
+                        <span id="network-download">下载速度：{{ networkData_downloadSpeedStr }}</span>
                     </div>
                 </div>
             </div>
         </transition>
         <transition name="empty">
-            <el-empty image-size="100" v-if="empty"/>
+            <el-empty :image-size="100" v-if="empty"/>
         </transition>
     </div>
 </template>
@@ -30,10 +30,12 @@ export default {
     data() {
         return {
             networkData: {
-                downloadSpeed: 0,
-                downloadSpeedStr: "0 B/s",
                 uploadSpeed: 0,
-                uploadSpeedStr: "0 B/s"
+                downloadSpeed: 0,
+                format: {
+                    uploadSpeed: {value: 0, unit: "B/s"},
+                    downloadSpeed: {value: 0, unit: "B/s"}
+                }
             },
             empty: true,
             bodyShow: false
@@ -49,6 +51,16 @@ export default {
             setTimeout(function () {
                 this.bodyShow = true;
             }.bind(this), 300);
+        }
+    },
+    computed: {
+        networkData_uploadSpeedStr() {
+            let data = this.networkData.format.uploadSpeed;
+            return `${data.value} ${data.unit}`;
+        },
+        networkData_downloadSpeedStr() {
+            let data = this.networkData.format.downloadSpeed;
+            return `${data.value} ${data.unit}`;
         }
     }
 }

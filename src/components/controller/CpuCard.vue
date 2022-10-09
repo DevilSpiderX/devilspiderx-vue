@@ -32,7 +32,7 @@
             </div>
         </transition>
         <transition name="empty">
-            <el-empty image-size="100" v-if="empty"/>
+            <el-empty :image-size="100" v-if="empty"/>
         </transition>
     </div>
 </template>
@@ -43,14 +43,12 @@ export default {
     data() {
         return {
             cpuData: {
-                cpuTemperature: 0,
-                freePercent: "100%",
-                is64bit: true,
-                logicalNum: 0,
                 name: "",
                 physicalNum: 0,
-                usedPercent: "0%",
-                usedRate: 0
+                logicalNum: 0,
+                usedRate: 0,
+                is64bit: true,
+                cpuTemperature: 0
             },
             progress: {
                 colors: [
