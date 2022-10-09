@@ -125,7 +125,7 @@ export default {
     width: 100%;
     padding: 0.7rem 1.2rem;
     font-size: 1.5rem;
-    font-family: MiSans-Regular, serif;
+    font-family: MiSans-Normal, system-ui;
     line-height: 1.5;
     margin: 0 0 24px 0;
     height: 60px;
