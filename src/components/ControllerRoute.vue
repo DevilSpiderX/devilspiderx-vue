@@ -23,9 +23,9 @@
 
 <script>
 import {ElMessage} from "element-plus";
-import CpuCard from "./controller/CpuCard";
-import MemoryCard from "./controller/MemoryCard";
-import {token} from "@/js/server-api";
+import CpuCard from "./controller/CpuCard.vue";
+import MemoryCard from "./controller/MemoryCard.vue";
+import {token} from "/src/js/server-api.js";
 
 export default {
     name: "ControllerRoute",
@@ -64,6 +64,8 @@ export default {
                 this.ws.time_str = resp["data"]["timeStr"];
                 let wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
                 this.ws.websocket = new WebSocket(`${wsProtocol}//${location.host}/websocket/getServerInfo/${this.ws.token}/${this.ws.time_str}`);
+            } else {
+                this.$router.push({name: "login"});
             }
         }.bind(this), function () {
             ElMessage.error("服务器错误");
@@ -83,18 +85,18 @@ export default {
     },
     methods: {
         WsOnOPen() {
-            ElMessage.success("WebSocket成功接入服务器");
+            ElMessage.success({message: "WebSocket成功接入服务器", duration: 1000});
             console.log(Date() + "\nWebSocket成功接入服务器");
             if (typeof this.ws.websocket !== 'undefined') {
                 this.ws.websocket.send(JSON.stringify({"cmd": "start", "cd": this.cd}));
             }
         },
         WsOnClose() {
-            ElMessage.success("WebSocket连接已关闭");
+            ElMessage.success({message: "WebSocket连接已关闭", duration: 1000});
             console.log(Date() + "\n连接已关闭");
         },
         WsOnError(event) {
-            ElMessage.error("WebSocket发生错误");
+            ElMessage.error({message: "WebSocket发生错误", duration: 1000});
             console.log(event);
             console.log(Date() + "\nWebSocket发生错误，使用POST请求获取信息");
             // getHardware();
@@ -105,8 +107,6 @@ export default {
     }
 }
 </script>
-
-<style scoped src="../css/nav-back-button.css"></style>
 
 <style scoped>
 .main-card {

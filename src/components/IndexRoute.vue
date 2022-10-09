@@ -31,7 +31,7 @@
                                @click="this.$router.push({name:'v2ray'})">
                         <template #icon>
                             <!--suppress CheckImageSize -->
-                            <img src="@/assets/v2rayN.png" alt="v2ray" width="27" height="27">
+                            <img src="/src/assets/v2rayN.png" alt="v2ray" width="27" height="27">
                         </template>
                         V2Ray
                     </el-button>
@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import {logout} from "@/js/server-api";
+import {logout} from "/src/js/server-api";
 import {ElMessage} from "element-plus";
 
 export default {

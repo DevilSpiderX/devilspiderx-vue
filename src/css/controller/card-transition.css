@@ -1,0 +1,27 @@
+.body-enter-active {
+    transition: all 500ms ease-in-out;
+}
+
+.body-enter-from {
+    transform: scale(0);
+    opacity: 0;
+}
+
+.body-enter-to {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.empty-leave-active {
+    transition: all 300ms ease-in-out;
+}
+
+.empty-leave-from {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.empty-leave-to {
+    transform: scale(0);
+    opacity: 0;
+}

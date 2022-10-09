@@ -20,8 +20,8 @@
 </template>
 
 <script>
-import Switch from "@/components/v2ray/MySwitch";
-import {v2rayState, v2rayStart, v2rayStop} from "@/js/server-api";
+import Switch from "/src/components/v2ray/MySwitch.vue";
+import {v2rayState, v2rayStart, v2rayStop} from "/src/js/server-api.js";
 import {ElMessage} from "element-plus";
 
 export default {

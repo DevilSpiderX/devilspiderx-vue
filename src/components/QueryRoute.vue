@@ -70,12 +70,12 @@
     <update-modal v-model:open="updateModal.visible" :in-data="updateModal.inData" @submit="update_submit"/>
 </template>
 
-<script>
-import {addPasswords, query, updatePasswords} from "@/js/server-api";
+<script lang="jsx">
+import {addPasswords, query, updatePasswords} from "/src/js/server-api.js";
 import {ElMessage, ElMessageBox} from 'element-plus';
 import {Vue3Menus} from 'vue3-menus';
-import AddModal from "./query/AddModal";
-import UpdateModal from "./query/UpdateModal";
+import AddModal from "./query/AddModal.vue";
+import UpdateModal from "./query/UpdateModal.vue";
 
 export default {
     name: "QueryRoute",

@@ -1,26 +1,30 @@
 <template>
     <el-card :body-style="{padding:'20px 30px'}" shadow="hover">
         <template #header>
-            <h3 style="text-align: start;margin: 0;"><i class="fa-solid fa-memory fa-fw"></i>内存</h3>
+            <h3 style="margin: 0;"><i class="fa-solid fa-memory fa-fw"></i>内存</h3>
         </template>
-        <div class="my-card-body" v-if="!empty">
-            <!-- 已用 -->
-            <div>已 用：{{ memoryData.usedStr }}</div>
-            <!-- 剩余 -->
-            <div>剩 余：{{ memoryData.freeStr }}</div>
-            <!-- 总量 -->
-            <div>总 量：{{ memoryData.totalStr }}</div>
-            <br/>
-            <!-- 使用率 -->
-            <div class="my-card-body-content progress-bar">
-                <div style="width: 4em;">使用率：</div>
-                <div style="width: calc(100% - 4em)">
-                    <el-progress text-inside :stroke-width="22" :percentage="memoryUsedPercentage"
-                                 :status="progress.status"/>
+        <transition name="body">
+            <div class="my-card-body" v-if="bodyShow">
+                <!-- 已用 -->
+                <div>已 用：&nbsp;&nbsp;{{ memoryData.usedStr }}</div>
+                <!-- 剩余 -->
+                <div>剩 余：&nbsp;&nbsp;{{ memoryData.freeStr }}</div>
+                <!-- 总量 -->
+                <div>总 量：&nbsp;&nbsp;{{ memoryData.totalStr }}</div>
+                <br/>
+                <!-- 使用率 -->
+                <div class="my-card-body-content progress-bar">
+                    <div style="width: 4em;">使用率：</div>
+                    <div style="width: calc(100% - 4em)">
+                        <el-progress text-inside :stroke-width="22" :percentage="memoryUsedPercentage"
+                                     :status="progress.status"/>
+                    </div>
                 </div>
             </div>
-        </div>
-        <el-empty image-size="100" v-if="empty"/>
+        </transition>
+        <transition name="empty">
+            <el-empty image-size="100" v-if="empty"/>
+        </transition>
     </el-card>
 </template>
 
@@ -41,7 +45,8 @@ export default {
             progress: {
                 status: "success"
             },
-            empty: true
+            empty: true,
+            bodyShow: false
         }
     },
     props: {
@@ -63,12 +68,17 @@ export default {
                 this.progress.status = "exception";
             }
             this.empty = false;
+            setTimeout(function () {
+                this.bodyShow = true;
+            }.bind(this), 300);
         }
     }
 }
 </script>
 
 <style scoped>
+@import url(/src/css/controller/card-transition.css);
+
 .my-card-body {
     margin-bottom: 10px;
     display: flex;

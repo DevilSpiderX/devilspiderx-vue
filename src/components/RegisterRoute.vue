@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import {register} from "@/js/server-api";
+import {register} from "/src/js/server-api.js";
 import {ElMessage} from "element-plus";
 
 export default {

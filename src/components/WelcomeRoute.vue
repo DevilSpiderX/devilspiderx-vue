@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import {user_status} from "@/js/server-api";
+import {user_status} from "/src/js/server-api";
 
 export default {
     name: "WelcomeRoute",

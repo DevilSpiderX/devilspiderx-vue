@@ -1,7 +1,7 @@
-import {createApp} from 'vue';
-import router from './router';
-import App from './App.vue';
-import {setThemeColor} from "@/js/global";
+import {createApp} from 'vue'
+import App from './App.vue'
+import router from './router.js';
+import {setThemeColor} from "./js/global.js";
 
 const app = createApp(App);
 app.use(router);

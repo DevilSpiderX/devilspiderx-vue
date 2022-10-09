@@ -1,13 +1,13 @@
 import {createRouter, createWebHashHistory} from "vue-router";
-import WelcomeRoute from "@/components/WelcomeRoute";
-import LoginRoute from '@/components/LoginRoute';
-import RegisterRoute from '@/components/RegisterRoute';
-import IndexRoute from '@/components/IndexRoute';
-import ControllerRoute from "@/components/ControllerRoute";
-import QueryRoute from "@/components/QueryRoute";
-import V2rayRoute from "@/components/V2rayRoute";
-import LogRoute from "@/components/LogRoute";
-import UpdatePwdRoute from "@/components/UpdatePwdRoute";
+import WelcomeRoute from "./components/WelcomeRoute.vue";
+import LoginRoute from './components/LoginRoute.vue';
+import RegisterRoute from './components/RegisterRoute.vue';
+import IndexRoute from './components/IndexRoute.vue';
+import ControllerRoute from "./components/ControllerRoute.vue";
+import QueryRoute from "./components/QueryRoute.vue";
+import V2rayRoute from "./components/V2rayRoute.vue";
+import LogRoute from "./components/LogRoute.vue";
+import UpdatePwdRoute from "./components/UpdatePwdRoute.vue";
 
 const routes = [
     {name: "welcome", path: "/", component: WelcomeRoute},

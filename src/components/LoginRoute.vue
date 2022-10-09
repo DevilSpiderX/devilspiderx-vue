@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import {login} from "@/js/server-api";
+import {login} from "/src/js/server-api.js";
 import SHA256 from 'crypto-js/sha256';
 import Hex from 'crypto-js/enc-hex';
 import {ElMessage} from "element-plus";
