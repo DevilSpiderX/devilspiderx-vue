@@ -21,6 +21,12 @@ const routes = [
     {name: "updatePwd", path: "/updatePwd", component: UpdatePwdRoute, meta: {title: "修改密码 - DevilSpiderX"}}
 ]
 
+if (Object.hasOwn === undefined) {
+    Object.hasOwn = (obj, p) => {
+        return obj.hasOwnProperty(p);
+    }
+}
+
 const router = createRouter({
     history: createWebHashHistory(),
     routes: routes

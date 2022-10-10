@@ -23,8 +23,10 @@
     "vue3-menus": "^1.1.2"
   },
   "devDependencies": {
+    "@vitejs/plugin-legacy": "^2.2.0",
     "@vitejs/plugin-vue": "^3.1.0",
     "@vitejs/plugin-vue-jsx": "^2.0.1",
+    "terser": "^5.15.1",
     "vite": "^3.1.0"
   }
 }

@@ -4,6 +4,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx';
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import {ElementPlusResolver} from 'unplugin-vue-components/resolvers';
+import legacy from '@vitejs/plugin-legacy'
 
 let objExternals = {
     vue: "Vue",
@@ -23,6 +24,9 @@ export default defineConfig({
         }),
         Components({
             resolvers: [ElementPlusResolver()],
+        }),
+        legacy({
+            targets: ['defaults']
         })
     ],
     server: {
