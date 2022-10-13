@@ -31,7 +31,7 @@
                     <el-table :data="dataList" border stripe max-height="calc(100vh - 80px)" size="large"
                               @cell-contextmenu="table_cell_contextmenu" @sort-change="table_sort_change">
                         <template #empty>
-                            <el-empty image-size="200"/>
+                            <el-empty :image-size="200"/>
                         </template>
                         <el-table-column prop="name" label="名称" header-align="center" sortable="custom">
                             <template v-slot="{row}">

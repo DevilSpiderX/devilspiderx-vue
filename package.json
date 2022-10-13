@@ -23,6 +23,7 @@
     "vue3-menus": "^1.1.2"
   },
   "devDependencies": {
+    "@vitejs/plugin-basic-ssl": "^0.1.2",
     "@vitejs/plugin-legacy": "^2.2.0",
     "@vitejs/plugin-vue": "^3.1.0",
     "@vitejs/plugin-vue-jsx": "^2.0.1",
