@@ -122,7 +122,9 @@ export default {
             this.values = JSON.parse(msgEv.data);
         },
         main_card_mouse_enter() {
-            this.mainCard.class["scrollBar-hide"] = false;
+            if (!this.isTouchDevice) {
+                this.mainCard.class["scrollBar-hide"] = false;
+            }
         },
         main_card_mouse_leave() {
             this.mainCard.class["scrollBar-hide"] = true;
