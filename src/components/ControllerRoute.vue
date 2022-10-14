@@ -1,6 +1,6 @@
 <template>
     <el-container>
-        <el-card class="main-card">
+        <el-card class="main-card" :style="{height:mainCard.height+'px'}">
             <template #header>
                 <div>
                     <h1 style="text-align: center;user-select: none;margin: 0;">
@@ -52,6 +52,9 @@ export default {
                 memory: {},
                 network: {},
                 disk: []
+            },
+            mainCard: {
+                height: window.innerHeight - 1//等相对单位dvh标准出来之后删除
             }
         }
     },
@@ -85,12 +88,13 @@ export default {
         this.setThemeColor("#ffffff");
     },
     mounted() {
-
+        window.addEventListener('resize', this.window_resize);//等相对单位dvh标准出来之后删除
     },
     unmounted() {
         if (this.ws.websocket instanceof WebSocket && this.ws.websocket.readyState === WebSocket.OPEN) {
             this.ws.websocket.close();
         }
+        window.removeEventListener('resize', this.window_resize);//等相对单位dvh标准出来之后删除
     },
     methods: {
         WsOnOPen() {
@@ -113,6 +117,9 @@ export default {
         WsOnMessage(msgEv) {
             this.values = JSON.parse(msgEv.data);
         },
+        window_resize() {//等相对单位dvh标准出来之后删除
+            this.mainCard.height = window.innerHeight - 1;
+        }
     }
 }
 </script>
@@ -123,6 +130,7 @@ export default {
     width: 100vw;
     height: 100vh;
     overflow-y: auto;
+    border: 0;
 }
 
 .my-col {
@@ -138,30 +146,18 @@ export default {
 }
 
 .main-card::-webkit-scrollbar {
-    z-index: 11;
-    width: 6px;
-}
-
-.main-card::-webkit-scrollbar:horizontal {
-    height: 6px;
+    z-index: 1;
+    width: 7px;
 }
 
 .main-card::-webkit-scrollbar-thumb {
     border-radius: 5px;
-    width: 6px;
-    background: #c0c4cc;
+    background: #0004;
 }
 
-.main-card::-webkit-scrollbar-corner {
-    background: #ffffff;
-}
-
-.main-card::-webkit-scrollbar-track {
-    background: #ffffff;
-}
-
+.main-card::-webkit-scrollbar-corner,
+.main-card::-webkit-scrollbar-track,
 .main-card::-webkit-scrollbar-track-piece {
-    background: #ffffff;
-    width: 6px;
+    background: #0000;
 }
 </style>

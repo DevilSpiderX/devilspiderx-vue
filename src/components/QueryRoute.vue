@@ -28,7 +28,7 @@
         <el-main style="--el-main-padding:0;">
             <el-row justify="center">
                 <el-col :xs="22" :sm="20" :md="18" :lg="16" :xl="14" class="my-xxs-col">
-                    <el-table :data="dataList" border stripe max-height="calc(100vh - 80px)" size="large"
+                    <el-table :data="dataList" border stripe :max-height="table.maxHeight+'px'" size="large"
                               @cell-contextmenu="table_cell_contextmenu" @sort-change="table_sort_change">
                         <template #empty>
                             <el-empty :image-size="200"/>
@@ -104,6 +104,9 @@ export default {
             updateModal: {
                 visible: false,
                 inData: {}
+            },
+            table: {
+                maxHeight: window.innerHeight - 80//等相对单位dvh标准出来之后删除
             }
         }
     },
@@ -123,9 +126,11 @@ export default {
                 this.key = hQKey;
             }
         }
+        window.addEventListener('resize', this.window_resize);//等相对单位dvh标准出来之后删除
     },
     unmounted() {
         window.sessionStorage.removeItem('history_query_key');
+        window.removeEventListener('resize', this.window_resize);//等相对单位dvh标准出来之后删除
     },
     methods: {
         Search() {
@@ -304,6 +309,10 @@ export default {
                     }
                 }.bind(this)
             });
+        },
+
+        window_resize() {//等相对单位dvh标准出来之后删除
+            this.table.maxHeight = window.innerHeight - 80;
         }
 
     }
