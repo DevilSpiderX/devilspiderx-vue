@@ -57,7 +57,7 @@ export default {
             mainCard: {
                 height: window.innerHeight - 1,//等相对单位dvh标准出来之后删除
                 class: {
-                    'scrollBar-hide': false
+                    'scrollBar-hide': true
                 }
             }
         }
@@ -157,9 +157,10 @@ export default {
 
 .main-card::-webkit-scrollbar {
     z-index: 1;
-    width: 6px;
+    width: 8px;
 }
 
+/*noinspection CssUnusedSymbol*/
 .main-card.scrollBar-hide::-webkit-scrollbar {
     display: none;
 }
