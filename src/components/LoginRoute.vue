@@ -62,6 +62,16 @@ export default {
             }
         }
     },
+    beforeMount() {
+        this.setThemeColor("#ffffff");
+    },
+    mounted() {
+        let loginUid = localStorage.loginUid;
+        if (loginUid !== undefined) {
+            this.form.uid = loginUid;
+        }
+
+    },
     methods: {
         form_submit() {
             let uid = this.form.uid;
@@ -114,16 +124,6 @@ export default {
             this.running.show = false;
             this.setThemeColor("#ffffff");
         }
-    },
-    beforeMount() {
-        this.setThemeColor("#ffffff");
-    },
-    mounted() {
-        let loginUid = localStorage.loginUid;
-        if (loginUid !== undefined) {
-            this.form.uid = loginUid;
-        }
-
     }
 }
 </script>

@@ -1,6 +1,7 @@
 <template>
     <el-container>
-        <el-card class="main-card" :style="{height:mainCard.height+'px'}">
+        <el-card class="main-card" :class="mainCard.class" :style="{height:mainCard.height+'px'}"
+                 @mouseenter="main_card_mouse_enter" @mouseleave="main_card_mouse_leave">
             <template #header>
                 <div>
                     <h1 style="text-align: center;user-select: none;margin: 0;">
@@ -54,7 +55,10 @@ export default {
                 disk: []
             },
             mainCard: {
-                height: window.innerHeight - 1//等相对单位dvh标准出来之后删除
+                height: window.innerHeight - 1,//等相对单位dvh标准出来之后删除
+                class: {
+                    'scrollBar-hide': false
+                }
             }
         }
     },
@@ -117,6 +121,12 @@ export default {
         WsOnMessage(msgEv) {
             this.values = JSON.parse(msgEv.data);
         },
+        main_card_mouse_enter() {
+            this.mainCard.class["scrollBar-hide"] = false;
+        },
+        main_card_mouse_leave() {
+            this.mainCard.class["scrollBar-hide"] = true;
+        },
         window_resize() {//等相对单位dvh标准出来之后删除
             this.mainCard.height = window.innerHeight - 1;
         }
@@ -147,12 +157,16 @@ export default {
 
 .main-card::-webkit-scrollbar {
     z-index: 1;
-    width: 7px;
+    width: 6px;
+}
+
+.main-card.scrollBar-hide::-webkit-scrollbar {
+    display: none;
 }
 
 .main-card::-webkit-scrollbar-thumb {
     border-radius: 5px;
-    background: #0004;
+    background: #00000040;
 }
 
 .main-card::-webkit-scrollbar-corner,
