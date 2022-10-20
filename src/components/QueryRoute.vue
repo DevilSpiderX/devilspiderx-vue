@@ -139,39 +139,19 @@ export default {
         Search() {
             window.sessionStorage['history_query_key'] = this.key;
             query(this.key, 1, this.QuerySucceed);
+            this.current_page = 1;
         },
 
         QuerySucceed(resp) {
             console.log(resp);
             switch (resp["code"]) {
                 case 0: {
-                    this.dataList = resp["data"]["list"];
-                    this.page_count = resp["data"]["page_count"];
-                    this.current_page = 1;
-                    this.SortTable(this.sortSetting.prop, this.sortSetting.order);
-                    break;
-                }
-                case 1: {
-                    console.log("没有查询到任何结果");
                     this.dataList = [];
-                    this.page_count = 1;
-                    this.current_page = 1;
-                    break;
-                }
-                case 100: {
-                    this.$router.push({name: "login"});
-                    break;
-                }
-            }
-        },
-
-        QuerySucceed2(resp) {
-            console.log(resp);
-            switch (resp["code"]) {
-                case 0: {
-                    this.dataList = resp["data"]["list"];
                     this.page_count = resp["data"]["page_count"];
                     this.SortTable(this.sortSetting.prop, this.sortSetting.order);
+                    this.$nextTick(function () {
+                        this.dataList = resp["data"]["list"];
+                    });
                     break;
                 }
                 case 1: {
@@ -342,7 +322,7 @@ export default {
         },
 
         pagination_current_change(new_page) {
-            query(this.key, new_page, this.QuerySucceed2);
+            query(this.key, new_page, this.QuerySucceed);
         },
 
         window_resize() {//等相对单位dvh标准出来之后删除
@@ -367,5 +347,6 @@ export default {
     border-left: 1px solid var(--el-border-color-lighter);
     border-right: 1px solid var(--el-border-color-lighter);
     border-bottom: 1px solid var(--el-border-color-lighter);
+    padding: 0 1rem;
 }
 </style>
