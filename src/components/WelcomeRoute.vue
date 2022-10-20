@@ -2,7 +2,7 @@
     <div class="main">
         <div>
             <i class="fas fa-spider"></i>
-            <p id="logo">DevilSpiderX</p>
+            <p class="logo">{{ logo }}</p>
         </div>
     </div>
 </template>
@@ -12,6 +12,11 @@ import {user_status} from "/src/js/server-api";
 
 export default {
     name: "WelcomeRoute",
+    data() {
+        return {
+            logo: ""
+        }
+    },
     methods: {
         verify() {
             user_status(function (resp) {
@@ -31,6 +36,14 @@ export default {
         this.setThemeColor("#ffffff");
     },
     mounted() {
+        let hour = new Date().getHours();
+        if (7 <= hour && hour < 12) {
+            this.logo = "Good Morning";
+        } else if (12 <= hour && hour < 19) {
+            this.logo = "Good Afternoon";
+        } else {
+            this.logo = "Good Evening";
+        }
         setTimeout(this.verify, 400);
     }
 
@@ -50,10 +63,11 @@ export default {
     font-size: 20rem;
 }
 
-#logo {
+.logo {
     text-align: center;
     font-size: 3rem;
     font-weight: 900;
+    font-family: system-ui;
     margin: 2rem 0;
 }
 </style>

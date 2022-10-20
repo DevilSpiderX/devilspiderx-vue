@@ -28,7 +28,7 @@
         <el-main style="--el-main-padding:0;">
             <el-row justify="center">
                 <el-col :xs="22" :sm="20" :md="18" :lg="16" :xl="14" class="my-xxs-col">
-                    <el-table :data="dataList" border stripe :max-height="table.maxHeight+'px'" size="large"
+                    <el-table :data="dataList" border stripe :height="table.maxHeight+'px'" size="large"
                               @cell-contextmenu="table_cell_contextmenu" @sort-change="table_sort_change">
                         <template #empty>
                             <el-empty :image-size="200"/>
@@ -56,10 +56,11 @@
                                 <span style="user-select: none">{{ row.remark }}</span>
                             </template>
                         </el-table-column>
-                        <template #append>
-
-                        </template>
                     </el-table>
+                    <div class="pagination-wrapper">
+                        <el-pagination :layout="'prev, pager, next'" v-model:current-page="current_page"
+                                       :page-count="page_count" @current-change="pagination_current_change"/>
+                    </div>
                 </el-col>
             </el-row>
         </el-main>
@@ -84,6 +85,8 @@ export default {
         return {
             key: "",
             dataList: [],
+            page_count: 1,
+            current_page: 1,
             sortSetting: {
                 prop: "",
                 order: null
@@ -106,7 +109,7 @@ export default {
                 inData: {}
             },
             table: {
-                maxHeight: window.innerHeight - 80//等相对单位dvh标准出来之后删除
+                maxHeight: window.innerHeight - 106//等相对单位dvh标准出来之后删除
             }
         }
     },
@@ -142,13 +145,40 @@ export default {
             console.log(resp);
             switch (resp["code"]) {
                 case 0: {
-                    this.dataList = resp["data"];
+                    this.dataList = resp["data"]["list"];
+                    this.page_count = resp["data"]["page_count"];
+                    this.current_page = 1;
                     this.SortTable(this.sortSetting.prop, this.sortSetting.order);
                     break;
                 }
                 case 1: {
                     console.log("没有查询到任何结果");
                     this.dataList = [];
+                    this.page_count = 1;
+                    this.current_page = 1;
+                    break;
+                }
+                case 100: {
+                    this.$router.push({name: "login"});
+                    break;
+                }
+            }
+        },
+
+        QuerySucceed2(resp) {
+            console.log(resp);
+            switch (resp["code"]) {
+                case 0: {
+                    this.dataList = resp["data"]["list"];
+                    this.page_count = resp["data"]["page_count"];
+                    this.SortTable(this.sortSetting.prop, this.sortSetting.order);
+                    break;
+                }
+                case 1: {
+                    console.log("没有查询到任何结果");
+                    this.dataList = [];
+                    this.page_count = 1;
+                    this.current_page = 1;
                     break;
                 }
                 case 100: {
@@ -311,8 +341,12 @@ export default {
             });
         },
 
+        pagination_current_change(new_page) {
+            query(this.key, new_page, this.QuerySucceed2);
+        },
+
         window_resize() {//等相对单位dvh标准出来之后删除
-            this.table.maxHeight = window.innerHeight - 80;
+            this.table.maxHeight = window.innerHeight - 106;
         }
 
     }
@@ -325,5 +359,13 @@ export default {
         max-width: 100%;
         flex: 0 0 100%;
     }
+}
+
+.pagination-wrapper {
+    box-sizing: border-box;
+    width: 100%;
+    border-left: 1px solid var(--el-border-color-lighter);
+    border-right: 1px solid var(--el-border-color-lighter);
+    border-bottom: 1px solid var(--el-border-color-lighter);
 }
 </style>
