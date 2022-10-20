@@ -1,143 +1,142 @@
-import $ from 'jquery';
+import axios from 'axios';
 
 export function login(uid, pwd, success, error) {
-    let postBody = {
-        "uid": uid,
-        "pwd": pwd
-    }
-    $.ajax("/api/user/login", {
-        type: "POST", data: JSON.stringify(postBody), contentType: "application/json", success: success, error: error
-    });
+    axios.post("/api/user/login", {uid: uid, pwd: pwd})
+        .then(resp => success(resp.data))
+        .catch(error);
 }
 
 export function logout(success, error) {
-    $.ajax("/api/user/logout", {type: "POST", success: success, error: error});
+    axios.post("/api/user/logout")
+        .then(resp => success(resp.data))
+        .catch(error);
 }
 
 export function register(uid, pwd, success, error) {
     let postBody = {
-        "uid": uid,
-        "pwd": pwd
+        uid: uid,
+        pwd: pwd
     }
-    $.ajax("/api/user/register", {
-        type: "POST", data: JSON.stringify(postBody), contentType: "application/json", success: success, error: error
-    });
+    axios.post("/api/user/register", postBody)
+        .then(resp => success(resp.data))
+        .catch(error);
 }
 
-export function query(key, success, error) {
+export function query(key, page, success, error) {
     let postBody = {
-        "key": key
+        key: key,
+        page: page
     }
-    $.ajax("/api/query", {
-        type: "POST", data: JSON.stringify(postBody), contentType: "application/json", success: success, error: error
-    });
+    axios.post("/api/query", postBody)
+        .then(resp => success(resp.data))
+        .catch(error);
 }
 
 export function addPasswords(name, account, password, remark, success, error) {
     let postBody = {
-        "name": name,
-        "account": account,
-        "password": password,
-        "remark": remark,
+        name: name,
+        account: account,
+        password: password,
+        remark: remark,
     }
-    $.ajax("/api/addPasswords", {
-        type: "POST", data: JSON.stringify(postBody), contentType: "application/json", success: success, error: error
-    });
+    axios.post("/api/addPasswords", postBody)
+        .then(resp => success(resp.data))
+        .catch(error);
 }
 
 export function updatePasswords(id, name, account, password, remark, success, error) {
     let postBody = {
-        "id": id,
-        "name": name,
-        "account": account,
-        "password": password,
-        "remark": remark,
+        id: id,
+        name: name,
+        account: account,
+        password: password,
+        remark: remark,
     }
-    $.ajax("/api/updatePasswords", {
-        type: "POST", data: JSON.stringify(postBody), contentType: "application/json", success: success, error: error
-    });
+    axios.post("/api/updatePasswords", postBody)
+        .then(resp => success(resp.data))
+        .catch(error);
 }
 
 export function os_reboot(success, error) {
-    $.ajax("/api/os/reboot", {
-        type: "POST", success: success, error: error
-    });
+    axios.post("/api/os/reboot")
+        .then(resp => success(resp.data))
+        .catch(error);
 }
 
 export function os_shutdown(success, error) {
-    $.ajax("/api/os/shutdown", {
-        type: "POST", success: success, error: error
-    });
+    axios.post("/api/os/shutdown")
+        .then(resp => success(resp.data))
+        .catch(error);
 }
 
 export function v2rayStart(success, error) {
-    $.ajax("/api/v2ray/start", {
-        type: "POST", success: success, error: error
-    });
+    axios.post("/api/v2ray/start")
+        .then(resp => success(resp.data))
+        .catch(error);
 }
 
 export function v2rayStop(success, error) {
-    $.ajax("/api/v2ray/stop", {
-        type: "POST", success: success, error: error
-    });
+    axios.post("/api/v2ray/stop")
+        .then(resp => success(resp.data))
+        .catch(error);
 }
 
 export function v2rayState(success, error) {
-    $.ajax("/api/v2ray/state", {
-        type: "POST", success: success, error: error
-    });
+    axios.post("/api/v2ray/state")
+        .then(resp => success(resp.data))
+        .catch(error);
 }
 
 export function cpu(success, error) {
-    $.ajax("/api/ServerInfo/cpu", {
-        type: "POST", success: success, error: error
-    });
+    axios.post("/api/ServerInfo/cpu")
+        .then(resp => success(resp.data))
+        .catch(error);
 }
 
 export function memory(success, error) {
-    $.ajax("/api/ServerInfo/memory", {
-        type: "POST", success: success, error: error
-    });
+    axios.post("/api/ServerInfo/memory")
+        .then(resp => success(resp.data))
+        .catch(error);
 }
 
 export function network(success, error) {
-    $.ajax("/api/ServerInfo/network", {
-        type: "POST", success: success, error: error
-    });
+    axios.post("/api/ServerInfo/network")
+        .then(resp => success(resp.data))
+        .catch(error);
 }
 
 export function network_size(async, success, error) {
-    $.ajax("/api/ServerInfo/network/size", {
-        type: "POST", async: async, success: success, error: error
-    });
+    axios.post("/api/ServerInfo/network/size")
+        .then(resp => success(resp.data))
+        .catch(error);
 }
 
 export function disk(success, error) {
-    $.ajax("/api/ServerInfo/disk", {
-        type: "POST", success: success, error: error
-    });
+    axios.post("/api/ServerInfo/disk")
+        .then(resp => success(resp.data))
+        .catch(error);
 }
 
 export function disk_size(async, success, error) {
-    $.ajax("/api/ServerInfo/disk/size", {
-        type: "POST", async: async, success: success, error: error
-    });
+    axios.post("/api/ServerInfo/disk/size")
+        .then(resp => success(resp.data))
+        .catch(error);
 }
 
 export function token(success, error) {
-    $.ajax("/api/ServerInfo/token", {
-        type: "POST", success: success, error: error
-    });
+    axios.post("/api/ServerInfo/token")
+        .then(resp => success(resp.data))
+        .catch(error);
 }
 
 export function logList(success, error) {
-    $.ajax("/log", {
-        type: "POST", success: success, error: error
-    });
+    axios.post("/log")
+        .then(resp => success(resp.data))
+        .catch(error);
 }
 
 export function user_status(success, error) {
-    $.ajax("/api/user/status", {
-        type: "POST", success: success, error: error
-    });
+    axios.post("/api/user/status")
+        .then(resp => success(resp.data))
+        .catch(error);
 }

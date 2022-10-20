@@ -118,11 +118,11 @@ export default {
         if (Object.hasOwn(routeQuery, "key")) {
             this.key = routeQuery.key;
             window.sessionStorage['history_query_key'] = this.key;
-            query(this.key, this.QuerySucceed);
+            query(this.key, 1, this.QuerySucceed);
         } else {
             let hQKey = window.sessionStorage['history_query_key'];
             if (hQKey !== undefined) {
-                query(hQKey, this.QuerySucceed);
+                query(hQKey, 1, this.QuerySucceed);
                 this.key = hQKey;
             }
         }
@@ -135,7 +135,7 @@ export default {
     methods: {
         Search() {
             window.sessionStorage['history_query_key'] = this.key;
-            query(this.key, this.QuerySucceed);
+            query(this.key, 1, this.QuerySucceed);
         },
 
         QuerySucceed(resp) {
@@ -253,7 +253,7 @@ export default {
                         let key = window.sessionStorage['history_query_key'];
                         key = key === undefined || key === '' ? name : `${key} ${name}`;
                         window.sessionStorage['history_query_key'] = key;
-                        query(key, this.QuerySucceed);
+                        query(key, 1, this.QuerySucceed);
                         this.key = key;
                         this.addModal.visible = false;
                         this.addModal.clean = true;
@@ -294,7 +294,7 @@ export default {
                                         key += ` ${name}`;
                                     }
                                     window.sessionStorage['history_query_key'] = key;
-                                    query(key, this.QuerySucceed);
+                                    query(key, 1, this.QuerySucceed);
                                     this.key = key;
                                     this.updateModal.visible = false;
                                     ElMessage.success("修改成功");
