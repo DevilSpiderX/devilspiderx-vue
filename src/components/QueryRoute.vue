@@ -148,9 +148,9 @@ export default {
                 case 0: {
                     this.dataList = [];
                     this.page_count = resp["data"]["page_count"];
-                    this.SortTable(this.sortSetting.prop, this.sortSetting.order);
                     this.$nextTick(function () {
                         this.dataList = resp["data"]["list"];
+                        this.SortTable(this.sortSetting.prop, this.sortSetting.order);
                     });
                     break;
                 }
