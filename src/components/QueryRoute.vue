@@ -28,7 +28,7 @@
         <el-main style="--el-main-padding:0;">
             <el-row justify="center">
                 <el-col :xs="22" :sm="20" :md="18" :lg="16" :xl="14" class="my-xxs-col">
-                    <el-table :data="dataList" border stripe :height="table.maxHeight+'px'" size="large"
+                    <el-table :data="dataList" border stripe :height="table.maxHeight+'px'" size="large" ref="pwdTable"
                               @cell-contextmenu="table_cell_contextmenu" @sort-change="table_sort_change">
                         <template #empty>
                             <el-empty :image-size="200"/>
@@ -146,12 +146,10 @@ export default {
             console.log(resp);
             switch (resp["code"]) {
                 case 0: {
-                    this.dataList = [];
+                    this.dataList = resp["data"]["list"];
                     this.page_count = resp["data"]["page_count"];
-                    this.$nextTick(function () {
-                        this.dataList = resp["data"]["list"];
-                        this.SortTable(this.sortSetting.prop, this.sortSetting.order);
-                    });
+                    this.SortTable(this.sortSetting.prop, this.sortSetting.order);
+                    this.$refs.pwdTable.setScrollTop(0);
                     break;
                 }
                 case 1: {

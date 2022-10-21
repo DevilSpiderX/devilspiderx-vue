@@ -2,7 +2,10 @@
     <div class="main">
         <div>
             <i class="fas fa-spider"></i>
-            <p class="logo">{{ logo }}</p>
+            <p class="logo">
+                Good<br/>
+                {{ logo }}
+            </p>
         </div>
     </div>
 </template>
@@ -38,11 +41,11 @@ export default {
     mounted() {
         let hour = new Date().getHours();
         if (7 <= hour && hour < 12) {
-            this.logo = "Good Morning";
+            this.logo = "Morning";
         } else if (12 <= hour && hour < 19) {
-            this.logo = "Good Afternoon";
+            this.logo = "Afternoon";
         } else {
-            this.logo = "Good Evening";
+            this.logo = "Evening";
         }
         setTimeout(this.verify, 400);
     }
