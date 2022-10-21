@@ -347,6 +347,7 @@ export default {
     border-left: 1px solid var(--el-border-color-lighter);
     border-right: 1px solid var(--el-border-color-lighter);
     border-bottom: 1px solid var(--el-border-color-lighter);
-    padding: 0 1rem;
+    display: flex;
+    justify-content: center;
 }
 </style>
