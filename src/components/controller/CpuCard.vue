@@ -12,7 +12,7 @@
                 <!-- 逻辑核心数 -->
                 <div>逻辑核心数：&nbsp;{{ cpuData.logicalNum }}</div>
                 <!-- 是否64位CPU -->
-                <div>是否64位：&nbsp;{{ cpuData.is64bit ? "是" : "否" }}</div>
+                <div>处理器位宽：&nbsp;{{ cpuData.is64bit ? "64" : "32" }}</div>
                 <!-- CPU温度 -->
                 <div>
                     <i class="fas fa-thermometer-half fa-fw"></i>
