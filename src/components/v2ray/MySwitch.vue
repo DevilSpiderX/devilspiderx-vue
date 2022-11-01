@@ -21,9 +21,21 @@ export default {
             style: ""
         }
     },
-    props: [
-        "width", "height", "font-size"
-    ],
+    props: {
+        width: String,
+        height: String,
+        "font-size": String,
+        modalStatus: Boolean
+    },
+    emits: ["update:modalStatus"],
+    watch: {
+        status(newVal) {
+            this.$emit("update:modalStatus", newVal === "on");
+        },
+        modalStatus(newVal) {
+            this.status = newVal ? "on" : "off";
+        }
+    },
     methods: {
         switch_modal() {
             if (this.is_on()) {

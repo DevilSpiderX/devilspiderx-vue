@@ -1,10 +1,10 @@
 <template>
-    <el-container>
-    </el-container>
+    <a-layout>
+    </a-layout>
 </template>
 
 <script>
-import {ElMessageBox} from "element-plus";
+import {Modal} from "@arco-design/web-vue";
 
 export default {
     name: "LogRoute",
@@ -12,18 +12,19 @@ export default {
         this.setThemeColor("#ffffff");
     },
     mounted() {
-        ElMessageBox.alert("页面未完成", "提示", {
-            autofocus: false,
-            type: "warning ",
-            confirmButtonText: "旧页面",
-            cancelButtonText: "返回",
-            showCancelButton: true,
-            callback: function (action) {
-                if (action === "confirm") {
-                    window.open("/log.html", "_self");
-                } else {
-                    this.$router.back();
-                }
+        Modal.info({
+            title: "提示",
+            content: "页面未完成",
+            width: 300,
+            okText: "旧页面",
+            cancelText: "返回",
+            hideCancel: false,
+            maskClosable: false,
+            onOk: () => {
+                window.open("/log.html", "_self");
+            },
+            onCancel: function () {
+                this.$router.back();
             }.bind(this)
         });
     }
