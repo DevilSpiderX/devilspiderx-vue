@@ -38,7 +38,7 @@ export default {
     beforeMount() {
         this.setThemeColor("#ffffff");
     },
-    mounted() {
+    async mounted() {
         let hour = new Date().getHours();
         if (7 <= hour && hour < 12) {
             this.logo = "Morning";
@@ -47,7 +47,8 @@ export default {
         } else {
             this.logo = "Evening";
         }
-        setTimeout(this.verify, 400);
+        await sleep(400);
+        this.verify();
     }
 
 }

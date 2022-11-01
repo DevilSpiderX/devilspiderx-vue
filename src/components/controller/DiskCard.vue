@@ -52,12 +52,11 @@ export default {
         diskIndex: Number
     },
     watch: {
-        value(newVal) {
+        async value(newVal) {
             Object.assign(this.diskData, newVal);
             this.empty = false;
-            setTimeout(function () {
-                this.bodyShow = true;
-            }.bind(this), 300);
+            await sleep(300);
+            this.bodyShow = true;
         }
     },
     computed: {
