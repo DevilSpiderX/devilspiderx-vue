@@ -1,42 +1,41 @@
 <template>
-    <el-container>
-        <el-main style="padding: 0;overflow: visible;">
-            <el-row justify="center">
-                <el-col class="register-col">
-                    <el-form :model="form" @submit.prevent="form_submit">
-                        <h1 style="text-align: center;font-size: 2.5rem;">登&nbsp;&nbsp;录</h1>
-                        <el-form-item>
-                            <el-input placeholder="账号" ref="user" v-model="form.uid">
+    <a-layout>
+        <a-layout-content style="padding: 0;overflow: visible;">
+            <a-row justify="center">
+                <a-col class="register-col">
+                    <a-form :model="form" @submit.prevent="form_submit">
+                        <h1 style="text-align: center;font-size: 2.5rem;color: var(--color-text-1);">
+                            登&nbsp;&nbsp;录
+                        </h1>
+                        <a-form-item hide-label>
+                            <a-input class="my-input" placeholder="账号" ref="user" v-model="form.uid" allow-clear
+                                     :input-attrs="{style:{'font-size':'1.1rem'}}">
                                 <template #prefix>
-                                        <span style="color: rgb(73,80,87);">
-                                            <i class="fas fa-user fa-fw"></i>
-                                        </span>
+                                    <span><i class="fas fa-user fa-fw"></i></span>
                                 </template>
-                            </el-input>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-input type="password" placeholder="密码" ref="password" v-model="form.pwd"
-                                      show-password>
+                            </a-input>
+                        </a-form-item>
+                        <a-form-item hide-label>
+                            <a-input-password class="my-input" placeholder="密码" ref="password" v-model="form.pwd"
+                                              allow-clear :input-attrs="{style:{'font-size':'1.1rem'}}">
                                 <template #prefix>
-                                        <span style="color: rgb(73,80,87);">
-                                            <i class="fas fa-key fa-fw"></i>
-                                        </span>
+                                    <span><i class="fas fa-key fa-fw"></i></span>
                                 </template>
-                            </el-input>
-                        </el-form-item>
-                        <el-row class="button-row" justify="space-around">
-                            <el-button type="primary" size="large" native-type="submit" auto-insert-space>
+                            </a-input-password>
+                        </a-form-item>
+                        <a-row class="button-row" justify="space-around">
+                            <a-button type="primary" size="large" native-type="submit" auto-insert-space>
                                 登录
-                            </el-button>
-                            <el-button type="primary" size="large" native-type="button" auto-insert-space
-                                       @click="this.$router.push({name:'register'})">注册
-                            </el-button>
-                        </el-row>
-                    </el-form>
-                </el-col>
-            </el-row>
-        </el-main>
-    </el-container>
+                            </a-button>
+                            <a-button type="primary" size="large" native-type="button" auto-insert-space
+                                      @click="this.$router.push({name:'register'})">注册
+                            </a-button>
+                        </a-row>
+                    </a-form>
+                </a-col>
+            </a-row>
+        </a-layout-content>
+    </a-layout>
 
     <div class="running" v-show="running.show">
         <i class="fas fa-spinner fa-spin"></i>
@@ -133,14 +132,14 @@ export default {
     border-radius: 2ex;
     max-width: 500px;
     margin-top: 100px;
-    background-color: white;
-    box-shadow: var(--el-box-shadow-dark);
+    background-color: var(--color-bg-2);
+    box-shadow: var(--box-shadow-dark);
     padding: 15px;
 }
 
 form > h1,
 form > div {
-    margin: 20px 0;
+    margin: 10px 0;
 }
 
 .button-row > button {
@@ -150,8 +149,7 @@ form > div {
     font-size: 1.25rem;
 }
 
-/*noinspection CssUnusedSymbol*/
-.el-input {
+.my-input {
     font-size: 1.1rem;
     height: 3rem;
 }

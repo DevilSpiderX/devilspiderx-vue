@@ -1,6 +1,6 @@
 <template>
     <el-container style="padding-top: 8px;">
-        <el-header>
+        <a-layout-header>
             <el-row justify="center">
                 <el-col :xs="17" :sm="15" :md="13" :lg="11" :xl="9" class="my-xxs-col">
                     <el-button size="large" style="margin-right: 10px;" @click="addModal.visible=true">
@@ -24,8 +24,8 @@
                     </el-input>
                 </el-col>
             </el-row>
-        </el-header>
-        <el-main style="--el-main-padding:0;">
+        </a-layout-header>
+        <a-layout-content style="--el-main-padding:0;">
             <el-row justify="center">
                 <el-col :xs="22" :sm="20" :md="18" :lg="16" :xl="14" class="my-xxs-col">
                     <el-table :data="dataList" border stripe :height="table.maxHeight+'px'" size="large" ref="pwdTable"
@@ -63,7 +63,7 @@
                     </div>
                 </el-col>
             </el-row>
-        </el-main>
+        </a-layout-content>
     </el-container>
 
     <vue3-menus v-model:open="tableMenu.open" :event="tableMenu.event" :menus="tableMenu.menus" minWidth="100"/>

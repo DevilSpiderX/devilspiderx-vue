@@ -10,58 +10,25 @@ export default {
 
 <style>
 body {
-    font-family: MiSans-Normal, system-ui;
-    background-color: var(--el-bg-color);
+    font-family: MiSans-Normal, Inter, "-apple-system", BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "noto sans", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    background-color: var(--color-bg-1);
     margin: 0;
 }
-
-/*@font-face {*/
-/*    font-family: MiSans-Bold;*/
-/*    src: url("./font/MiSans-Bold.ttf");*/
-/*}*/
-
-/*@font-face {*/
-/*    font-family: MiSans-Demibold;*/
-/*    src: url("./font/MiSans-Demibold.ttf");*/
-/*}*/
-
-/*@font-face {*/
-/*    font-family: MiSans-ExtraLight;*/
-/*    src: url("./font/MiSans-ExtraLight.ttf");*/
-/*}*/
-
-/*@font-face {*/
-/*    font-family: MiSans-Heavy;*/
-/*    src: url("./font/MiSans-Heavy.ttf");*/
-/*}*/
-
-/*@font-face {*/
-/*    font-family: MiSans-Light;*/
-/*    src: url("./font/MiSans-Light.ttf");*/
-/*}*/
-
-/*@font-face {*/
-/*    font-family: MiSans-Medium;*/
-/*    src: url("./font/MiSans-Medium.ttf");*/
-/*}*/
 
 @font-face {
     font-family: MiSans-Normal;
     src: url("./font/MiSans-Normal.ttf");
 }
 
-/*@font-face {*/
-/*    font-family: MiSans-Regular;*/
-/*    src: url("./font/MiSans-Regular.ttf");*/
-/*}*/
+:root {
+    --shadow-special: 0 0 1px rgba(0, 0, 0, 0.3);
+    --shadow1-center: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    --shadow2-center: 0 0 10px rgba(0, 0, 0, 0.1);
+    --shadow3-center: 0 0 20px rgba(0, 0, 0, 0.1);
+    --box-shadow: 0px 12px 32px 4px #0000000a, 0px 8px 20px #00000014;
+    --box-shadow-light: 0px 0px 12px #0000001f;
+    --box-shadow-lighter: 0px 0px 6px #0000001f;
+    --box-shadow-dark: 0px 16px 48px 16px #00000014, 0px 12px 32px #0000001f, 0px 8px 16px -8px #00000029;
+}
 
-/*@font-face {*/
-/*    font-family: MiSans-Semibold ;*/
-/*    src: url("./font/MiSans-Semibold.ttf");*/
-/*}*/
-
-/*@font-face {*/
-/*    font-family: MiSans-Thin;*/
-/*    src: url("./font/MiSans-Thin.ttf");*/
-/*}*/
 </style>

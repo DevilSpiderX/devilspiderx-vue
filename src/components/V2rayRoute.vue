@@ -1,6 +1,6 @@
 <template>
     <el-container>
-        <el-main>
+        <a-layout-content>
             <el-row justify="center">
                 <el-col class="card-container">
                     <el-card>
@@ -15,7 +15,7 @@
                     </el-card>
                 </el-col>
             </el-row>
-        </el-main>
+        </a-layout-content>
     </el-container>
 </template>
 
