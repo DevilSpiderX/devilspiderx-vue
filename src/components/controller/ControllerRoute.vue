@@ -1,41 +1,42 @@
 <template>
-    <el-container>
-        <el-card class="main-card" :class="mainCard.class" :style="{height:mainCard.height+'px'}"
-                 @mouseenter="main_card_mouse_enter" @mouseleave="main_card_mouse_leave">
-            <template #header>
+    <a-layout>
+        <a-card class="main-card" :class="mainCard.class" :header-style="{height:'auto'}"
+                :style="{height:mainCard.height+'px',backgroundColor:'var(--color-bg-1)'}"
+                @mouseenter="main_card_mouse_enter" @mouseleave="main_card_mouse_leave">
+            <template #title>
                 <div>
-                    <h1 style="text-align: center;user-select: none;margin: 0;">
+                    <h1 style="text-align: center;user-select: none;margin: 0;font-size: 1.5rem">
                         <i class="fas fa-server fa-fw"></i>
                         服务器状态监控
                     </h1>
                 </div>
             </template>
-            <el-row :gutter="10">
-                <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6" class="my-col">
+            <a-row :gutter="10" align="stretch">
+                <a-col :xs="24" :md="12" :xl="8" class="my-col">
                     <cpu-card :value="values.cpu"/>
-                </el-col>
-                <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6" class="my-col">
+                </a-col>
+                <a-col :xs="24" :md="12" :xl="8" class="my-col">
                     <memory-card :value="values.memory"/>
-                </el-col>
-                <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6" class="my-col">
+                </a-col>
+                <a-col :xs="24" :md="12" :xl="8" class="my-col">
                     <network-card :value="values.network"/>
-                </el-col>
-                <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="6" class="my-col"
-                        v-for="(disk,index) in values.disk">
+                </a-col>
+                <a-col :xs="24" :md="12" :xl="8" class="my-col"
+                       v-for="(disk,index) in values.disk">
                     <disk-card :value="disk" :disk-index="index"/>
-                </el-col>
-            </el-row>
-        </el-card>
-    </el-container>
+                </a-col>
+            </a-row>
+        </a-card>
+    </a-layout>
 </template>
 
 <script>
-import {ElMessage} from "element-plus";
-import CpuCard from "./controller/CpuCard.vue";
-import MemoryCard from "./controller/MemoryCard.vue";
-import NetworkCard from "./controller/NetworkCard.vue";
-import DiskCard from "./controller/DiskCard.vue";
-import {token} from "/src/js/server-api.js";
+import {Message} from "@arco-design/web-vue";
+import CpuCard from "./CpuCard.vue";
+import MemoryCard from "./MemoryCard.vue";
+import NetworkCard from "./NetworkCard.vue";
+import DiskCard from "./DiskCard.vue";
+import {token} from "/src/scripts/server-api.js";
 
 export default {
     name: "ControllerRoute",
@@ -84,7 +85,7 @@ export default {
                 this.$router.push({name: "login"});
             }
         }.bind(this), function () {
-            ElMessage.error("服务器错误");
+            Message.error("服务器错误");
             this.$router.back();
         }.bind(this));
     },
@@ -102,18 +103,18 @@ export default {
     },
     methods: {
         WsOnOPen() {
-            ElMessage.success({message: "WebSocket成功接入服务器", duration: 1000});
+            Message.success({content: "WebSocket成功接入服务器", duration: 1000});
             console.log(Date() + "\nWebSocket成功接入服务器");
             if (typeof this.ws.websocket !== 'undefined') {
                 this.ws.websocket.send(JSON.stringify({"cmd": "start", "cd": this.cd}));
             }
         },
         WsOnClose() {
-            ElMessage.success({message: "WebSocket连接已关闭", duration: 1000});
+            Message.success({content: "WebSocket连接已关闭", duration: 1000});
             console.log(Date() + "\n连接已关闭");
         },
         WsOnError(event) {
-            ElMessage.error({message: "WebSocket发生错误", duration: 1000});
+            Message.error({content: "WebSocket发生错误", duration: 1000});
             console.log(event);
             console.log(Date() + "\nWebSocket发生错误，使用POST请求获取信息");
             // getHardware();

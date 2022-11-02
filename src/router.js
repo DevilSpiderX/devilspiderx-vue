@@ -3,9 +3,9 @@ import WelcomeRoute from "./components/WelcomeRoute.vue";
 import LoginRoute from './components/LoginRoute.vue';
 import RegisterRoute from './components/RegisterRoute.vue';
 import IndexRoute from './components/IndexRoute.vue';
-import ControllerRoute from "./components/ControllerRoute.vue";
-import QueryRoute from "./components/QueryRoute.vue";
-import V2rayRoute from "./components/V2rayRoute.vue";
+import ControllerRoute from "./components/controller/ControllerRoute.vue";
+import QueryRoute from "./components/query/QueryRoute.vue";
+import V2rayRoute from "./components/v2ray/V2rayRoute.vue";
 import LogRoute from "./components/LogRoute.vue";
 import UpdatePwdRoute from "./components/UpdatePwdRoute.vue";
 

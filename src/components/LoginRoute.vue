@@ -3,7 +3,7 @@
         <a-layout-content style="padding: 0;overflow: visible;">
             <a-row justify="center">
                 <a-col class="register-col">
-                    <a-form :model="form" @submit.prevent="form_submit">
+                    <a-form :model="form" @submit="form_submit">
                         <h1 style="text-align: center;font-size: 2.5rem;color: var(--color-text-1);">
                             登&nbsp;&nbsp;录
                         </h1>
@@ -24,11 +24,10 @@
                             </a-input-password>
                         </a-form-item>
                         <a-row class="button-row" justify="space-around">
-                            <a-button type="primary" size="large" native-type="submit" auto-insert-space>
-                                登录
-                            </a-button>
-                            <a-button type="primary" size="large" native-type="button" auto-insert-space
-                                      @click="this.$router.push({name:'register'})">注册
+                            <a-button type="primary" size="large" html-type="submit">登 录</a-button>
+                            <a-button type="primary" size="large" html-type="button"
+                                      @click="this.$router.push({name:'register'})">
+                                注 册
                             </a-button>
                         </a-row>
                     </a-form>
@@ -43,7 +42,7 @@
 </template>
 
 <script>
-import {login} from "/src/js/server-api.js";
+import {login} from "/src/scripts/server-api.js";
 import SHA256 from 'crypto-js/sha256';
 import Hex from 'crypto-js/enc-hex';
 import {ElMessage} from "element-plus";

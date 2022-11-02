@@ -3,7 +3,7 @@
         <a-layout-content style="padding: 0;overflow: visible;">
             <a-row justify="center">
                 <a-col class="register-col">
-                    <a-form :model="form" @submit.prevent="form_submit">
+                    <a-form :model="form" @submit="form_submit">
                         <h1 style="text-align: center;font-size: 2.5rem;color: var(--color-text-1);">
                             注&nbsp;&nbsp;册
                         </h1>
@@ -33,11 +33,10 @@
                             </a-input-password>
                         </a-form-item>
                         <a-row class="button-row" justify="space-around">
-                            <a-button type="primary" size="large" native-type="submit" auto-insert-space>
-                                注册
-                            </a-button>
-                            <a-button type="primary" size="large" native-type="button" auto-insert-space
-                                      @click="this.$router.back()">返回
+                            <a-button type="primary" size="large" html-type="submit">注 册</a-button>
+                            <a-button type="primary" size="large" html-type="button"
+                                      @click="this.$router.back()">
+                                返 回
                             </a-button>
                         </a-row>
                     </a-form>
@@ -52,7 +51,7 @@
 </template>
 
 <script>
-import {register} from "/src/js/server-api.js";
+import {register} from "/src/scripts/server-api.js";
 import {ElMessage} from "element-plus";
 
 export default {

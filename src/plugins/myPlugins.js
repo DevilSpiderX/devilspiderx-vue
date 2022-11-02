@@ -1,8 +1,14 @@
 export function setThemeColor(color) {
+    let meta = document.querySelector("meta[name=theme-color]");
+    if (meta === null) {
+        meta = document.createElement("meta");
+        meta.setAttribute("name", "theme-color");
+        document.head.append(meta);
+    }
     if (color === undefined || color === "") {
-        document.querySelector("meta[name=theme-color]").removeAttribute("content");
+        meta.removeAttribute("content");
     } else {
-        document.querySelector("meta[name=theme-color]").setAttribute("content", color);
+        meta.setAttribute("content", color);
     }
 }
 
@@ -25,11 +31,20 @@ export function changeTheme(themeName) {
     }
 }
 
+export function sleep(duration) {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve(duration);
+        }, duration);
+    });
+}
+
 export default {
     install(app) {
         app.config.globalProperties.setThemeColor = setThemeColor;
         app.config.globalProperties.getTheme = getTheme;
         app.config.globalProperties.changeTheme = changeTheme;
         app.config.globalProperties.isTouchDevice = "ontouchstart" in window && navigator.maxTouchPoints !== 0;
+        app.config.globalProperties.sleep = sleep;
     }
 }

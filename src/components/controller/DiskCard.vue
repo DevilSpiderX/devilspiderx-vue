@@ -1,28 +1,29 @@
 <template>
-    <div class="my-card">
-        <header>
-            <h3><i class="fa-solid fa-hdd fa-fw"></i>硬盘分区 {{ diskIndex }}</h3>
-        </header>
-        <transition name="body">
-            <div class="my-card-body" v-if="bodyShow">
-                <div>{{ diskData.label }}({{ diskData.mount }})</div>
-                <el-progress :show-text="false" :stroke-width="22" :color="progress.colors"
-                             :percentage="this.diskData.used / this.diskData.total * 100"/>
-                <div>{{ diskData_freeStr }}可用，共 {{ diskData_totalStr }}</div>
+    <base-card :empty="empty">
+        <template #header>
+            <div class="header">
+                <h3><i class="fa-solid fa-hdd fa-fw"></i>硬盘分区 {{ diskIndex }}</h3>
             </div>
-        </transition>
-        <transition name="empty">
-            <el-empty :image-size="100" v-if="empty"/>
-        </transition>
-    </div>
+        </template>
+        <div class="my-card-body">
+            <div>{{ Value.label }}({{ Value.mount }})</div>
+            <a-progress :percent="Value.usedPercent" :show-text="false" :stroke-width="22" size="large"
+                        :color="progressColor"/>
+            <div>{{ freeStr }}可用，共 {{ totalStr }}</div>
+        </div>
+    </base-card>
 </template>
 
 <script>
+import BaseCard from "./BaseCard.vue";
+import {colors} from "./scripts/progressColor";
+
 export default {
     name: "DiskCard",
+    components: {BaseCard},
     data() {
         return {
-            diskData: {
+            Value: {
                 label: "",
                 mount: "",
                 fSType: "",
@@ -34,90 +35,53 @@ export default {
                     total: {value: 0, unit: "B"},
                     free: {value: 0, unit: "B"},
                     used: {value: 0, unit: "B"}
-                }
-            },
-            progress: {
-                colors: [
-                    {color: '#28a745', percentage: 70},
-                    {color: '#ffc107', percentage: 90},
-                    {color: '#dc3545', percentage: 100},
-                ]
+                },
+                usedPercent: 0
             },
             empty: true,
-            bodyShow: false
         }
     },
     props: {
-        value: Object,
+        value: {
+            type: Object,
+            required: true
+        },
         diskIndex: Number
     },
     watch: {
-        async value(newVal) {
-            Object.assign(this.diskData, newVal);
+        value(newVal) {
+            Object.assign(this.Value, newVal);
             this.empty = false;
-            await sleep(300);
-            this.bodyShow = true;
+            this.Value.usedPercent = newVal.used / newVal.total;
         }
     },
     computed: {
-        diskData_freeStr() {
-            let data = this.diskData.format.free;
+        freeStr() {
+            let data = this.Value.format.free;
             return `${data.value} ${data.unit}`;
         },
-        diskData_totalStr() {
-            let data = this.diskData.format.total;
+        totalStr() {
+            let data = this.Value.format.total;
             return `${data.value} ${data.unit}`;
+        },
+        progressColor() {
+            let rate = this.Value.usedPercent;
+            if (rate < 0.7) {
+                return colors[0];
+            } else if (rate < 0.9) {
+                return colors[1];
+            } else {
+                return colors[2];
+            }
         }
     }
 }
 </script>
 
 <style scoped>
-@import url(/src/css/controller/card-transition.css);
-
-.my-card {
-    --el-card-border-color: var(--el-border-color-light);
-    --el-card-border-radius: 4px;
-    --el-card-padding: 20px;
-    --el-card-bg-color: var(--el-fill-color-blank);
-    border-radius: var(--el-card-border-radius);
-    border: 1px solid var(--el-card-border-color);
-    background-color: var(--el-card-bg-color);
-    overflow: hidden;
-    color: var(--el-text-color-primary);
-    transition: var(--el-transition-duration);
-    z-index: 100;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-direction: column;
-    flex-direction: column;
-}
-
-.my-card:hover {
-    z-index: 101;
-    box-shadow: var(--el-box-shadow-dark);
-}
-
-header {
-    padding: 18px 20px;
-    background-color: #fcfcfc;
-    border-bottom: 1px solid var(--el-card-border-color);
-}
-
-header > h3 {
-    text-align: center;
-    margin: 0;
-    user-select: none;
-}
+@import url(/src/components/controller/styles/card-normal.css);
 
 .my-card-body {
-    height: 100%;
-    min-height: 10px;
-    padding: 20px 30px 30px;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-direction: column;
-    flex-direction: column;
-    justify-content: center;
+    font-size: 16px;
 }
 </style>

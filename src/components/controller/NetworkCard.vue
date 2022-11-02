@@ -1,35 +1,49 @@
 <template>
-    <div class="my-card">
-        <header>
-            <h3><i class="fa-solid fa-rss fa-fw"></i>网络信息</h3>
-        </header>
-        <transition name="body">
-            <div class="my-card-body" v-if="bodyShow">
-                <div style="min-width: 200px;padding: 10px 0;">
-                    <div>
-                        <i class="fas fa-cloud-upload-alt fa-fw"></i>
-                        <span id="network-upload">上传速度：{{ networkData_uploadSpeedStr }}</span>
-                    </div>
-                    <br>
-                    <div>
-                        <i class="fas fa-cloud-download-alt fa-fw"></i>
-                        <span id="network-download">下载速度：{{ networkData_downloadSpeedStr }}</span>
-                    </div>
-                </div>
+    <base-card :empty="empty">
+        <template #header>
+            <div class="header">
+                <h3><i class="fa-solid fa-rss fa-fw"></i>网络信息</h3>
             </div>
-        </transition>
-        <transition name="empty">
-            <el-empty :image-size="100" v-if="empty"/>
-        </transition>
-    </div>
+        </template>
+        <div class="my-card-body">
+            <a-descriptions :column="1" :align="{label:'right'}" :label-style="{width:'calc(50% - 1px)'}">
+                <a-descriptions-item label="上传速度">
+                    <a-statistic :value="Value.format.uploadSpeed.value" :precision="precision.upload"
+                                 :value-style="{color:'rgb(var(--green-7))',fontSize:'20px'}">
+                        <template #prefix>
+                            <icon-arrow-rise/>
+                        </template>
+                        <template #suffix>
+                            {{ Value.format.uploadSpeed.unit }}
+                        </template>
+                    </a-statistic>
+                </a-descriptions-item>
+                <a-descriptions-item label="下载速度">
+                    <a-statistic :value="Value.format.downloadSpeed.value" :precision="precision.download"
+                                 :value-style="{color:'rgb(var(--blue-7))',fontSize:'20px'}">>
+                        <template #prefix>
+                            <icon-arrow-fall/>
+                        </template>
+                        <template #suffix>
+                            {{ Value.format.downloadSpeed.unit }}
+                        </template>
+                    </a-statistic>
+                </a-descriptions-item>
+            </a-descriptions>
+        </div>
+    </base-card>
 </template>
 
 <script>
+import BaseCard from "./BaseCard.vue";
+import {IconArrowRise, IconArrowFall} from "@arco-design/web-vue/es/icon";
+
 export default {
     name: "NetworkCard",
+    components: {BaseCard, IconArrowRise, IconArrowFall},
     data() {
         return {
-            networkData: {
+            Value: {
                 uploadSpeed: 0,
                 downloadSpeed: 0,
                 format: {
@@ -38,80 +52,35 @@ export default {
                 }
             },
             empty: true,
-            bodyShow: false
+            precision: {
+                upload: 2,
+                download: 2
+            }
         }
     },
     props: {
-        value: Object
+        value: {
+            type: Object,
+            required: true
+        }
     },
     watch: {
         async value(newVal) {
-            Object.assign(this.networkData, newVal);
+            Object.assign(this.Value, newVal);
             this.empty = false;
-            await sleep(300);
-            this.bodyShow = true;
-        }
-    },
-    computed: {
-        networkData_uploadSpeedStr() {
-            let data = this.networkData.format.uploadSpeed;
-            return `${data.value} ${data.unit}`;
-        },
-        networkData_downloadSpeedStr() {
-            let data = this.networkData.format.downloadSpeed;
-            return `${data.value} ${data.unit}`;
+            this.precision.upload = 2;
+            if (newVal.format.uploadSpeed.unit === "B/s") {
+                this.precision.upload = 0;
+            }
+            this.precision.download = 2;
+            if (newVal.format.downloadSpeed.unit === "B/s") {
+                this.precision.download = 0;
+            }
         }
     }
 }
 </script>
 
 <style scoped>
-@import url(/src/css/controller/card-transition.css);
-
-.my-card {
-    --el-card-border-color: var(--el-border-color-light);
-    --el-card-border-radius: 4px;
-    --el-card-padding: 20px;
-    --el-card-bg-color: var(--el-fill-color-blank);
-    border-radius: var(--el-card-border-radius);
-    border: 1px solid var(--el-card-border-color);
-    background-color: var(--el-card-bg-color);
-    overflow: hidden;
-    color: var(--el-text-color-primary);
-    transition: var(--el-transition-duration);
-    z-index: 100;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-direction: column;
-    flex-direction: column;
-}
-
-.my-card:hover {
-    z-index: 101;
-    box-shadow: var(--el-box-shadow-dark);
-}
-
-header {
-    padding: 18px 20px;
-    background-color: #fcfcfc;
-    border-bottom: 1px solid var(--el-card-border-color);
-}
-
-header > h3 {
-    text-align: center;
-    margin: 0;
-    user-select: none;
-}
-
-.my-card-body {
-    height: 100%;
-    min-height: 10px;
-    padding: 20px 30px 30px;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-direction: column;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
+@import url(/src/components/controller/styles/card-normal.css);
 </style>

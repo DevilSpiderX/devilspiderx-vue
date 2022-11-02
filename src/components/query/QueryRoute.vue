@@ -72,11 +72,11 @@
 </template>
 
 <script lang="jsx">
-import {addPasswords, query, updatePasswords} from "/src/js/server-api.js";
+import {addPasswords, query, updatePasswords} from "/src/scripts/server-api.js";
 import {ElMessage, ElMessageBox} from 'element-plus';
 import {Vue3Menus} from 'vue3-menus';
-import AddModal from "./query/AddModal.vue";
-import UpdateModal from "./query/UpdateModal.vue";
+import AddModal from "./AddModal.vue";
+import UpdateModal from "./UpdateModal.vue";
 
 export default {
     name: "QueryRoute",

@@ -1,48 +1,43 @@
 <template>
-    <div class="my-card">
-        <header>
-            <h3><i class="fa-solid fa-microchip fa-fw"></i>CPU</h3>
-        </header>
-        <transition name="body">
-            <div class="my-card-body" v-if="bodyShow">
-                <!-- 名称 -->
-                <div>名 称：{{ cpuData.name }}</div>
-                <!-- 物理核心数 -->
-                <div>物理核心数：&nbsp;{{ cpuData.physicalNum }}</div>
-                <!-- 逻辑核心数 -->
-                <div>逻辑核心数：&nbsp;{{ cpuData.logicalNum }}</div>
-                <!-- 是否64位CPU -->
-                <div>处理器位宽：&nbsp;{{ cpuData.is64bit ? "64" : "32" }}</div>
-                <!-- CPU温度 -->
-                <div>
-                    <i class="fas fa-thermometer-half fa-fw"></i>
-                    温 度：&nbsp;{{ cpuData.cpuTemperature }} ℃
-                </div>
-                <br/>
-                <!-- CPU使用率 -->
-                <div class="progress-bar">
-                    <div style="width: 4em;">使用率：</div>
-                    <div style="width: calc(100% - 4em)">
-                        <el-progress :stroke-width="22" :percentage="this.cpuData.usedRate * 100"
-                                     :color="progress.colors" v-slot="{percentage}">
-                            <span style="font-size: 1rem;">{{ percentage.toFixed(2) }}%</span>
-                        </el-progress>
-                    </div>
-                </div>
+    <base-card :empty="empty">
+        <template #header>
+            <div class="header">
+                <h3><i class="fa-solid fa-microchip fa-fw"></i>CPU</h3>
             </div>
-        </transition>
-        <transition name="empty">
-            <el-empty :image-size="100" v-if="empty"/>
-        </transition>
-    </div>
+        </template>
+        <div class="my-card-body">
+            <a-descriptions :column="2" :value-style="{fontSize:'16px'}">
+                <a-descriptions-item label="名 称" :span="2">
+                    <span style="font-size: 14px">{{ Value.name }}</span>
+                </a-descriptions-item>
+                <a-descriptions-item label="物理核心数">{{ Value.physicalNum }}</a-descriptions-item>
+                <a-descriptions-item label="逻辑核心数">{{ Value.logicalNum }}</a-descriptions-item>
+                <a-descriptions-item label="处理器位宽">{{ Value.is64bit ? "64" : "32" }}</a-descriptions-item>
+                <a-descriptions-item label="温 度">{{ Value.cpuTemperature }} ℃</a-descriptions-item>
+            </a-descriptions>
+            <a-descriptions>
+                <a-descriptions-item label="使用率" :span="2">
+                    <a-progress :percent="Value.usedRate" :stroke-width="22" size="large" :color="progressColor">
+                        <template #text="{percent}">
+                            {{ (percent * 100).toFixed(2) }}%
+                        </template>
+                    </a-progress>
+                </a-descriptions-item>
+            </a-descriptions>
+        </div>
+    </base-card>
 </template>
 
 <script>
+import BaseCard from "./BaseCard.vue";
+import {colors} from "./scripts/progressColor.js";
+
 export default {
     name: "CpuCard",
+    components: {BaseCard},
     data() {
         return {
-            cpuData: {
+            Value: {
                 name: "",
                 physicalNum: 0,
                 logicalNum: 0,
@@ -50,82 +45,36 @@ export default {
                 is64bit: true,
                 cpuTemperature: 0
             },
-            progress: {
-                colors: [
-                    {color: '#28a745', percentage: 70},
-                    {color: '#ffc107', percentage: 90},
-                    {color: '#dc3545', percentage: 100},
-                ]
-            },
-            empty: true,
-            bodyShow: false
+            empty: true
         }
     },
     props: {
-        value: Object
+        value: {
+            type: Object,
+            required: true
+        }
     },
     watch: {
-        async value(newVal) {
-            Object.assign(this.cpuData, newVal);
+        value(newVal) {
+            Object.assign(this.Value, newVal);
             this.empty = false;
-            await sleep(300);
-            this.bodyShow = true;
+        }
+    },
+    computed: {
+        progressColor() {
+            let rate = this.Value.usedRate;
+            if (rate < 0.7) {
+                return colors[0];
+            } else if (rate < 0.9) {
+                return colors[1];
+            } else {
+                return colors[2];
+            }
         }
     }
 }
 </script>
 
 <style scoped>
-@import url(/src/css/controller/card-transition.css);
-
-.my-card {
-    --el-card-border-color: var(--el-border-color-light);
-    --el-card-border-radius: 4px;
-    --el-card-padding: 20px;
-    --el-card-bg-color: var(--el-fill-color-blank);
-    border-radius: var(--el-card-border-radius);
-    border: 1px solid var(--el-card-border-color);
-    background-color: var(--el-card-bg-color);
-    overflow: hidden;
-    color: var(--el-text-color-primary);
-    transition: var(--el-transition-duration);
-    z-index: 100;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-direction: column;
-    flex-direction: column;
-}
-
-.my-card:hover {
-    z-index: 101;
-    box-shadow: var(--el-box-shadow-dark);
-}
-
-header {
-    padding: 18px 20px;
-    background-color: #fcfcfc;
-    border-bottom: 1px solid var(--el-card-border-color);
-}
-
-header > h3 {
-    text-align: center;
-    margin: 0;
-    user-select: none;
-}
-
-.my-card-body {
-    height: 100%;
-    min-height: 10px;
-    padding: 20px 30px 30px;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-direction: column;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.progress-bar {
-    display: -webkit-flex;
-    display: flex;
-}
+@import url(/src/components/controller/styles/card-normal.css);
 </style>

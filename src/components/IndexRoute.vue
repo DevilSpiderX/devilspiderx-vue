@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import {logout} from "/src/js/server-api";
+import {logout} from "/src/scripts/server-api.js";
 import {Message, Notification} from '@arco-design/web-vue';
 
 export default {

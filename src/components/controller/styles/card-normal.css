@@ -1,0 +1,20 @@
+.header {
+    padding: 18px 20px;
+}
+
+.header > h3 {
+    text-align: center;
+    margin: 0;
+    user-select: none;
+}
+
+.my-card-body {
+    height: 100%;
+    min-height: 10px;
+    padding: 20px 10px 20px 30px;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    justify-content: center;
+}

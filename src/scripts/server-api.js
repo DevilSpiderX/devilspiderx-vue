@@ -105,7 +105,7 @@ export function network(success, error) {
         .catch(error);
 }
 
-export function network_size(async, success, error) {
+export function network_size(success, error) {
     axios.post("/api/ServerInfo/network/size")
         .then(resp => success(resp.data))
         .catch(error);
@@ -117,7 +117,7 @@ export function disk(success, error) {
         .catch(error);
 }
 
-export function disk_size(async, success, error) {
+export function disk_size(success, error) {
     axios.post("/api/ServerInfo/disk/size")
         .then(resp => success(resp.data))
         .catch(error);

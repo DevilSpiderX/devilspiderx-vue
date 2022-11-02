@@ -8,9 +8,7 @@ import legacy from '@vitejs/plugin-legacy';
 
 let objExternals = {
     vue: "Vue",
-    "element-plus": "ElementPlus",
     "crypto-js": "CryptoJS",
-    jquery: "jQuery",
     "vue3-menus": "Vue3Menus"
 }
 

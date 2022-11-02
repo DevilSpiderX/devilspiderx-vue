@@ -1,12 +1,13 @@
 import {createApp} from 'vue'
 import App from './App.vue'
 import router from './router.js';
+import ArcoVue from "@arco-design/web-vue";
+import ArcoVueIcon from '@arco-design/web-vue/es/icon';
 import MyPlugins from "./plugins/myPlugins.js";
-import sleep from "/src/js/timeout.js";
 
 const app = createApp(App);
 app.use(router);
-app.use(MyPlugins)
+app.use(ArcoVue);
+app.use(ArcoVueIcon);
+app.use(MyPlugins);
 app.mount('#app');
-
-window.sleep = sleep;

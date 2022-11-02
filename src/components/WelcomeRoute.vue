@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import {user_status} from "/src/js/server-api";
+import {user_status} from "/src/scripts/server-api.js";
 
 export default {
     name: "WelcomeRoute",
@@ -47,7 +47,7 @@ export default {
         } else {
             this.logo = "Evening";
         }
-        await sleep(400);
+        await this.sleep(400);
         this.verify();
     }
 
@@ -73,5 +73,9 @@ export default {
     font-weight: 900;
     font-family: system-ui;
     margin: 2rem 0;
+}
+
+body[arco-theme='dark'] .main {
+    color: #fcfcfc;
 }
 </style>

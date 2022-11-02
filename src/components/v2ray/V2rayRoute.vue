@@ -19,7 +19,7 @@
 
 <script>
 import Switch from "/src/components/v2ray/MySwitch.vue";
-import {v2rayState, v2rayStart, v2rayStop} from "/src/js/server-api.js";
+import {v2rayState, v2rayStart, v2rayStop} from "/src/scripts/server-api.js";
 import {Notification} from '@arco-design/web-vue';
 
 export default {
