@@ -6,24 +6,48 @@
             </div>
         </template>
         <div class="my-card-body">
-            <div>{{ Value.label }}({{ Value.mount }})</div>
-            <a-progress :percent="Value.usedPercent" :show-text="false" :stroke-width="22" size="large"
+            <div>{{ value.label }}({{ value.mount }})</div>
+            <a-progress :percent="usedPercent" :show-text="false" :stroke-width="22" size="large"
                         :color="progressColor"/>
             <div>{{ freeStr }}可用，共 {{ totalStr }}</div>
         </div>
     </base-card>
 </template>
 
-<script>
+<script lang="ts">
+import {defineComponent, PropType} from "vue";
 import BaseCard from "./BaseCard.vue";
 import {colors} from "./scripts/progressColor";
 
-export default {
+interface DiskValueType {
+    label: string,
+    mount: string,
+    fSType: string,
+    name: string,
+    total: number,
+    free: number,
+    used: number,
+    format: {
+        total: { value: number, unit: string },
+        free: { value: number, unit: string },
+        used: { value: number, unit: string }
+    }
+}
+
+export default defineComponent({
     name: "DiskCard",
     components: {BaseCard},
     data() {
         return {
-            Value: {
+            empty: true,
+            usedPercent: 0
+        }
+    },
+    props: {
+        value: {
+            type: Object as PropType<DiskValueType>,
+            required: true,
+            default: {
                 label: "",
                 mount: "",
                 fSType: "",
@@ -35,37 +59,28 @@ export default {
                     total: {value: 0, unit: "B"},
                     free: {value: 0, unit: "B"},
                     used: {value: 0, unit: "B"}
-                },
-                usedPercent: 0
-            },
-            empty: true,
-        }
-    },
-    props: {
-        value: {
-            type: Object,
-            required: true
+                }
+            }
         },
         diskIndex: Number
     },
     watch: {
         value(newVal) {
-            Object.assign(this.Value, newVal);
             this.empty = false;
-            this.Value.usedPercent = newVal.used / newVal.total;
+            this.usedPercent = newVal.used / newVal.total;
         }
     },
     computed: {
         freeStr() {
-            let data = this.Value.format.free;
+            let data = this.value.format.free;
             return `${data.value} ${data.unit}`;
         },
         totalStr() {
-            let data = this.Value.format.total;
+            let data = this.value.format.total;
             return `${data.value} ${data.unit}`;
         },
         progressColor() {
-            let rate = this.Value.usedPercent;
+            let rate = this.usedPercent;
             if (rate < 0.7) {
                 return colors[0];
             } else if (rate < 0.9) {
@@ -75,7 +90,7 @@ export default {
             }
         }
     }
-}
+})
 </script>
 
 <style scoped>

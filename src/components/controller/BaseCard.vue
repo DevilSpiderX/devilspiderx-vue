@@ -32,6 +32,7 @@ export default {
         async empty(newVal) {
             if (newVal) {
                 this.bodyShow = false;
+                await this.sleep(0);
                 this.emptyShow = true;
             } else {
                 this.emptyShow = false;

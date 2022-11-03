@@ -1,70 +1,47 @@
 <template>
-    <el-container style="padding-top: 8px;">
-        <a-layout-header>
-            <el-row justify="center">
-                <el-col :xs="17" :sm="15" :md="13" :lg="11" :xl="9" class="my-xxs-col">
-                    <el-button size="large" style="margin-right: 10px;" @click="addModal.visible=true">
-                        <template #icon>
-                            <i class="fas fa-plus fa-fw"></i>
-                        </template>
-                        添加
-                    </el-button>
-                    <el-input v-model="key" size="large" clearable style="max-width: calc(100% - 100px);"
-                              @keydown.enter="Search">
-                        <template #prefix>
-                            <i class="fas fa-terminal fa-fw"></i>
-                        </template>
-                        <template #append>
-                            <el-button @click="Search">
+    <a-layout>
+        <a-layout-header style="padding:8px">
+            <a-row justify="center">
+                <a-col :xs="24" :sm="17" :md="15" :lg="13" :xl="11" :xxl="9">
+                    <a-row>
+                        <a-col flex="105px">
+                            <a-button size="large" @click="addModal.visible=true">
                                 <template #icon>
-                                    <i class="fas fa-search fa-fw"></i>
+                                    <i class="fas fa-plus fa-fw"></i>
                                 </template>
-                            </el-button>
-                        </template>
-                    </el-input>
-                </el-col>
-            </el-row>
+                                添加
+                            </a-button>
+                        </a-col>
+                        <a-col flex="auto">
+                            <a-input-search v-model="key" size="large" allow-clear :button-props="{type:'secondary'}"
+                                            search-button @keydown.enter="Search" @search="Search">
+                                <template #prefix>
+                                    <i class="fas fa-terminal fa-fw"></i>
+                                </template>
+                            </a-input-search>
+                        </a-col>
+                    </a-row>
+                </a-col>
+            </a-row>
         </a-layout-header>
-        <a-layout-content style="--el-main-padding:0;">
-            <el-row justify="center">
-                <el-col :xs="22" :sm="20" :md="18" :lg="16" :xl="14" class="my-xxs-col">
-                    <el-table :data="dataList" border stripe :height="table.maxHeight+'px'" size="large" ref="pwdTable"
-                              @cell-contextmenu="table_cell_contextmenu" @sort-change="table_sort_change">
+        <a-layout-content>
+            <a-row justify="center">
+                <a-col :xs="24" :sm="22" :md="20" :lg="18" :xl="16" :xxl="14">
+                    <a-table :columns="table.columns" :data="table.data" :scroll="{y:table.maxHeight+'px'}" row-key="id"
+                             page-position="bottom" :pagination="table.paginationProps"
+                             @page-change="table_page_change">
                         <template #empty>
-                            <el-empty :image-size="200"/>
+                            <a-empty/>
                         </template>
-                        <el-table-column prop="name" label="名称" header-align="center" sortable="custom">
-                            <template v-slot="{row}">
-                                <span style="user-select: none;">{{ row.name }}</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="account" label="账号" header-align="center"
-                                         show-overflow-tooltip sortable="custom">
-                            <template v-slot="{row}">
-                                <span style="user-select: none">{{ row.account }}</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="password" label="密码" header-align="center"
-                                         show-overflow-tooltip sortable="custom">
-                            <template v-slot="{row}">
-                                <span style="user-select: none">{{ row.password }}</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="remark" label="备注" header-align="center"
-                                         show-overflow-tooltip sortable="custom">
-                            <template v-slot="{row}">
-                                <span style="user-select: none">{{ row.remark }}</span>
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                    <div class="pagination-wrapper">
-                        <el-pagination :layout="'prev, pager, next'" v-model:current-page="current_page"
-                                       :page-count="page_count" @current-change="pagination_current_change"/>
-                    </div>
-                </el-col>
-            </el-row>
+                        <template #td="{column, record}">
+                            <td class="user-select-none"
+                                @contextmenu.prevent="table_cell_contextmenu(column,record,$event)"/>
+                        </template>
+                    </a-table>
+                </a-col>
+            </a-row>
         </a-layout-content>
-    </el-container>
+    </a-layout>
 
     <vue3-menus v-model:open="tableMenu.open" :event="tableMenu.event" :menus="tableMenu.menus" minWidth="100"/>
     <add-modal v-model:open="addModal.visible" :clean="addModal.clean" @submit="add_submit"/>
@@ -73,7 +50,8 @@
 
 <script lang="jsx">
 import {addPasswords, query, updatePasswords} from "/src/scripts/server-api.js";
-import {ElMessage, ElMessageBox} from 'element-plus';
+import {ElMessageBox} from 'element-plus';
+import {Message} from '@arco-design/web-vue';
 import {Vue3Menus} from 'vue3-menus';
 import AddModal from "./AddModal.vue";
 import UpdateModal from "./UpdateModal.vue";
@@ -84,12 +62,21 @@ export default {
     data() {
         return {
             key: "",
-            dataList: [],
-            page_count: 1,
-            current_page: 1,
-            sortSetting: {
-                prop: "",
-                order: null
+            table: {
+                maxHeight: window.innerHeight - 64,//等相对单位dvh标准出来之后删除
+                columns: [
+                    {title: "名称", dataIndex: "name"},
+                    {title: "账号", dataIndex: "account", ellipsis: true, tooltip: true},
+                    {title: "密码", dataIndex: "password", ellipsis: true, tooltip: true},
+                    {title: "备注", dataIndex: "remark", ellipsis: true, tooltip: true}
+                ],
+                data: [],
+                paginationProps: {
+                    pageSize: 20,
+                    current: 1,
+                    hideOnSinglePage: true
+                },
+                bodyScrollWrap: null
             },
             tableMenu: {
                 open: false,
@@ -107,9 +94,6 @@ export default {
             updateModal: {
                 visible: false,
                 inData: {}
-            },
-            table: {
-                maxHeight: window.innerHeight - 106//等相对单位dvh标准出来之后删除
             }
         }
     },
@@ -121,14 +105,15 @@ export default {
         if (Object.hasOwn(routeQuery, "key")) {
             this.key = routeQuery.key;
             window.sessionStorage['history_query_key'] = this.key;
-            query(this.key, 1, this.QuerySucceed);
+            query(this.key, this.QuerySucceed);
         } else {
             let hQKey = window.sessionStorage['history_query_key'];
             if (hQKey !== undefined) {
-                query(hQKey, 1, this.QuerySucceed);
+                query(hQKey, this.QuerySucceed);
                 this.key = hQKey;
             }
         }
+        this.table.bodyScrollWrap = document.querySelector('.arco-scrollbar-container.arco-table-body');
         window.addEventListener('resize', this.window_resize);//等相对单位dvh标准出来之后删除
     },
     unmounted() {
@@ -138,25 +123,22 @@ export default {
     methods: {
         Search() {
             window.sessionStorage['history_query_key'] = this.key;
-            query(this.key, 1, this.QuerySucceed);
-            this.current_page = 1;
+            query(this.key, this.QuerySucceed);
         },
 
         QuerySucceed(resp) {
             console.log(resp);
+            this.table.paginationProps.current = 1;
             switch (resp["code"]) {
                 case 0: {
-                    this.dataList = resp["data"]["list"];
-                    this.page_count = resp["data"]["page_count"];
-                    this.SortTable(this.sortSetting.prop, this.sortSetting.order);
-                    this.$refs.pwdTable.setScrollTop(0);
+                    this.table.data = resp["data"]["list"];
+
+                    this.setTableScrollTop(0);
                     break;
                 }
                 case 1: {
                     console.log("没有查询到任何结果");
-                    this.dataList = [];
-                    this.page_count = 1;
-                    this.current_page = 1;
+                    this.table.data = [];
                     break;
                 }
                 case 100: {
@@ -166,25 +148,28 @@ export default {
             }
         },
 
-        table_cell_contextmenu(row, column, cell, event) {
-            event.preventDefault();
+        setTableScrollTop(number) {
+            this.table.bodyScrollWrap.scrollTop = number;
+        },
 
+        table_cell_contextmenu(column, record, event) {
+            if (record.id === -1) return;
             //复制按钮
             this.tableMenu.menus[0].click = function () {
                 try {
-                    navigator.clipboard.writeText(row[column.property]).then(function () {
-                        ElMessage.success("剪切板写入成功");
+                    navigator.clipboard.writeText(record[column.dataIndex]).then(function () {
+                        Message.success("剪切板写入成功");
                     }, function () {
-                        ElMessage.error("剪切板写入失败");
+                        Message.error("剪切板写入失败");
                     });
                 } catch (e) {
-                    ElMessage.error("剪切板写入错误\n" + e);
+                    Message.error("剪切板写入错误\n" + e);
                 }
             }.bind(this);
 
             //删除按钮
             this.tableMenu.menus[1].click = function () {
-                this.dataList.splice(this.dataList.indexOf(row), 1);
+                this.table.data.splice(this.table.data.indexOf(record), 1);
             }.bind(this);
 
             //修改按钮
@@ -192,12 +177,12 @@ export default {
                 this.updateModal.visible = true;
                 this.updateModal.inData = {};
                 this.$nextTick(function () {
-                    this.updateModal.inData = row;
+                    this.updateModal.inData = record;
                 });
             }.bind(this);
 
             //滚动表格消除菜单
-            let scroller = document.querySelector(".el-table__body-wrapper .el-scrollbar__wrap");
+            let scroller = this.table.bodyScrollWrap;
             let scrollEvent = function () {
                 this.tableMenu.open = false;
                 scroller.removeEventListener("scroll", scrollEvent);
@@ -217,39 +202,6 @@ export default {
             });
         },
 
-        table_sort_change({prop, order}) {
-            this.sortSetting.prop = prop;
-            this.sortSetting.order = order;
-            this.SortTable(prop, order);
-        },
-
-        SortTable(prop, order) {
-            switch (order) {
-                case 'ascending': {
-                    this.dataList.sort((a, b) => {
-                        if (a[prop] === b[prop]) return 0;
-                        return a[prop] > b[prop] ? 1 : -1;
-                    });
-                    break;
-                }
-                case 'descending': {
-                    this.dataList.sort((a, b) => {
-                        if (a[prop] === b[prop]) return 0;
-                        return a[prop] > b[prop] ? -1 : 1;
-                    });
-                    break;
-                }
-                default: {
-                    this.dataList.sort((a, b) => {
-                        let i0 = Number(a.id);
-                        let i1 = Number(b.id);
-                        return i0 - i1;
-                    });
-                    break;
-                }
-            }
-        },
-
         add_submit(form_data) {
             let name = form_data.name;
             let account = form_data.account;
@@ -261,20 +213,23 @@ export default {
                         let key = window.sessionStorage['history_query_key'];
                         key = key === undefined || key === '' ? name : `${key} ${name}`;
                         window.sessionStorage['history_query_key'] = key;
-                        query(key, 1, this.QuerySucceed);
+                        query(key, this.QuerySucceed);
                         this.key = key;
                         this.addModal.visible = false;
                         this.addModal.clean = true;
                         this.$nextTick(function () {
                             this.addModal.clean = false;
                         });
-                        ElMessage.success("添加成功");
+                        Message.success("添加成功");
                         break;
                     }
                     case 1: {
-                        ElMessage.error(<p className="el-message__content">
-                            添加失败<br/>可能该名称已存在<br/>请尝试换一个名称再添加
-                        </p>);
+                        Message.error({
+                            content: () =>
+                                <p className="el-message__content">
+                                    添加失败<br/>可能该名称已存在<br/>请尝试换一个名称再添加
+                                </p>
+                        });
                         this.addModal.visible = false;
                         break;
                     }
@@ -302,14 +257,14 @@ export default {
                                         key += ` ${name}`;
                                     }
                                     window.sessionStorage['history_query_key'] = key;
-                                    query(key, 1, this.QuerySucceed);
+                                    query(key, this.QuerySucceed);
                                     this.key = key;
                                     this.updateModal.visible = false;
-                                    ElMessage.success("修改成功");
+                                    Message.success("修改成功");
                                     break;
                                 }
                                 case 1: {
-                                    ElMessage.error(resp["msg"]);
+                                    Message.error(resp["msg"]);
                                     break;
                                 }
                             }
@@ -319,12 +274,14 @@ export default {
             });
         },
 
-        pagination_current_change(new_page) {
-            query(this.key, new_page, this.QuerySucceed);
+        window_resize() {//等相对单位dvh标准出来之后删除
+            this.table.maxHeight = window.innerHeight - 64;
         },
 
-        window_resize() {//等相对单位dvh标准出来之后删除
-            this.table.maxHeight = window.innerHeight - 106;
+        async table_page_change(page) {
+            this.table.paginationProps.current = page;
+            await this.$nextTick();
+            this.setTableScrollTop(0);
         }
 
     }
@@ -332,20 +289,7 @@ export default {
 </script>
 
 <style scoped>
-@media (max-width: 576px) {
-    .my-xxs-col {
-        max-width: 100%;
-        flex: 0 0 100%;
-    }
-}
-
-.pagination-wrapper {
-    box-sizing: border-box;
-    width: 100%;
-    border-left: 1px solid var(--el-border-color-lighter);
-    border-right: 1px solid var(--el-border-color-lighter);
-    border-bottom: 1px solid var(--el-border-color-lighter);
-    display: flex;
-    justify-content: center;
+.user-select-none {
+    user-select: none;
 }
 </style>

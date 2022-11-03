@@ -50,10 +50,46 @@ export default {
                 time_str: ""
             },
             values: {
-                cpu: {},
-                memory: {},
-                network: {},
-                disk: []
+                cpu: {
+                    name: "",
+                    physicalNum: 0,
+                    logicalNum: 0,
+                    usedRate: 0,
+                    is64bit: true,
+                    cpuTemperature: 0
+                },
+                memory: {
+                    total: 1,
+                    used: 0,
+                    free: 0,
+                    format: {
+                        total: {value: 0, unit: "B"},
+                        used: {value: 0, unit: "B"},
+                        free: {value: 0, unit: "B"}
+                    }
+                },
+                network: {
+                    uploadSpeed: 0,
+                    downloadSpeed: 0,
+                    format: {
+                        uploadSpeed: {value: 0, unit: "B/s"},
+                        downloadSpeed: {value: 0, unit: "B/s"}
+                    }
+                },
+                disk: [{
+                    label: "",
+                    mount: "",
+                    fSType: "",
+                    name: "",
+                    total: 1,
+                    free: 0,
+                    used: 0,
+                    format: {
+                        total: {value: 0, unit: "B"},
+                        free: {value: 0, unit: "B"},
+                        used: {value: 0, unit: "B"}
+                    }
+                }]
             },
             mainCard: {
                 height: window.innerHeight - 1,//等相对单位dvh标准出来之后删除
@@ -171,6 +207,10 @@ export default {
 .main-card::-webkit-scrollbar-thumb {
     border-radius: 5px;
     background: #00000040;
+}
+
+body[arco-theme='dark'] .main-card::-webkit-scrollbar-thumb {
+    background: #ffffff40;
 }
 
 .main-card::-webkit-scrollbar-corner,

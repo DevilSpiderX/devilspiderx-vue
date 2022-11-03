@@ -39,7 +39,7 @@ export function sleep(duration) {
     });
 }
 
-export default {
+const MyPlugins = {
     install(app) {
         app.config.globalProperties.setThemeColor = setThemeColor;
         app.config.globalProperties.getTheme = getTheme;
@@ -48,3 +48,5 @@ export default {
         app.config.globalProperties.sleep = sleep;
     }
 }
+
+export default MyPlugins;

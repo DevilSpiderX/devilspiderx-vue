@@ -22,10 +22,9 @@ export function register(uid, pwd, success, error) {
         .catch(error);
 }
 
-export function query(key, page, success, error) {
+export function query(key, success, error) {
     let postBody = {
         key: key,
-        page: page
     }
     axios.post("/api/query", postBody)
         .then(resp => success(resp.data))
