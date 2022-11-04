@@ -1,30 +1,31 @@
 <template>
-    <router-view></router-view>
+    <router-view/>
 </template>
 
-<script setup>
+<script>
 import {reactive, provide} from 'vue';
 
-const appSettings = reactive({
-    darkTheme: false,
-    themeFollowSystem: false
-});
-
-{
-    let settings = window.localStorage.getItem("appSettings");
-    if (settings === null) {
-        window.localStorage.setItem("appSettings", JSON.stringify(appSettings));
-    } else {
-        Object.assign(appSettings, JSON.parse(settings));
-    }
-}
-
-provide("appSettings", appSettings);
-</script>
-
-<script>
 export default {
     name: 'App',
+    setup() {
+        const appSettings = reactive({
+            darkTheme: false,
+            themeFollowSystem: false
+        });
+
+        {
+            let settings = window.localStorage.getItem("appSettings");
+            if (settings === null) {
+                window.localStorage.setItem("appSettings", JSON.stringify(appSettings));
+            } else {
+                Object.assign(appSettings, JSON.parse(settings));
+            }
+        }
+
+        provide("appSettings", appSettings);
+
+        return {appSettings};
+    },
     watch: {
         appSettings: {
             handler(newVal) {

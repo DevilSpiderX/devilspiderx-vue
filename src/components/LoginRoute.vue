@@ -41,12 +41,6 @@
     </div>
 </template>
 
-<script setup>
-import {inject} from "vue";
-
-const appSettings = inject("appSettings");
-</script>
-
 <script>
 import {login} from "/src/scripts/server-api.js";
 import SHA256 from 'crypto-js/sha256';
@@ -67,6 +61,7 @@ export default {
             }
         }
     },
+    inject: ["appSettings"],
     beforeMount() {
         this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
     },

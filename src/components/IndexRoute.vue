@@ -108,12 +108,6 @@
     </a-drawer>
 </template>
 
-<script setup>
-import {inject} from "vue";
-
-const appSettings = inject("appSettings");
-</script>
-
 <script>
 import {logout} from "/src/scripts/server-api.js";
 import {Notification} from '@arco-design/web-vue';
@@ -130,6 +124,7 @@ export default {
             }
         }
     },
+    inject: ["appSettings"],
     watch: {
         "appSettings.darkTheme"() {
             this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);

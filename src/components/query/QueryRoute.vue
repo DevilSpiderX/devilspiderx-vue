@@ -49,9 +49,10 @@
 </template>
 
 <script lang="jsx">
-import {addPasswords, query, updatePasswords} from "/src/scripts/server-api.js";
 import {Message, Modal} from '@arco-design/web-vue';
+import {routerViewLocationKey} from 'vue-router/dist/vue-router';
 import {Vue3Menus} from 'vue3-menus';
+import {addPasswords, query, updatePasswords} from "/src/scripts/server-api.js";
 import AddModal from "./AddModal.vue";
 import UpdateModal from "./UpdateModal.vue";
 
@@ -97,20 +98,24 @@ export default {
             }
         }
     },
+    inject: {
+        injectedRoute: {from: routerViewLocationKey}
+    },
     beforeMount() {
         this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
     },
     mounted() {
-        let routeQuery = this.$router.currentRoute.value.query;
+        let routeQuery = this.injectedRoute.value.query;
+        console.log(routeQuery);
         if (Object.hasOwn(routeQuery, "key")) {
             this.key = routeQuery.key;
             window.sessionStorage['history_query_key'] = this.key;
-            query(this.key, this.QuerySucceed);
+            query(this.key, this.QuerySucceed, this.QueryError);
             this.searching = true;
         } else {
             let hQKey = window.sessionStorage['history_query_key'];
             if (hQKey !== undefined) {
-                query(hQKey, this.QuerySucceed);
+                query(hQKey, this.QuerySucceed, this.QueryError);
                 this.searching = true;
                 this.key = hQKey;
             }
@@ -125,7 +130,7 @@ export default {
     methods: {
         Search() {
             window.sessionStorage['history_query_key'] = this.key;
-            query(this.key, this.QuerySucceed);
+            query(this.key, this.QuerySucceed, this.QueryError);
             this.searching = true;
         },
 
@@ -150,6 +155,11 @@ export default {
                     break;
                 }
             }
+        },
+
+        QueryError() {
+            Message.error("搜索出现错误");
+            this.searching = false;
         },
 
         setTableScrollTop(number) {
@@ -211,7 +221,7 @@ export default {
                         let key = window.sessionStorage['history_query_key'];
                         key = key === undefined || key === '' ? name : `${key} ${name}`;
                         window.sessionStorage['history_query_key'] = key;
-                        query(key, this.QuerySucceed);
+                        query(key, this.QuerySucceed, this.QueryError);
                         this.searching = true;
                         this.key = key;
                         this.addModal.visible = false;
@@ -254,7 +264,7 @@ export default {
                                     key += ` ${name}`;
                                 }
                                 window.sessionStorage['history_query_key'] = key;
-                                query(key, this.QuerySucceed);
+                                query(key, this.QuerySucceed, this.QueryError);
                                 this.searching = true;
                                 this.key = key;
                                 this.updateModal.visible = false;

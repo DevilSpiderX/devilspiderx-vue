@@ -50,12 +50,6 @@
     </div>
 </template>
 
-<script setup>
-import {inject} from "vue";
-
-const appSettings = inject("appSettings");
-</script>
-
 <script>
 import {register} from "/src/scripts/server-api.js";
 import {Message} from "@arco-design/web-vue";
@@ -75,6 +69,7 @@ export default {
             }
         }
     },
+    inject: ["appSettings"],
     beforeMount() {
         this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
     },
