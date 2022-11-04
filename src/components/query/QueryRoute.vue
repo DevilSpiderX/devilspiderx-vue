@@ -12,7 +12,7 @@
                                 添加
                             </a-button>
                         </a-col>
-                        <a-col flex="auto">
+                        <a-col flex="auto" style="max-width: calc(100% - 105px)">
                             <a-input-search v-model="key" size="large" allow-clear :button-props="{type:'secondary'}"
                                             search-button @keydown.enter="Search" @search="Search">
                                 <template #prefix>
@@ -50,8 +50,7 @@
 
 <script lang="jsx">
 import {addPasswords, query, updatePasswords} from "/src/scripts/server-api.js";
-import {ElMessageBox} from 'element-plus';
-import {Message} from '@arco-design/web-vue';
+import {Message, Modal} from '@arco-design/web-vue';
 import {Vue3Menus} from 'vue3-menus';
 import AddModal from "./AddModal.vue";
 import UpdateModal from "./UpdateModal.vue";
@@ -226,7 +225,7 @@ export default {
                     case 1: {
                         Message.error({
                             content: () =>
-                                <p className="el-message__content">
+                                <p style="margin:0">
                                     添加失败<br/>可能该名称已存在<br/>请尝试换一个名称再添加
                                 </p>
                         });
@@ -238,38 +237,38 @@ export default {
         },
 
         update_submit(form_data) {
-            ElMessageBox.confirm("确定修改？", "提示", {
-                confirmButtonText: "确定",
-                cancelButtonText: "取消",
-                callback: function (action) {
-                    if (action === "confirm") {
-                        let id = form_data.id;
-                        let name = form_data.name;
-                        let account = form_data.account;
-                        let password = form_data.password;
-                        let remark = form_data.remark;
-                        updatePasswords(id, name, account, password, remark, function (resp) {
-                            switch (resp["code"]) {
-                                case 0: {
-                                    let key = window.sessionStorage['history_query_key'];
-                                    key = key === undefined || key === '' ? name : key;
-                                    if (key.indexOf(name) === -1) {
-                                        key += ` ${name}`;
-                                    }
-                                    window.sessionStorage['history_query_key'] = key;
-                                    query(key, this.QuerySucceed);
-                                    this.key = key;
-                                    this.updateModal.visible = false;
-                                    Message.success("修改成功");
-                                    break;
+            Modal.confirm({
+                title: "提示",
+                content: "确认修改？",
+                okText: "确定",
+                cancelText: "取消",
+                onOk: function () {
+                    let id = form_data.id;
+                    let name = form_data.name;
+                    let account = form_data.account;
+                    let password = form_data.password;
+                    let remark = form_data.remark;
+                    updatePasswords(id, name, account, password, remark, function (resp) {
+                        switch (resp["code"]) {
+                            case 0: {
+                                let key = window.sessionStorage['history_query_key'];
+                                key = key === undefined || key === '' ? name : key;
+                                if (key.indexOf(name) === -1) {
+                                    key += ` ${name}`;
                                 }
-                                case 1: {
-                                    Message.error(resp["msg"]);
-                                    break;
-                                }
+                                window.sessionStorage['history_query_key'] = key;
+                                query(key, this.QuerySucceed);
+                                this.key = key;
+                                this.updateModal.visible = false;
+                                Message.success("修改成功");
+                                break;
                             }
-                        }.bind(this));
-                    }
+                            case 1: {
+                                Message.error(resp["msg"]);
+                                break;
+                            }
+                        }
+                    }.bind(this));
                 }.bind(this)
             });
         },

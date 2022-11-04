@@ -7,7 +7,7 @@
                         <h1 style="text-align: center;font-size: 2.5rem;color: var(--color-text-1);">
                             登&nbsp;&nbsp;录
                         </h1>
-                        <a-form-item hide-label>
+                        <a-form-item field="uid" hide-label>
                             <a-input class="my-input" placeholder="账号" ref="user" v-model="form.uid" allow-clear
                                      :input-attrs="{style:{'font-size':'1.1rem'}}">
                                 <template #prefix>
@@ -15,7 +15,7 @@
                                 </template>
                             </a-input>
                         </a-form-item>
-                        <a-form-item hide-label>
+                        <a-form-item field="pwd" hide-label>
                             <a-input-password class="my-input" placeholder="密码" ref="password" v-model="form.pwd"
                                               allow-clear :input-attrs="{style:{'font-size':'1.1rem'}}">
                                 <template #prefix>
@@ -45,7 +45,7 @@
 import {login} from "/src/scripts/server-api.js";
 import SHA256 from 'crypto-js/sha256';
 import Hex from 'crypto-js/enc-hex';
-import {ElMessage} from "element-plus";
+import {Message} from '@arco-design/web-vue';
 
 export default {
     name: "LoginRoute",
@@ -93,17 +93,17 @@ export default {
                         break;
                     }
                     case 1: {
-                        ElMessage.error({message: "密码错误", grouping: true});
+                        Message.error("密码错误");
                         break;
                     }
                     case 2: {
-                        ElMessage.error({message: "账号不存在", grouping: true});
+                        Message.error("账号不存在");
                         break;
                     }
                 }
                 this.running_stop();
             }.bind(this), function () {
-                ElMessage.error({message: "服务器错误", grouping: true});
+                Message.error("服务器错误");
                 this.running_stop();
             }.bind(this));
         },

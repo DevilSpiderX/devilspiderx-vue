@@ -72,15 +72,20 @@ export default {
     --width: 10rem;
     --height: 4rem;
     --font-size: 20px;
+    --on-bg-color: #28a745;
+    --center-bg-color: white;
+    --off-bg-color: #eee;
+    --background-color: linear-gradient(to right, var(--on-bg-color) 33.3%, var(--center-bg-color) 33.3%, var(--center-bg-color) 66.6%, var(--off-bg-color) 66.6%);
+    --border-color: #ccc;
 }
 
 .switch {
     width: var(--width);
     height: var(--height);
     padding: 0;
-    background: linear-gradient(to right, #28a745 33.3%, white 33.3%, white 66.6%, #eee 66.6%);
+    background: var(--background-color);
     background-size: 150%;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border-color);
     border-radius: .7rem;
     display: inline-block;
     overflow: hidden;
@@ -93,12 +98,6 @@ export default {
     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out,
     background-position .4s ease-in-out;
     user-select: none;
-}
-
-.switch:focus, .switch:active {
-    border-color: #80bdff;
-    box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
-    outline: 0;
 }
 
 .switch[data-status="off"] {
@@ -134,6 +133,16 @@ export default {
 
 .switch-lever-2 {
     color: rgba(0, 0, 0, 0.87);
+}
+
+body[arco-theme='dark'] .switch {
+    --on-bg-color: #1d9138;
+    --center-bg-color: #eee;
+    --off-bg-color: var(--color-bg-3);
+}
+
+body[arco-theme='dark'] .switch-lever-2 {
+    color: white;
 }
 
 </style>

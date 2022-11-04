@@ -14,8 +14,7 @@ export function setThemeColor(color) {
 
 export function getTheme() {
     let arcoTheme = document.body.getAttribute("arco-theme");
-    if (arcoTheme === null) return "light";
-    return arcoTheme;
+    return arcoTheme === null ? "light" : arcoTheme;
 }
 
 export function changeTheme(themeName) {

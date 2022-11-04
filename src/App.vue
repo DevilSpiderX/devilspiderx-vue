@@ -3,8 +3,55 @@
 </template>
 
 <script>
+const appSettings = {
+    darkTheme: false,
+    themeFollowSystem: false
+}
+{
+    let settings = window.localStorage.getItem("appSettings");
+    if (settings === null) {
+        window.localStorage.setItem("appSettings", JSON.stringify(appSettings));
+    } else {
+        Object.assign(appSettings, JSON.parse(settings));
+    }
+}
 export default {
-    name: 'App'
+    name: 'App',
+    data() {
+        return {
+            appSettings: appSettings
+        }
+    },
+    watch: {
+        appSettings: {
+            handler(newVal) {
+                console.log('App配置已被修改', newVal);
+                window.localStorage.setItem("appSettings", JSON.stringify(this.appSettings));
+            },
+            deep: true
+        },
+        "appSettings.darkTheme"(newVal) {
+            this.changeTheme(newVal ? "dark" : "light");
+        },
+        "appSettings.themeFollowSystem"(newVal) {
+            if (newVal) {
+                this.setThemeFollowSystem();
+            }
+        }
+    },
+    beforeMount() {
+        if (this.appSettings.darkTheme) {
+            this.changeTheme();
+        }
+        if (this.appSettings.themeFollowSystem) {
+            this.setThemeFollowSystem();
+        }
+    },
+    methods: {
+        setThemeFollowSystem() {
+            this.appSettings.darkTheme = window.matchMedia('(prefers-color-scheme:dark)').matches;
+        }
+    }
 }
 </script>
 

@@ -7,7 +7,7 @@
                         <h1 style="text-align: center;font-size: 2.5rem;color: var(--color-text-1);">
                             注&nbsp;&nbsp;册
                         </h1>
-                        <a-form-item hide-label>
+                        <a-form-item field="uid" hide-label>
                             <a-input class="my-input" placeholder="账号" ref="user" v-model="form.uid" allow-clear
                                      :input-attrs="{style:{'font-size':'1.1rem'}}">
                                 <template #prefix>
@@ -15,7 +15,7 @@
                                 </template>
                             </a-input>
                         </a-form-item>
-                        <a-form-item hide-label>
+                        <a-form-item field="pwd" hide-label>
                             <a-input-password class="my-input" placeholder="密码" ref="password" v-model="form.pwd"
                                               allow-clear :input-attrs="{style:{'font-size':'1.1rem'}}">
                                 <template #prefix>
@@ -23,7 +23,7 @@
                                 </template>
                             </a-input-password>
                         </a-form-item>
-                        <a-form-item hide-label>
+                        <a-form-item field="pwd_a" hide-label>
                             <a-input-password class="my-input" placeholder="再次输入密码" ref="password_again"
                                               v-model="form.pwd_a" allow-clear
                                               :input-attrs="{style:{'font-size':'1.1rem'}}">
@@ -52,7 +52,7 @@
 
 <script>
 import {register} from "/src/scripts/server-api.js";
-import {ElMessage} from "element-plus";
+import {Message} from "@arco-design/web-vue";
 
 export default {
     name: "RegisterRoute",
@@ -97,21 +97,11 @@ export default {
                         break;
                     }
                     case 1: {
-                        ElMessage({
-                            type: "error",
-                            message: "注册失败",
-                            "show-close": true,
-                            grouping: true
-                        });
+                        Message.error("注册失败");
                         break;
                     }
                     case 4: {
-                        ElMessage({
-                            type: "error",
-                            message: "用户名已存在\n请换一个用户名",
-                            "show-close": true,
-                            grouping: true
-                        });
+                        Message.error("用户名已存在\n请换一个用户名");
                         break;
                     }
                 }

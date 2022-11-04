@@ -1,28 +1,28 @@
 <template>
     <a-modal v-model:visible="visible" title="添加密码记录" :width="width">
         <a-form :model="form" @submit="form_submit">
-            <a-form-item hide-label>
+            <a-form-item field="name" hide-label>
                 <a-input placeholder="名称" ref="name" v-model="form.name" allow-clear>
                     <template #prefix>
                         <i class="fas fa-tag fa-fw"></i>
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item hide-label>
+            <a-form-item field="account" hide-label>
                 <a-input placeholder="账号" v-model="form.account" allow-clear>
                     <template #prefix>
                         <i class="fas fa-user fa-fw"></i>
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item hide-label>
+            <a-form-item field="password" hide-label>
                 <a-input placeholder="密码" v-model="form.password" allow-clear>
                     <template #prefix>
                         <i class="fas fa-key fa-fw"></i>
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item hide-label>
+            <a-form-item field="remark" hide-label>
                 <a-input placeholder="备注" v-model="form.remark" allow-clear>
                     <template #prefix>
                         <i class="fas fa-info fa-fw"></i>

@@ -1,51 +1,46 @@
 <template>
-    <el-dialog v-model="visible" title="修改密码记录" :width="width">
-        <el-form :model="form" @submit.prevent="form_submit">
-            <el-form-item>
-                <el-input placeholder="名称" ref="name" v-model="form.name" clearable>
+    <a-modal v-model:visible="visible" title="修改密码记录" :width="width">
+        <a-form :model="form" @submit="form_submit">
+            <a-form-item field="id" label="ID" v-show="false">
+                <a-input placeholder="id" v-model="form.id"></a-input>
+            </a-form-item>
+            <a-form-item field="name" hide-label>
+                <a-input placeholder="名称" ref="name" v-model="form.name" clearable>
                     <template #prefix>
-                    <span style="color: rgb(73,80,87);">
                         <i class="fas fa-tag fa-fw"></i>
-                    </span>
                     </template>
-                </el-input>
-            </el-form-item>
-            <el-form-item>
-                <el-input placeholder="账号" v-model="form.account" clearable>
+                </a-input>
+            </a-form-item>
+            <a-form-item field="account" hide-label>
+                <a-input placeholder="账号" v-model="form.account" clearable>
                     <template #prefix>
-                    <span style="color: rgb(73,80,87);">
                         <i class="fas fa-user fa-fw"></i>
-                    </span>
                     </template>
-                </el-input>
-            </el-form-item>
-            <el-form-item>
-                <el-input placeholder="密码" v-model="form.password" clearable>
+                </a-input>
+            </a-form-item>
+            <a-form-item field="password" hide-label>
+                <a-input placeholder="密码" v-model="form.password" clearable>
                     <template #prefix>
-                    <span style="color: rgb(73,80,87);">
                         <i class="fas fa-key fa-fw"></i>
-                    </span>
                     </template>
-                </el-input>
-            </el-form-item>
-            <el-form-item>
-                <el-input placeholder="备注" v-model="form.remark" clearable>
+                </a-input>
+            </a-form-item>
+            <a-form-item field="remark" hide-label>
+                <a-input placeholder="备注" v-model="form.remark" clearable>
                     <template #prefix>
-                    <span style="color: rgb(73,80,87);">
                         <i class="fas fa-info fa-fw"></i>
-                    </span>
                     </template>
-                </el-input>
-            </el-form-item>
+                </a-input>
+            </a-form-item>
             <button type="submit" v-show="false"></button>
-        </el-form>
+        </a-form>
         <template #footer>
-            <el-button type="primary" auto-insert-space @click="form_submit" style="margin-right: 10px;">
-                修改
-            </el-button>
-            <el-button auto-insert-space @click="cancel_click">取消</el-button>
+            <a-button type="primary" @click="form_submit">
+                修 改
+            </a-button>
+            <a-button @click="cancel_click">取 消</a-button>
         </template>
-    </el-dialog>
+    </a-modal>
 </template>
 
 <script>
@@ -110,13 +105,15 @@ export default {
         },
         window_resize() {
             let width = window.innerWidth;
-            if (width < 768) {
+            if (width < 576) {
                 this.width = "90%";
-            } else if (width >= 768 && width < 992) {
+            } else if (width < 768) {
+                this.width = "83.3%";
+            } else if (width < 992) {
                 this.width = "62.5%";
-            } else if (width >= 992 && width < 1200) {
+            } else if (width < 1200) {
                 this.width = "48%";
-            } else if (width >= 1200 && width < 1920) {
+            } else if (width < 1920) {
                 this.width = "40%";
             } else if (width >= 1920) {
                 this.width = "25%";

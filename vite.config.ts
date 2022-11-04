@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
-import {ElementPlusResolver, ArcoResolver} from 'unplugin-vue-components/resolvers';
+import {ArcoResolver} from 'unplugin-vue-components/resolvers';
 import legacy from '@vitejs/plugin-legacy';
 
 let objExternals = {
@@ -18,11 +18,10 @@ export default defineConfig({
         vue(),
         vueJsx(),
         AutoImport({
-            resolvers: [ElementPlusResolver(), ArcoResolver()],
+            resolvers: [ArcoResolver()],
         }),
         Components({
             resolvers: [
-                ElementPlusResolver(),
                 ArcoResolver({
                     sideEffect: true
                 })
