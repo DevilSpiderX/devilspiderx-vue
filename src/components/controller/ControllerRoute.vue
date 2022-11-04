@@ -126,7 +126,7 @@ export default {
         }.bind(this));
     },
     beforeMount() {
-        this.setThemeColor("#ffffff");
+        this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
     },
     mounted() {
         window.addEventListener('resize', this.window_resize);//等相对单位dvh标准出来之后删除

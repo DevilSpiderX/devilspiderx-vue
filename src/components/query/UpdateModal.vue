@@ -1,11 +1,12 @@
 <template>
-    <a-modal v-model:visible="visible" title="修改密码记录" :width="width">
+    <a-modal :visible="visible" title="修改密码记录" :width="width"
+             @update:visible="value=>$emit('update:visible',value)">
         <a-form :model="form" @submit="form_submit">
             <a-form-item field="id" label="ID" v-show="false">
-                <a-input placeholder="id" v-model="form.id"></a-input>
+                <a-input-number placeholder="id" v-model="form.id" :min="0"></a-input-number>
             </a-form-item>
             <a-form-item field="name" hide-label>
-                <a-input placeholder="名称" ref="name" v-model="form.name" clearable>
+                <a-input placeholder="名称" v-model="form.name" clearable :error="inputNameStatus">
                     <template #prefix>
                         <i class="fas fa-tag fa-fw"></i>
                     </template>
@@ -48,7 +49,6 @@ export default {
     name: "UpdateModal",
     data() {
         return {
-            visible: false,
             form: {
                 id: -1,
                 name: "",
@@ -56,47 +56,39 @@ export default {
                 password: "",
                 remark: ""
             },
+            inputNameStatus: false,
             width: "50%"
         }
     },
     props: {
-        open: Boolean,
-        inData: Object
+        visible: Boolean,
+        data: Object
     },
     watch: {
-        open(newVal, oldVal) {
-            if (this.visible === oldVal) {
-                this.visible = newVal;
-            }
-        },
-        visible(newVal, oldVal) {
-            if (this.$props.open === oldVal) {
-                this.$emit("update:open", newVal);
-            }
+        visible(newVal) {
             if (newVal) {
+                this.window_resize();
                 window.addEventListener("resize", this.window_resize);
             } else {
                 window.removeEventListener("resize", this.window_resize);
             }
         },
-        inData(newVal) {
+        data(newVal) {
             Object.assign(this.form, newVal);
         }
     },
-    emits: ["submit", "update:open"],
-    mounted() {
-        this.$nextTick(this.window_resize);
-    },
+    emits: ["submit", "update:visible"],
     methods: {
         Open() {
-            this.visible = true;
+            this.$emit('update:visible', true);
         },
         Close() {
-            this.visible = false;
+            this.$emit('update:visible', false);
         },
         form_submit() {
+            this.inputNameStatus = false;
             if (this.form.name === "") {
-                this.$refs.name.focus();
+                this.inputNameStatus = true;
                 return;
             }
             let form_data = {};

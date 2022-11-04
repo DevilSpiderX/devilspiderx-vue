@@ -2,11 +2,14 @@
     <router-view></router-view>
 </template>
 
-<script>
-const appSettings = {
+<script setup>
+import {reactive, provide} from 'vue';
+
+const appSettings = reactive({
     darkTheme: false,
     themeFollowSystem: false
-}
+});
+
 {
     let settings = window.localStorage.getItem("appSettings");
     if (settings === null) {
@@ -15,13 +18,13 @@ const appSettings = {
         Object.assign(appSettings, JSON.parse(settings));
     }
 }
+
+provide("appSettings", appSettings);
+</script>
+
+<script>
 export default {
     name: 'App',
-    data() {
-        return {
-            appSettings: appSettings
-        }
-    },
     watch: {
         appSettings: {
             handler(newVal) {
@@ -41,15 +44,23 @@ export default {
     },
     beforeMount() {
         if (this.appSettings.darkTheme) {
-            this.changeTheme();
+            this.changeTheme("dark");
         }
         if (this.appSettings.themeFollowSystem) {
             this.setThemeFollowSystem();
         }
+        window.matchMedia('(prefers-color-scheme:dark)')
+            .addEventListener("change", this.prefers_color_scheme_change);
     },
     methods: {
         setThemeFollowSystem() {
             this.appSettings.darkTheme = window.matchMedia('(prefers-color-scheme:dark)').matches;
+        },
+        prefers_color_scheme_change(e) {
+            console.log(e)
+            if (this.appSettings.themeFollowSystem) {
+                this.setThemeFollowSystem();
+            }
         }
     }
 }

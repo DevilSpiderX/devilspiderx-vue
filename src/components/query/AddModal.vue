@@ -1,8 +1,9 @@
 <template>
-    <a-modal v-model:visible="visible" title="添加密码记录" :width="width">
+    <a-modal :visible="visible" title="添加密码记录" :width="width"
+             @update:visible="value=>$emit('update:visible',value)">
         <a-form :model="form" @submit="form_submit">
             <a-form-item field="name" hide-label>
-                <a-input placeholder="名称" ref="name" v-model="form.name" allow-clear>
+                <a-input placeholder="名称" v-model="form.name" allow-clear :error="inputNameStatus">
                     <template #prefix>
                         <i class="fas fa-tag fa-fw"></i>
                     </template>
@@ -45,59 +46,51 @@ export default {
     name: "AddModal",
     data() {
         return {
-            visible: false,
             form: {
                 name: "",
                 account: "",
                 password: "",
                 remark: ""
             },
+            inputNameStatus: false,
             width: "50%"
         }
     },
     props: {
-        open: Boolean,
-        clean: Boolean
+        visible: Boolean,
+        cleaning: Boolean
     },
     watch: {
-        open(newVal, oldVal) {
-            if (this.visible === oldVal) {
-                this.visible = newVal;
-            }
-        },
-        visible(newVal, oldVal) {
-            if (this.$props.open === oldVal) {
-                this.$emit("update:open", newVal);
-            }
+        visible(newVal) {
             if (newVal) {
+                this.window_resize();
                 window.addEventListener("resize", this.window_resize);
             } else {
                 window.removeEventListener("resize", this.window_resize);
             }
         },
-        clean(newVal) {
+        cleaning(newVal) {
             if (newVal) {
                 this.CleanData();
             }
         }
     },
-    emits: ["submit", "update:open"],
-    mounted() {
-        this.$nextTick(this.window_resize);
-    },
+    emits: ["submit", "update:visible", "update:cleaning"],
     methods: {
         Open() {
-            this.visible = true;
+            this.$emit('update:visible', true);
         },
         Close() {
-            this.visible = false;
+            this.$emit('update:visible', false);
         },
         CleanData() {
             this.form = {name: "", account: "", password: "", remark: ""};
+            this.$emit('update:cleaning', false);
         },
         form_submit() {
+            this.inputNameStatus = false;
             if (this.form.name === "") {
-                this.$refs.name.focus();
+                this.inputNameStatus = true;
                 return;
             }
             let form_data = {};

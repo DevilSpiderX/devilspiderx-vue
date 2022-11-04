@@ -9,7 +9,7 @@ import {Modal} from "@arco-design/web-vue";
 export default {
     name: "LogRoute",
     beforeMount() {
-        this.setThemeColor("#ffffff");
+        this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
     },
     mounted() {
         Modal.info({

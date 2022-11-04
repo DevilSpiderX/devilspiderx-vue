@@ -8,16 +8,16 @@
                             登&nbsp;&nbsp;录
                         </h1>
                         <a-form-item field="uid" hide-label>
-                            <a-input class="my-input" placeholder="账号" ref="user" v-model="form.uid" allow-clear
-                                     :input-attrs="{style:{'font-size':'1.1rem'}}">
+                            <a-input class="my-input" placeholder="账号" v-model="form.uid" allow-clear
+                                     :input-attrs="{style:{'font-size':'1.1rem'}}" :error="inputStatus[0]">
                                 <template #prefix>
                                     <span><i class="fas fa-user fa-fw"></i></span>
                                 </template>
                             </a-input>
                         </a-form-item>
                         <a-form-item field="pwd" hide-label>
-                            <a-input-password class="my-input" placeholder="密码" ref="password" v-model="form.pwd"
-                                              allow-clear :input-attrs="{style:{'font-size':'1.1rem'}}">
+                            <a-input-password class="my-input" placeholder="密码" v-model="form.pwd" allow-clear
+                                              :input-attrs="{style:{'font-size':'1.1rem'}}" :error="inputStatus[1]">
                                 <template #prefix>
                                     <span><i class="fas fa-key fa-fw"></i></span>
                                 </template>
@@ -41,6 +41,12 @@
     </div>
 </template>
 
+<script setup>
+import {inject} from "vue";
+
+const appSettings = inject("appSettings");
+</script>
+
 <script>
 import {login} from "/src/scripts/server-api.js";
 import SHA256 from 'crypto-js/sha256';
@@ -55,13 +61,14 @@ export default {
                 uid: "",
                 pwd: ""
             },
+            inputStatus: [false, false],
             running: {
                 show: false
             }
         }
     },
     beforeMount() {
-        this.setThemeColor("#ffffff");
+        this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
     },
     mounted() {
         let loginUid = localStorage.loginUid;
@@ -72,14 +79,15 @@ export default {
     },
     methods: {
         form_submit() {
+            for (const i in this.inputStatus) this.inputStatus[i] = false;
             let uid = this.form.uid;
             let pwd = this.form.pwd;
             if (uid === "") {
-                this.$refs.user.focus();
+                this.inputStatus[0] = true;
                 return;
             }
             if (pwd === "") {
-                this.$refs.password.focus();
+                this.inputStatus[1] = true;
                 return;
             }
             this.storageAccount(uid, true);
@@ -94,10 +102,12 @@ export default {
                     }
                     case 1: {
                         Message.error("密码错误");
+                        this.inputStatus[1] = true;
                         break;
                     }
                     case 2: {
                         Message.error("账号不存在");
+                        for (const i in this.inputStatus) this.inputStatus[i] = false;
                         break;
                     }
                 }
@@ -115,12 +125,12 @@ export default {
             }
         },
         running_start() {
-            this.setThemeColor("#808080");
+            this.setThemeColor(this.appSettings.darkTheme ? "#0c0c0d" : "#808080");
             this.running.show = true;
         },
         running_stop() {
             this.running.show = false;
-            this.setThemeColor("#ffffff");
+            this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
         }
     }
 }

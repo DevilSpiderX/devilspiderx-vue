@@ -36,7 +36,7 @@ export default {
         }
     },
     beforeMount() {
-        this.setThemeColor("#ffffff");
+        this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
     },
     async mounted() {
         let hour = new Date().getHours();

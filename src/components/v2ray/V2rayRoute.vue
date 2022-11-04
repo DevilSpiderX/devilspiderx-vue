@@ -86,7 +86,7 @@ export default {
         }
     },
     beforeMount() {
-        this.setThemeColor("#ffffff");
+        this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
     },
     mounted() {
         v2rayState(function (resp) {

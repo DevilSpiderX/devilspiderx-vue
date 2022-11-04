@@ -14,7 +14,7 @@
                         </a-col>
                         <a-col flex="auto" style="max-width: calc(100% - 105px)">
                             <a-input-search v-model="key" size="large" allow-clear :button-props="{type:'secondary'}"
-                                            search-button @keydown.enter="Search" @search="Search">
+                                            search-button @keydown.enter="Search" @search="Search" :loading="searching">
                                 <template #prefix>
                                     <i class="fas fa-terminal fa-fw"></i>
                                 </template>
@@ -28,7 +28,7 @@
             <a-row justify="center">
                 <a-col :xs="24" :sm="22" :md="20" :lg="18" :xl="16" :xxl="14">
                     <a-table :columns="table.columns" :data="table.data" :scroll="{y:table.maxHeight+'px'}" row-key="id"
-                             page-position="bottom" :pagination="table.paginationProps"
+                             page-position="bottom" :pagination="table.paginationProps" :loading="searching"
                              @page-change="table_page_change">
                         <template #empty>
                             <a-empty/>
@@ -44,8 +44,8 @@
     </a-layout>
 
     <vue3-menus v-model:open="tableMenu.open" :event="tableMenu.event" :menus="tableMenu.menus" minWidth="100"/>
-    <add-modal v-model:open="addModal.visible" :clean="addModal.clean" @submit="add_submit"/>
-    <update-modal v-model:open="updateModal.visible" :in-data="updateModal.inData" @submit="update_submit"/>
+    <add-modal v-model:visible="addModal.visible" v-model:cleaning="addModal.cleaning" @submit="add_submit"/>
+    <update-modal v-model:visible="updateModal.visible" :data="updateModal.data" @submit="update_submit"/>
 </template>
 
 <script lang="jsx">
@@ -61,6 +61,7 @@ export default {
     data() {
         return {
             key: "",
+            searching: false,
             table: {
                 maxHeight: window.innerHeight - 64,//等相对单位dvh标准出来之后删除
                 columns: [
@@ -88,16 +89,16 @@ export default {
             },
             addModal: {
                 visible: false,
-                clean: false
+                cleaning: false
             },
             updateModal: {
                 visible: false,
-                inData: {}
+                data: {}
             }
         }
     },
     beforeMount() {
-        this.setThemeColor("#ffffff");
+        this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
     },
     mounted() {
         let routeQuery = this.$router.currentRoute.value.query;
@@ -105,10 +106,12 @@ export default {
             this.key = routeQuery.key;
             window.sessionStorage['history_query_key'] = this.key;
             query(this.key, this.QuerySucceed);
+            this.searching = true;
         } else {
             let hQKey = window.sessionStorage['history_query_key'];
             if (hQKey !== undefined) {
                 query(hQKey, this.QuerySucceed);
+                this.searching = true;
                 this.key = hQKey;
             }
         }
@@ -123,10 +126,12 @@ export default {
         Search() {
             window.sessionStorage['history_query_key'] = this.key;
             query(this.key, this.QuerySucceed);
+            this.searching = true;
         },
 
         QuerySucceed(resp) {
             console.log(resp);
+            this.searching = false;
             this.table.paginationProps.current = 1;
             switch (resp["code"]) {
                 case 0: {
@@ -172,27 +177,21 @@ export default {
             }.bind(this);
 
             //修改按钮
-            this.tableMenu.menus[2].click = function () {
+            this.tableMenu.menus[2].click = async function () {
                 this.updateModal.visible = true;
-                this.updateModal.inData = {};
-                this.$nextTick(function () {
-                    this.updateModal.inData = record;
-                });
+                this.updateModal.data = {};
+                await this.$nextTick();
+                this.updateModal.data = record;
             }.bind(this);
 
+
+            const menuClose = function () {
+                this.tableMenu.open = false;
+            }.bind(this);
             //滚动表格消除菜单
-            let scroller = this.table.bodyScrollWrap;
-            let scrollEvent = function () {
-                this.tableMenu.open = false;
-                scroller.removeEventListener("scroll", scrollEvent);
-            }.bind(this);
-            scroller.addEventListener("scroll", scrollEvent);
+            this.table.bodyScrollWrap.addEventListener("scroll", menuClose, {once: true});
             //窗体尺寸变化消除菜单
-            let windowResizeEvent = function () {
-                this.tableMenu.open = false;
-                window.removeEventListener("resize", windowResizeEvent);
-            }.bind(this);
-            window.addEventListener("resize", windowResizeEvent);
+            window.addEventListener("resize", menuClose, {once: true});
 
             this.tableMenu.open = false;
             this.tableMenu.event = event;
@@ -213,12 +212,10 @@ export default {
                         key = key === undefined || key === '' ? name : `${key} ${name}`;
                         window.sessionStorage['history_query_key'] = key;
                         query(key, this.QuerySucceed);
+                        this.searching = true;
                         this.key = key;
                         this.addModal.visible = false;
                         this.addModal.clean = true;
-                        this.$nextTick(function () {
-                            this.addModal.clean = false;
-                        });
                         Message.success("添加成功");
                         break;
                     }
@@ -258,6 +255,7 @@ export default {
                                 }
                                 window.sessionStorage['history_query_key'] = key;
                                 query(key, this.QuerySucceed);
+                                this.searching = true;
                                 this.key = key;
                                 this.updateModal.visible = false;
                                 Message.success("修改成功");

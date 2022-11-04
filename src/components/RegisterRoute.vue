@@ -8,25 +8,25 @@
                             注&nbsp;&nbsp;册
                         </h1>
                         <a-form-item field="uid" hide-label>
-                            <a-input class="my-input" placeholder="账号" ref="user" v-model="form.uid" allow-clear
-                                     :input-attrs="{style:{'font-size':'1.1rem'}}">
+                            <a-input class="my-input" placeholder="账号" v-model="form.uid" allow-clear
+                                     :input-attrs="{style:{'font-size':'1.1rem'}}" :error="inputStatus[0]">
                                 <template #prefix>
                                     <span><i class="fas fa-user fa-fw"></i></span>
                                 </template>
                             </a-input>
                         </a-form-item>
                         <a-form-item field="pwd" hide-label>
-                            <a-input-password class="my-input" placeholder="密码" ref="password" v-model="form.pwd"
-                                              allow-clear :input-attrs="{style:{'font-size':'1.1rem'}}">
+                            <a-input-password class="my-input" placeholder="密码" v-model="form.pwd" allow-clear
+                                              :input-attrs="{style:{'font-size':'1.1rem'}}" :error="inputStatus[1]">
                                 <template #prefix>
                                     <span><i class="fas fa-key fa-fw"></i></span>
                                 </template>
                             </a-input-password>
                         </a-form-item>
                         <a-form-item field="pwd_a" hide-label>
-                            <a-input-password class="my-input" placeholder="再次输入密码" ref="password_again"
-                                              v-model="form.pwd_a" allow-clear
-                                              :input-attrs="{style:{'font-size':'1.1rem'}}">
+                            <a-input-password class="my-input" placeholder="再次输入密码" v-model="form.pwd_a"
+                                              allow-clear :input-attrs="{style:{'font-size':'1.1rem'}}"
+                                              :error="inputStatus[2]">
                                 <template #prefix>
                                     <span><i class="fas fa-key fa-fw"></i></span>
                                 </template>
@@ -50,6 +50,12 @@
     </div>
 </template>
 
+<script setup>
+import {inject} from "vue";
+
+const appSettings = inject("appSettings");
+</script>
+
 <script>
 import {register} from "/src/scripts/server-api.js";
 import {Message} from "@arco-design/web-vue";
@@ -63,30 +69,37 @@ export default {
                 pwd: "",
                 pwd_a: ""
             },
+            inputStatus: [false, false, false],
             running: {
                 show: false
             }
         }
     },
+    beforeMount() {
+        this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
+    },
     methods: {
         form_submit() {
+            for (const i in this.inputStatus) this.inputStatus[i] = false;
             let uid = this.form.uid;
             let pwd = this.form.pwd;
             let pwd_a = this.form.pwd_a;
             if (uid === "") {
-                this.$refs.user.focus();
+                this.inputStatus[0] = true;
                 return;
             }
             if (pwd === "") {
-                this.$refs.password.focus();
+                this.inputStatus[1] = true;
                 return;
             }
             if (pwd_a === "") {
-                this.$refs.password_again.focus();
+                this.inputStatus[2] = true;
                 return;
             }
             if (pwd !== pwd_a) {
-                alert("两次输入的密码不相同");
+                Message.error("两次输入的密码不相同");
+                this.inputStatus[1] = true;
+                this.inputStatus[2] = true;
                 return;
             }
             this.running_start();
@@ -98,27 +111,29 @@ export default {
                     }
                     case 1: {
                         Message.error("注册失败");
+                        for (const i in this.inputStatus) this.inputStatus[i] = true;
                         break;
                     }
                     case 4: {
                         Message.error("用户名已存在\n请换一个用户名");
+                        this.inputStatus[0] = true;
                         break;
                     }
                 }
                 this.running_stop();
-            }.bind(this), this.running_stop);
+            }.bind(this), function () {
+                Message.error("服务器错误");
+                this.running_stop();
+            }.bind(this));
         },
         running_start() {
-            this.setThemeColor("#808080");
+            this.setThemeColor(this.appSettings.darkTheme ? "#0c0c0d" : "#808080");
             this.running.show = true;
         },
         running_stop() {
             this.running.show = false;
-            this.setThemeColor("#ffffff");
+            this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
         }
-    },
-    beforeMount() {
-        this.setThemeColor("#ffffff");
     }
 }
 </script>

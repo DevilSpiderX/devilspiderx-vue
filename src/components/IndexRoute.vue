@@ -3,13 +3,16 @@
         <a-layout-header style="border-bottom: 1px solid #84858d55;">
             <a-page-header @back="open_drawer">
                 <template #back-icon>
-                    <i class="fa-solid fa-bars fa-fw" style="font-size: 1.2rem;"></i>
+                    <span style="font-size: 1.2rem;position: relative">
+                        <i class="fa-solid fa-bars fa-fw">
+
+                        </i></span>
                 </template>
                 <template #title>
                     <span style="font-weight:700;"> DevilSpiderX </span>
                 </template>
                 <template #extra>
-                    <a-switch v-model="drawer.form.darkTheme" :disabled="drawer.form.themeFollowSys"
+                    <a-switch v-model="appSettings.darkTheme" :disabled="appSettings.themeFollowSystem"
                               checked-color="#2f2f2f">
                         <template #unchecked-icon>
                             <span style="color: var(--color-text-3)">
@@ -87,7 +90,7 @@
         <template #header style="justify-content: space-between">
             <a-row justify="space-between" style="width: 100%;">
                 <h2 style="margin: 0;color: var(--color-text-1)">设置</h2>
-                <a-button style="background-color: #0000" @click="drawer.visible=false">
+                <a-button class="drawer-close-button" shape="circle" size="small" @click="drawer.visible=false">
                     <template #icon>
                         <icon-close/>
                     </template>
@@ -95,15 +98,21 @@
             </a-row>
         </template>
         <a-form :model="drawer.form" auto-label-width>
-            <a-form-item field="darkTheme" label="深色模式">
-                <a-switch v-model="drawer.form.darkTheme" :disabled="drawer.form.themeFollowSys"/>
+            <a-form-item label="深色模式">
+                <a-switch v-model="appSettings.darkTheme" :disabled="appSettings.themeFollowSystem"/>
             </a-form-item>
-            <a-form-item field="themeFollowSys" label="主题跟随系统">
-                <a-switch v-model="drawer.form.themeFollowSys"/>
+            <a-form-item label="主题跟随系统">
+                <a-switch v-model="appSettings.themeFollowSystem"/>
             </a-form-item>
         </a-form>
     </a-drawer>
 </template>
+
+<script setup>
+import {inject} from "vue";
+
+const appSettings = inject("appSettings");
+</script>
 
 <script>
 import {logout} from "/src/scripts/server-api.js";
@@ -117,26 +126,17 @@ export default {
         return {
             drawer: {
                 visible: false,
-                form: {
-                    darkTheme: this.$root.$data.appSettings.darkTheme,
-                    themeFollowSys: this.$root.$data.appSettings.themeFollowSystem
-                }
+                form: {}
             }
         }
     },
     watch: {
-        "drawer.form.darkTheme"(newVal) {
-            this.$root.$data.appSettings.darkTheme = newVal;
-        },
-        "drawer.form.themeFollowSys"(newVal) {
-            this.$root.$data.appSettings.themeFollowSystem = newVal;
-            this.$nextTick(function () {
-                this.drawer.form.darkTheme = this.$root.$data.appSettings.darkTheme;
-            });
+        "appSettings.darkTheme"() {
+            this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
         }
     },
     beforeMount() {
-        this.setThemeColor("#ffffff");
+        this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
     },
     mounted() {
     },
@@ -229,5 +229,9 @@ body[arco-theme='dark'] .my-button.exit-button:hover {
 
 body[arco-theme='dark'] .my-button img {
     filter: invert(100%);
+}
+
+.drawer-close-button {
+    --color-secondary: #0000;
 }
 </style>
