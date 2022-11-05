@@ -34,8 +34,7 @@
                         </a-form-item>
                         <a-row class="button-row" justify="space-around">
                             <a-button type="primary" size="large" html-type="submit">注 册</a-button>
-                            <a-button type="primary" size="large" html-type="button"
-                                      @click="this.$router.back()">
+                            <a-button type="primary" size="large" html-type="button" @click="$router.back()">
                                 返 回
                             </a-button>
                         </a-row>
@@ -51,8 +50,9 @@
 </template>
 
 <script>
-import {register} from "/src/scripts/server-api.js";
 import {Message} from "@arco-design/web-vue";
+import http from "/src/scripts/server-api";
+import router from "/src/router.js";
 
 export default {
     name: "RegisterRoute",
@@ -74,7 +74,7 @@ export default {
         this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
     },
     methods: {
-        form_submit() {
+        async form_submit() {
             for (const i in this.inputStatus) this.inputStatus[i] = false;
             let uid = this.form.uid;
             let pwd = this.form.pwd;
@@ -98,10 +98,12 @@ export default {
                 return;
             }
             this.running_start();
-            register(uid, pwd, function (resp) {
+            try {
+                let resp = await http.register(uid, pwd);
+                console.log("Register:", resp);
                 switch (resp["code"]) {
                     case 0: {
-                        this.$router.push({name: "login"});
+                        await router.push({name: "login"});
                         break;
                     }
                     case 1: {
@@ -115,11 +117,11 @@ export default {
                         break;
                     }
                 }
-                this.running_stop();
-            }.bind(this), function () {
+            } catch (error) {
+                console.error("form_submit:", error);
                 Message.error("服务器错误");
-                this.running_stop();
-            }.bind(this));
+            }
+            this.running_stop();
         },
         running_start() {
             this.setThemeColor(this.appSettings.darkTheme ? "#0c0c0d" : "#808080");

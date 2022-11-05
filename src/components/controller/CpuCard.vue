@@ -1,5 +1,5 @@
 <template>
-    <base-card :empty="empty">
+    <base-card>
         <template #header>
             <div class="header">
                 <h3><i class="fa-solid fa-microchip fa-fw"></i>CPU</h3>
@@ -45,11 +45,6 @@ interface CpuValueTYpe {
 export default defineComponent({
     name: "CpuCard",
     components: {BaseCard},
-    data() {
-        return {
-            empty: true
-        }
-    },
     props: {
         value: {
             type: Object as PropType<CpuValueTYpe>,
@@ -62,11 +57,6 @@ export default defineComponent({
                 is64bit: true,
                 cpuTemperature: 0
             }
-        }
-    },
-    watch: {
-        value() {
-            this.empty = false;
         }
     },
     computed: {

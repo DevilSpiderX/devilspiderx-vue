@@ -1,5 +1,5 @@
 <template>
-    <base-card :empty="empty">
+    <base-card>
         <template #header>
             <div class="header">
                 <h3><i class="fa-solid fa-rss fa-fw"></i>网络信息</h3>
@@ -8,7 +8,7 @@
         <div class="my-card-body">
             <a-descriptions :column="1" :align="{label:'right'}" :label-style="{width:'calc(50% - 1px)'}">
                 <a-descriptions-item label="上传速度">
-                    <a-statistic :value="value.format.uploadSpeed.value" :precision="precision.upload"
+                    <a-statistic :value="value.format.uploadSpeed.value" :precision="precision_upload"
                                  :value-style="{color:'rgb(var(--green-7))',fontSize:'20px'}">
                         <template #prefix>
                             <icon-arrow-rise/>
@@ -19,7 +19,7 @@
                     </a-statistic>
                 </a-descriptions-item>
                 <a-descriptions-item label="下载速度">
-                    <a-statistic :value="value.format.downloadSpeed.value" :precision="precision.download"
+                    <a-statistic :value="value.format.downloadSpeed.value" :precision="precision_download"
                                  :value-style="{color:'rgb(var(--blue-7))',fontSize:'20px'}">>
                         <template #prefix>
                             <icon-arrow-fall/>
@@ -51,15 +51,6 @@ interface NetworkValueType {
 export default defineComponent({
     name: "NetworkCard",
     components: {BaseCard, IconArrowRise, IconArrowFall},
-    data() {
-        return {
-            empty: true,
-            precision: {
-                upload: 2,
-                download: 2
-            }
-        }
-    },
     props: {
         value: {
             type: Object as PropType<NetworkValueType>,
@@ -74,17 +65,12 @@ export default defineComponent({
             }
         }
     },
-    watch: {
-        value(newVal) {
-            this.empty = false;
-            this.precision.upload = 2;
-            if (newVal.format.uploadSpeed.unit === "B/s") {
-                this.precision.upload = 0;
-            }
-            this.precision.download = 2;
-            if (newVal.format.downloadSpeed.unit === "B/s") {
-                this.precision.download = 0;
-            }
+    computed: {
+        precision_upload() {
+            return this.value.format.uploadSpeed.unit === "B/s" ? 0 : 2;
+        },
+        precision_download() {
+            return this.value.format.downloadSpeed.unit === "B/s" ? 0 : 2;
         }
     }
 })

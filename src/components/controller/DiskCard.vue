@@ -1,5 +1,5 @@
 <template>
-    <base-card :empty="empty">
+    <base-card>
         <template #header>
             <div class="header">
                 <h3><i class="fa-solid fa-hdd fa-fw"></i>硬盘分区 {{ diskIndex }}</h3>
@@ -37,12 +37,6 @@ interface DiskValueType {
 export default defineComponent({
     name: "DiskCard",
     components: {BaseCard},
-    data() {
-        return {
-            empty: true,
-            usedPercent: 0
-        }
-    },
     props: {
         value: {
             type: Object as PropType<DiskValueType>,
@@ -64,12 +58,6 @@ export default defineComponent({
         },
         diskIndex: Number
     },
-    watch: {
-        value(newVal) {
-            this.empty = false;
-            this.usedPercent = newVal.used / newVal.total;
-        }
-    },
     computed: {
         freeStr() {
             let data = this.value.format.free;
@@ -78,6 +66,9 @@ export default defineComponent({
         totalStr() {
             let data = this.value.format.total;
             return `${data.value} ${data.unit}`;
+        },
+        usedPercent() {
+            return this.value.used / this.value.total;
         },
         progressColor() {
             let rate = this.usedPercent;

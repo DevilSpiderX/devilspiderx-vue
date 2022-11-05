@@ -1,5 +1,5 @@
 <template>
-    <base-card :empty="empty">
+    <base-card>
         <template #header>
             <div class="header">
                 <h3><i class="fa-solid fa-memory fa-fw"></i>内存</h3>
@@ -43,12 +43,6 @@ interface MemoryValueType {
 export default defineComponent({
     name: "MemoryCard",
     components: {BaseCard},
-    data() {
-        return {
-            empty: true,
-            usedPercent: 0
-        }
-    },
     props: {
         value: {
             type: Object as PropType<MemoryValueType>,
@@ -65,12 +59,6 @@ export default defineComponent({
             }
         }
     },
-    watch: {
-        value(newVal) {
-            this.empty = false;
-            this.usedPercent = newVal.used / newVal.total;
-        }
-    },
     computed: {
         usedStr() {
             let data = this.value.format.used;
@@ -83,6 +71,9 @@ export default defineComponent({
         totalStr() {
             let data = this.value.format.total;
             return `${data.value} ${data.unit}`;
+        },
+        usedPercent() {
+            return this.value.used / this.value.total;
         },
         progressColor() {
             let rate = this.usedPercent;

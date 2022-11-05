@@ -26,7 +26,7 @@
                         <a-row class="button-row" justify="space-around">
                             <a-button type="primary" size="large" html-type="submit">登 录</a-button>
                             <a-button type="primary" size="large" html-type="button"
-                                      @click="this.$router.push({name:'register'})">
+                                      @click="$router.push({name:'register'})">
                                 注 册
                             </a-button>
                         </a-row>
@@ -42,10 +42,11 @@
 </template>
 
 <script>
-import {login} from "/src/scripts/server-api.js";
+import {Message} from '@arco-design/web-vue';
 import SHA256 from 'crypto-js/sha256';
 import Hex from 'crypto-js/enc-hex';
-import {Message} from '@arco-design/web-vue';
+import router from "/src/router.js";
+import http from "/src/scripts/server-api";
 
 export default {
     name: "LoginRoute",
@@ -73,7 +74,7 @@ export default {
 
     },
     methods: {
-        form_submit() {
+        async form_submit() {
             for (const i in this.inputStatus) this.inputStatus[i] = false;
             let uid = this.form.uid;
             let pwd = this.form.pwd;
@@ -89,10 +90,12 @@ export default {
 
             this.running_start()
             pwd = SHA256(pwd).toString(Hex);
-            login(uid, pwd, function (resp) {
+            try {
+                let resp = await http.login(uid, pwd);
+                console.log("Login:", resp);
                 switch (resp["code"]) {
                     case 0: {
-                        this.$router.push({name: "index"});
+                        await router.push({name: "index"});
                         break;
                     }
                     case 1: {
@@ -106,11 +109,11 @@ export default {
                         break;
                     }
                 }
-                this.running_stop();
-            }.bind(this), function () {
+            } catch (error) {
+                console.error("form_submit:", error);
                 Message.error("服务器错误");
-                this.running_stop();
-            }.bind(this));
+            }
+            this.running_stop();
         },
         storageAccount(uid, allow) {
             if (allow) {

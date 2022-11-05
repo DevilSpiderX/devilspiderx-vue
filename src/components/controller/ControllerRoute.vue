@@ -12,31 +12,36 @@
                 </div>
             </template>
             <a-row :gutter="10" align="stretch">
-                <a-col :xs="24" :md="12" :xl="8" class="my-col">
-                    <cpu-card :value="values.cpu"/>
-                </a-col>
-                <a-col :xs="24" :md="12" :xl="8" class="my-col">
-                    <memory-card :value="values.memory"/>
-                </a-col>
-                <a-col :xs="24" :md="12" :xl="8" class="my-col">
-                    <network-card :value="values.network"/>
-                </a-col>
-                <a-col :xs="24" :md="12" :xl="8" class="my-col"
-                       v-for="(disk,index) in values.disk">
-                    <disk-card :value="disk" :disk-index="index"/>
-                </a-col>
+                <transition-group name="body">
+                    <a-col :xs="24" :md="12" :xl="8" class="my-col" v-if="values.cpu">
+                        <cpu-card :value="values.cpu"/>
+                    </a-col>
+                    <a-col :xs="24" :md="12" :xl="8" class="my-col" v-if="values.memory">
+                        <memory-card :value="values.memory"/>
+                    </a-col>
+                    <a-col :xs="24" :md="12" :xl="8" class="my-col" v-if="values.network">
+                        <network-card :value="values.network"/>
+                    </a-col>
+                    <a-col :xs="24" :md="12" :xl="8" class="my-col" v-for="(disk,index) in values.disk" :key="index+3">
+                        <disk-card :value="disk" :disk-index="index"/>
+                    </a-col>
+                </transition-group>
             </a-row>
+            <template #cover>
+                <a-empty v-if="empty_show"/>
+            </template>
         </a-card>
     </a-layout>
 </template>
 
 <script>
+import router from "../../router.js";
 import {Message} from "@arco-design/web-vue";
 import CpuCard from "./CpuCard.vue";
 import MemoryCard from "./MemoryCard.vue";
 import NetworkCard from "./NetworkCard.vue";
 import DiskCard from "./DiskCard.vue";
-import {token} from "/src/scripts/server-api.js";
+import http from "/src/scripts/server-api";
 
 export default {
     name: "ControllerRoute",
@@ -50,53 +55,18 @@ export default {
                 time_str: ""
             },
             values: {
-                cpu: {
-                    name: "",
-                    physicalNum: 0,
-                    logicalNum: 0,
-                    usedRate: 0,
-                    is64bit: true,
-                    cpuTemperature: 0
-                },
-                memory: {
-                    total: 1,
-                    used: 0,
-                    free: 0,
-                    format: {
-                        total: {value: 0, unit: "B"},
-                        used: {value: 0, unit: "B"},
-                        free: {value: 0, unit: "B"}
-                    }
-                },
-                network: {
-                    uploadSpeed: 0,
-                    downloadSpeed: 0,
-                    format: {
-                        uploadSpeed: {value: 0, unit: "B/s"},
-                        downloadSpeed: {value: 0, unit: "B/s"}
-                    }
-                },
-                disk: [{
-                    label: "",
-                    mount: "",
-                    fSType: "",
-                    name: "",
-                    total: 1,
-                    free: 0,
-                    used: 0,
-                    format: {
-                        total: {value: 0, unit: "B"},
-                        free: {value: 0, unit: "B"},
-                        used: {value: 0, unit: "B"}
-                    }
-                }]
+                cpu: undefined,
+                memory: undefined,
+                network: undefined,
+                disk: []
             },
             mainCard: {
                 height: window.innerHeight - 1,//等相对单位dvh标准出来之后删除
                 class: {
                     'scrollBar-hide': true
                 }
-            }
+            },
+            empty_show: true
         }
     },
     watch: {
@@ -104,26 +74,31 @@ export default {
             if (old instanceof WebSocket && old.readyState === WebSocket.OPEN) {
                 old.close();
             }
-            websocket.onopen = this.WsOnOPen;
-            websocket.onclose = this.WsOnClose;
-            websocket.onerror = this.WsOnError;
-            websocket.onmessage = this.WsOnMessage;
+            if (websocket instanceof WebSocket) {
+                websocket.onopen = this.WsOnOPen;
+                websocket.onclose = this.WsOnClose;
+                websocket.onerror = this.WsOnError;
+                websocket.onmessage = this.WsOnMessage;
+            }
         }
     },
-    beforeCreate() {
-        token(function (resp) {
+    async beforeCreate() {
+        try {
+            let resp = await http.token();
+            console.log("token:", resp);
             if (resp["code"] === 0) {
                 this.ws.token = resp["data"]["token"];
                 this.ws.time_str = resp["data"]["timeStr"];
                 let wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
                 this.ws.websocket = new WebSocket(`${wsProtocol}//${location.host}/websocket/getServerInfo/${this.ws.token}/${this.ws.time_str}`);
             } else {
-                this.$router.push({name: "login"});
+                await router.push({name: "login"});
             }
-        }.bind(this), function () {
+        } catch (error) {
+            console.error("beforeCreate:", error);
             Message.error("服务器错误");
-            this.$router.back();
-        }.bind(this));
+            router.back();
+        }
     },
     beforeMount() {
         this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
@@ -141,9 +116,7 @@ export default {
         WsOnOPen() {
             Message.success({content: "WebSocket成功接入服务器", duration: 1000});
             console.log(Date() + "\nWebSocket成功接入服务器");
-            if (typeof this.ws.websocket !== 'undefined') {
-                this.ws.websocket.send(JSON.stringify({"cmd": "start", "cd": this.cd}));
-            }
+            this.ws.websocket.send(JSON.stringify({"cmd": "start", "cd": this.cd}));
         },
         WsOnClose() {
             Message.success({content: "WebSocket连接已关闭", duration: 1000});
@@ -155,8 +128,9 @@ export default {
             console.log(Date() + "\nWebSocket发生错误，使用POST请求获取信息");
             // getHardware();
         },
-        WsOnMessage(msgEv) {
-            this.values = JSON.parse(msgEv.data);
+        WsOnMessage(msgEvent) {
+            this.empty_show = false;
+            this.values = JSON.parse(msgEvent.data);
         },
         main_card_mouse_enter() {
             if (!this.isTouchDevice) {
@@ -174,6 +148,8 @@ export default {
 </script>
 
 <style scoped>
+@import url(/src/components/controller/styles/card-transition.css);
+
 .main-card {
     box-sizing: border-box;
     width: 100vw;

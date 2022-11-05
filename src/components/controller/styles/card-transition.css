@@ -1,13 +1,16 @@
-.body-enter-active {
+.body-enter-active,
+.body-leave-active {
     transition: all 500ms ease-in-out;
 }
 
-.body-enter-from {
+.body-enter-from,
+.body-leave-to {
     transform: scale(0);
     opacity: 0;
 }
 
-.body-enter-to {
+.body-enter-to,
+.body-leave-from {
     transform: scale(1);
     opacity: 1;
 }

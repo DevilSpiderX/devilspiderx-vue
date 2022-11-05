@@ -11,7 +11,8 @@
 </template>
 
 <script>
-import {user_status} from "/src/scripts/server-api.js";
+import router from "../router.js";
+import http from "/src/scripts/server-api";
 
 export default {
     name: "WelcomeRoute",
@@ -21,24 +22,32 @@ export default {
         }
     },
     methods: {
-        verify() {
-            user_status(function (resp) {
-                console.log(resp);
+        async verify() {
+            let pushName;
+            try {
+                let resp = await http.user_status();
+                console.log("user_status:", resp);
                 let data = resp.data;
-                if (!data["login"] && data["status"] === 0) {
-                    this.$router.push({name: "login"});
+                if (data["login"] && data["status"] === 1) {
+                    pushName = "index";
                 } else {
-                    this.$router.push({name: "index"});
+                    pushName = "login";
                 }
-            }.bind(this), function () {
-                this.$router.push({name: "login"});
-            }.bind(this))
+            } catch (error) {
+                console.error("verify:", error);
+                pushName = "login";
+            }
+            await this.router_push(pushName);
+        },
+        async router_push(name) {
+            await this.sleep(400);
+            await router.push({name});
         }
     },
     beforeMount() {
         this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
     },
-    async mounted() {
+    mounted() {
         let hour = new Date().getHours();
         if (7 <= hour && hour < 12) {
             this.logo = "Morning";
@@ -47,7 +56,6 @@ export default {
         } else {
             this.logo = "Evening";
         }
-        await this.sleep(400);
         this.verify();
     }
 

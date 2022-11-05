@@ -19,8 +19,8 @@
 
 <script>
 import Switch from "/src/components/v2ray/MySwitch.vue";
-import {v2rayState, v2rayStart, v2rayStop} from "/src/scripts/server-api.js";
 import {Notification} from '@arco-design/web-vue';
+import http from "/src/scripts/server-api";
 
 export default {
     name: "V2rayRoute",
@@ -33,9 +33,11 @@ export default {
         }
     },
     methods: {
-        on_switch_clicked() {
-            if (this.switchStatus) {
-                v2rayStop(function (resp) {
+        async on_switch_clicked() {
+            try {
+                if (this.switchStatus) {
+                    let resp = await http.v2rayStop();
+                    console.log("v2rayStop:", resp);
                     switch (resp["code"]) {
                         case 0: {
                             this.switchStatus = false;
@@ -55,11 +57,9 @@ export default {
                             break;
                         }
                     }
-                }.bind(this), () => {
-                    Notification.error("服务器错误")
-                });
-            } else {
-                v2rayStart(function (resp) {
+                } else {
+                    let resp = await http.v2rayStart();
+                    console.log("v2rayStart:", resp);
                     switch (resp["code"]) {
                         case 0: {
                             this.switchStatus = true;
@@ -79,19 +79,20 @@ export default {
                             break;
                         }
                     }
-                }.bind(this), () => {
-                    Notification.error("服务器错误")
-                });
+                }
+            } catch (error) {
+                console.error("on_switch_clicked:", error);
+                Notification.error("服务器错误")
             }
         }
     },
     beforeMount() {
         this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
     },
-    mounted() {
-        v2rayState(function (resp) {
-            this.switchStatus = resp["code"] === 1;
-        }.bind(this));
+    async mounted() {
+        let resp = await http.v2rayState();
+        console.log("v2rayState:", resp);
+        this.switchStatus = resp["code"] === 1;
     }
 }
 </script>

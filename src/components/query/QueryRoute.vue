@@ -52,7 +52,8 @@
 import {Message, Modal} from '@arco-design/web-vue';
 import {routerViewLocationKey} from 'vue-router/dist/vue-router';
 import {Vue3Menus} from 'vue3-menus';
-import {addPasswords, query, updatePasswords} from "/src/scripts/server-api.js";
+import router from "../../router.js";
+import http from "/src/scripts/server-api";
 import AddModal from "./AddModal.vue";
 import UpdateModal from "./UpdateModal.vue";
 
@@ -105,21 +106,7 @@ export default {
         this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
     },
     mounted() {
-        let routeQuery = this.injectedRoute.value.query;
-        console.log(routeQuery);
-        if (Object.hasOwn(routeQuery, "key")) {
-            this.key = routeQuery.key;
-            window.sessionStorage['history_query_key'] = this.key;
-            query(this.key, this.QuerySucceed, this.QueryError);
-            this.searching = true;
-        } else {
-            let hQKey = window.sessionStorage['history_query_key'];
-            if (hQKey !== undefined) {
-                query(hQKey, this.QuerySucceed, this.QueryError);
-                this.searching = true;
-                this.key = hQKey;
-            }
-        }
+        this.detectKey(this.injectedRoute.value.query);
         this.table.bodyScrollWrap = document.querySelector('.arco-scrollbar-container.arco-table-body');
         window.addEventListener('resize', this.window_resize);//等相对单位dvh标准出来之后删除
     },
@@ -128,20 +115,24 @@ export default {
         window.removeEventListener('resize', this.window_resize);//等相对单位dvh标准出来之后删除
     },
     methods: {
-        Search() {
+        async Search() {
             window.sessionStorage['history_query_key'] = this.key;
-            query(this.key, this.QuerySucceed, this.QueryError);
             this.searching = true;
+            try {
+                this.QuerySucceed(await http.query(this.key));
+            } catch (error) {
+                console.error("Search:", error);
+                this.QueryError();
+            }
         },
 
         QuerySucceed(resp) {
-            console.log(resp);
+            console.log("QuerySucceed:", resp);
             this.searching = false;
             this.table.paginationProps.current = 1;
             switch (resp["code"]) {
                 case 0: {
                     this.table.data = resp["data"]["list"];
-
                     this.setTableScrollTop(0);
                     break;
                 }
@@ -151,7 +142,7 @@ export default {
                     break;
                 }
                 case 100: {
-                    this.$router.push({name: "login"});
+                    router.push({name: "login"});
                     break;
                 }
             }
@@ -160,6 +151,28 @@ export default {
         QueryError() {
             Message.error("搜索出现错误");
             this.searching = false;
+        },
+
+        async detectKey(routeQuery) {
+            console.log("routeQuery=", routeQuery);
+            try {
+                if (Object.hasOwn(routeQuery, "key")) {
+                    this.key = routeQuery.key;
+                    window.sessionStorage['history_query_key'] = this.key;
+                    this.searching = true;
+                    this.QuerySucceed(await http.query(this.key));
+                } else {
+                    let hQKey = window.sessionStorage['history_query_key'];
+                    if (hQKey !== undefined) {
+                        this.key = hQKey;
+                        this.searching = true;
+                        this.QuerySucceed(await http.query(hQKey));
+                    }
+                }
+            } catch (error) {
+                console.error("detectKey:", error);
+                this.QueryError();
+            }
         },
 
         setTableScrollTop(number) {
@@ -210,37 +223,42 @@ export default {
             });
         },
 
-        add_submit(form_data) {
+        async add_submit(form_data) {
             let name = form_data.name;
             let account = form_data.account;
             let password = form_data.password;
             let remark = form_data.remark;
-            addPasswords(name, account, password, remark, function (resp) {
-                switch (resp["code"]) {
-                    case 0: {
-                        let key = window.sessionStorage['history_query_key'];
-                        key = key === undefined || key === '' ? name : `${key} ${name}`;
-                        window.sessionStorage['history_query_key'] = key;
-                        query(key, this.QuerySucceed, this.QueryError);
-                        this.searching = true;
-                        this.key = key;
-                        this.addModal.visible = false;
-                        this.addModal.clean = true;
-                        Message.success("添加成功");
-                        break;
+            let resp = await http.addPasswords(name, account, password, remark);
+            console.log("addPasswords:", resp);
+            switch (resp["code"]) {
+                case 0: {
+                    let key = window.sessionStorage['history_query_key'];
+                    key = key === undefined || key === '' ? name : `${key} ${name}`;
+                    window.sessionStorage['history_query_key'] = key;
+                    this.searching = true;
+                    this.key = key;
+                    this.addModal.visible = false;
+                    this.addModal.clean = true;
+                    Message.success("添加成功");
+                    try {
+                        this.QuerySucceed(await http.query(key));
+                    } catch (error) {
+                        console.error("add_submit:", error);
+                        this.QueryError();
                     }
-                    case 1: {
-                        Message.error({
-                            content: () =>
-                                <p style="margin:0">
-                                    添加失败<br/>可能该名称已存在<br/>请尝试换一个名称再添加
-                                </p>
-                        });
-                        this.addModal.visible = false;
-                        break;
-                    }
+                    break;
                 }
-            }.bind(this));
+                case 1: {
+                    Message.error({
+                        content: () =>
+                            <p style="margin:0">
+                                添加失败<br/>可能该名称已存在<br/>请尝试换一个名称再添加
+                            </p>
+                    });
+                    this.addModal.visible = false;
+                    break;
+                }
+            }
         },
 
         update_submit(form_data) {
@@ -249,36 +267,43 @@ export default {
                 content: "确认修改？",
                 okText: "确定",
                 cancelText: "取消",
-                onOk: function () {
-                    let id = form_data.id;
-                    let name = form_data.name;
-                    let account = form_data.account;
-                    let password = form_data.password;
-                    let remark = form_data.remark;
-                    updatePasswords(id, name, account, password, remark, function (resp) {
-                        switch (resp["code"]) {
-                            case 0: {
-                                let key = window.sessionStorage['history_query_key'];
-                                key = key === undefined || key === '' ? name : key;
-                                if (key.indexOf(name) === -1) {
-                                    key += ` ${name}`;
-                                }
-                                window.sessionStorage['history_query_key'] = key;
-                                query(key, this.QuerySucceed, this.QueryError);
-                                this.searching = true;
-                                this.key = key;
-                                this.updateModal.visible = false;
-                                Message.success("修改成功");
-                                break;
-                            }
-                            case 1: {
-                                Message.error(resp["msg"]);
-                                break;
-                            }
-                        }
-                    }.bind(this));
-                }.bind(this)
+                onOk: this.okUpdate.bind(this, form_data)
             });
+        },
+
+        async okUpdate(form_data) {
+            let id = form_data.id;
+            let name = form_data.name;
+            let account = form_data.account;
+            let password = form_data.password;
+            let remark = form_data.remark;
+            let resp = await http.updatePasswords(id, name, account, password, remark);
+            console.log("updatePasswords:", resp);
+            switch (resp["code"]) {
+                case 0: {
+                    let key = window.sessionStorage['history_query_key'];
+                    key = key === undefined || key === '' ? name : key;
+                    if (key.indexOf(name) === -1) {
+                        key += ` ${name}`;
+                    }
+                    window.sessionStorage['history_query_key'] = key;
+                    this.searching = true;
+                    this.key = key;
+                    this.updateModal.visible = false;
+                    Message.success("修改成功");
+                    try {
+                        this.QuerySucceed(await http.query(key))
+                    } catch (error) {
+                        console.error("okUpdate:", error);
+                        this.QueryError();
+                    }
+                    break;
+                }
+                case 1: {
+                    Message.error(resp["msg"]);
+                    break;
+                }
+            }
         },
 
         window_resize() {//等相对单位dvh标准出来之后删除

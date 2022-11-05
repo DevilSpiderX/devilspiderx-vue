@@ -33,21 +33,21 @@
                 <a-col :xs="24" :sm="21" :md="16" :lg="14" :xl="12" :xxl="10">
                     <a-space direction="vertical" fill size="large">
                         <a-button class="my-button" @contextmenu.prevent.stop long
-                                  @click="this.$router.push({name:'controller'})">
+                                  @click="$router.push({name:'controller'})">
                             <template #icon>
                                 <i class="fas fa-sliders-h fa-fw"></i>
                             </template>
                             控制中心
                         </a-button>
                         <a-button class="my-button" @contextmenu.prevent.stop long
-                                  @click="this.$router.push({name:'query'})">
+                                  @click="$router.push({name:'query'})">
                             <template #icon>
                                 <i class="fas fa-search fa-fw"></i>
                             </template>
                             查&nbsp;&nbsp;询
                         </a-button>
                         <a-button class="my-button" @contextmenu.prevent.stop long
-                                  @click="this.$router.push({name:'v2ray'})">
+                                  @click="$router.push({name:'v2ray'})">
                             <template #icon>
                                 <!--suppress CheckImageSize -->
                                 <img src="/src/assets/v2rayN.png" alt="v2ray" width="27" height="27"
@@ -56,14 +56,14 @@
                             V2Ray
                         </a-button>
                         <a-button class="my-button" @contextmenu.prevent.stop long
-                                  @click="this.$router.push({name:'log'})">
+                                  @click="$router.push({name:'log'})">
                             <template #icon>
                                 <i class="fas fa-file-alt fa-fw"></i>
                             </template>
                             日&nbsp;&nbsp;志
                         </a-button>
                         <a-button class="my-button" @contextmenu.prevent.stop long
-                                  @click="this.$router.push({name:'updatePwd'})">
+                                  @click="$router.push({name:'updatePwd'})">
                             <template #icon>
                                 <i class="fas fa-edit fa-fw"></i>
                             </template>
@@ -109,9 +109,10 @@
 </template>
 
 <script>
-import {logout} from "/src/scripts/server-api.js";
 import {Notification} from '@arco-design/web-vue';
 import {IconMoonFill, IconSunFill, IconClose} from "@arco-design/web-vue/es/icon";
+import router from "/src/router.js";
+import http from "/src/scripts/server-api";
 
 export default {
     name: "IndexRoute",
@@ -139,8 +140,10 @@ export default {
         open_drawer() {
             this.drawer.visible = true;
         },
-        on_logoutButton_clicked() {
-            logout(function (resp) {
+        async on_logoutButton_clicked() {
+            try {
+                let resp = await http.logout();
+                console.log("Logout:", resp);
                 switch (resp["code"]) {
                     case 0: {
                         sessionStorage.setItem("user_status", "0");
@@ -152,10 +155,11 @@ export default {
                         break;
                     }
                 }
-                this.$router.push({name: "login"});
-            }.bind(this), function () {
+                await router.push({name: "login"});
+            } catch (error) {
+                console.error("on_logoutButton_clicked:", error);
                 Notification.error("服务器错误");
-            });
+            }
         },
         on_exit_clicked() {
             window.open("about:blank", "_self").close();
