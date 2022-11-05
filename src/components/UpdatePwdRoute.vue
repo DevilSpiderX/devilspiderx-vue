@@ -1,26 +1,33 @@
+<script setup>
+import { inject, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { Modal } from "@arco-design/web-vue";
+import { setThemeColor } from "../plugins/myPlugins.js";
+
+const appSettings = inject("appSettings");
+setThemeColor(appSettings.darkTheme ? "#17171a" : "#777a7f");
+
+const router = useRouter();
+
+onMounted(() => {
+    Modal.info({
+        title: "提示",
+        content: "页面未完成",
+        width: 300,
+        okText: "返回",
+        onBeforeClose: () => {
+            router.back();
+        }
+    })
+});
+
+</script>
+
 <template>
     <a-layout>
     </a-layout>
 </template>
 
-<script>
-import {Modal} from "@arco-design/web-vue";
+<style scoped>
 
-export default {
-    name: "UpdatePwdRoute",
-    beforeMount() {
-        this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
-    },
-    mounted() {
-        Modal.info({
-            title: "提示",
-            content: "页面未完成",
-            width: 300,
-            okText: "返回",
-            onBeforeClose: function () {
-                this.$router.back();
-            }.bind(this)
-        })
-    }
-}
-</script>
+</style>

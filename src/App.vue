@@ -1,71 +1,62 @@
+<script setup>
+import { onBeforeMount, provide, reactive, watch } from "vue";
+import { changeTheme } from "./plugins/myPlugins.js";
+
+const appSettings = reactive({
+    darkTheme: false,
+    themeFollowSystem: false
+});
+provide("appSettings", appSettings);
+{
+    let settings = window.localStorage.getItem("appSettings");
+    if (settings === null) {
+        window.localStorage.setItem("appSettings", JSON.stringify(appSettings));
+    } else {
+        Object.assign(appSettings, JSON.parse(settings));
+    }
+}
+
+watch(appSettings, newVal => {
+    console.log('App配置已被修改', newVal);
+    window.localStorage.setItem("appSettings", JSON.stringify(appSettings));
+});
+
+watch(() => appSettings.darkTheme, newVal => {
+    changeTheme(newVal ? "dark" : "light");
+});
+
+watch(() => appSettings.themeFollowSystem, newVal => {
+    if (newVal) {
+        setThemeFollowSystem();
+    }
+});
+
+onBeforeMount(() => {
+    if (appSettings.darkTheme) {
+        changeTheme("dark");
+    }
+    if (appSettings.themeFollowSystem) {
+        setThemeFollowSystem();
+    }
+    window.matchMedia('(prefers-color-scheme:dark)').addEventListener("change", prefers_color_scheme_change);
+})
+
+function setThemeFollowSystem() {
+    appSettings.darkTheme = window.matchMedia('(prefers-color-scheme:dark)').matches;
+}
+
+function prefers_color_scheme_change(e) {
+    console.log(e)
+    if (appSettings.themeFollowSystem) {
+        setThemeFollowSystem();
+    }
+}
+
+</script>
+
 <template>
     <router-view/>
 </template>
-
-<script>
-import {reactive, provide} from 'vue';
-
-export default {
-    name: 'App',
-    setup() {
-        const appSettings = reactive({
-            darkTheme: false,
-            themeFollowSystem: false
-        });
-
-        {
-            let settings = window.localStorage.getItem("appSettings");
-            if (settings === null) {
-                window.localStorage.setItem("appSettings", JSON.stringify(appSettings));
-            } else {
-                Object.assign(appSettings, JSON.parse(settings));
-            }
-        }
-
-        provide("appSettings", appSettings);
-
-        return {appSettings};
-    },
-    watch: {
-        appSettings: {
-            handler(newVal) {
-                console.log('App配置已被修改', newVal);
-                window.localStorage.setItem("appSettings", JSON.stringify(this.appSettings));
-            },
-            deep: true
-        },
-        "appSettings.darkTheme"(newVal) {
-            this.changeTheme(newVal ? "dark" : "light");
-        },
-        "appSettings.themeFollowSystem"(newVal) {
-            if (newVal) {
-                this.setThemeFollowSystem();
-            }
-        }
-    },
-    beforeMount() {
-        if (this.appSettings.darkTheme) {
-            this.changeTheme("dark");
-        }
-        if (this.appSettings.themeFollowSystem) {
-            this.setThemeFollowSystem();
-        }
-        window.matchMedia('(prefers-color-scheme:dark)')
-            .addEventListener("change", this.prefers_color_scheme_change);
-    },
-    methods: {
-        setThemeFollowSystem() {
-            this.appSettings.darkTheme = window.matchMedia('(prefers-color-scheme:dark)').matches;
-        },
-        prefers_color_scheme_change(e) {
-            console.log(e)
-            if (this.appSettings.themeFollowSystem) {
-                this.setThemeFollowSystem();
-            }
-        }
-    }
-}
-</script>
 
 <style>
 body {
@@ -89,5 +80,4 @@ body {
     --box-shadow-lighter: 0px 0px 6px #0000001f;
     --box-shadow-dark: 0px 16px 48px 16px #00000014, 0px 12px 32px #0000001f, 0px 8px 16px -8px #00000029;
 }
-
 </style>

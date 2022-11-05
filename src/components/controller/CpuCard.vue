@@ -29,9 +29,9 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, PropType} from "vue";
+import { defineComponent, PropType } from "vue";
 import BaseCard from "./BaseCard.vue";
-import {colors} from "./scripts/progressColor.js";
+import { colors } from "./scripts/progressColor.js";
 
 interface CpuValueTYpe {
     name: string,

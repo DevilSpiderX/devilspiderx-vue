@@ -49,9 +49,9 @@
 </template>
 
 <script lang="jsx">
-import {Message, Modal} from '@arco-design/web-vue';
-import {routerViewLocationKey} from 'vue-router/dist/vue-router';
-import {Vue3Menus} from 'vue3-menus';
+import { Message, Modal } from '@arco-design/web-vue';
+import { routerViewLocationKey } from 'vue-router/dist/vue-router';
+import { Vue3Menus } from 'vue3-menus';
 import router from "../../router.js";
 import http from "/src/scripts/server-api";
 import AddModal from "./AddModal.vue";

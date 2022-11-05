@@ -1,3 +1,44 @@
+<script setup>
+import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import { setThemeColor, sleep } from "../plugins/myPlugins.js";
+import http from "../scripts/server-api.js";
+
+setThemeColor(window.getComputedStyle(document.body).backgroundColor);
+
+const logo = ref((() => {
+    let hour = new Date().getHours();
+    if (7 <= hour && hour < 12) {
+        return "Morning";
+    } else if (12 <= hour && hour < 19) {
+        return "Afternoon";
+    } else {
+        return "Evening";
+    }
+})());
+
+const router = useRouter();
+
+onMounted(async () => {
+    let pushName;
+    try {
+        let resp = await http.user_status();
+        console.log("user_status:", resp);
+        let data = resp.data;
+        if (data["login"] && data["status"] === 1) {
+            pushName = "index";
+        } else {
+            pushName = "login";
+        }
+    } catch (error) {
+        console.error("verify:", error);
+        pushName = "login";
+    }
+    await sleep(400);
+    await router.push({name: pushName});
+});
+</script>
+
 <template>
     <div class="main">
         <div>
@@ -9,58 +50,6 @@
         </div>
     </div>
 </template>
-
-<script>
-import router from "../router.js";
-import http from "/src/scripts/server-api";
-
-export default {
-    name: "WelcomeRoute",
-    data() {
-        return {
-            logo: ""
-        }
-    },
-    methods: {
-        async verify() {
-            let pushName;
-            try {
-                let resp = await http.user_status();
-                console.log("user_status:", resp);
-                let data = resp.data;
-                if (data["login"] && data["status"] === 1) {
-                    pushName = "index";
-                } else {
-                    pushName = "login";
-                }
-            } catch (error) {
-                console.error("verify:", error);
-                pushName = "login";
-            }
-            await this.router_push(pushName);
-        },
-        async router_push(name) {
-            await this.sleep(400);
-            await router.push({name});
-        }
-    },
-    beforeMount() {
-        this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
-    },
-    mounted() {
-        let hour = new Date().getHours();
-        if (7 <= hour && hour < 12) {
-            this.logo = "Morning";
-        } else if (12 <= hour && hour < 19) {
-            this.logo = "Afternoon";
-        } else {
-            this.logo = "Evening";
-        }
-        this.verify();
-    }
-
-}
-</script>
 
 <style scoped>
 .main {

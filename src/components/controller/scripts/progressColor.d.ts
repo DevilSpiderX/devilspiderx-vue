@@ -1,3 +1,3 @@
 declare const colors: string[];
 
-export {colors};
+export { colors };

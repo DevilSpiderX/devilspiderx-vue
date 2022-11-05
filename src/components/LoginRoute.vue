@@ -1,3 +1,95 @@
+<script setup>
+import { inject, onMounted, reactive } from "vue";
+import { useRouter } from "vue-router";
+import { Message } from '@arco-design/web-vue';
+import SHA256 from 'crypto-js/sha256';
+import Hex from 'crypto-js/enc-hex';
+import http from "/src/scripts/server-api";
+import { setThemeColor } from "../plugins/myPlugins.js";
+
+setThemeColor(window.getComputedStyle(document.body).backgroundColor);
+
+const form = reactive({
+    uid: "",
+    pwd: ""
+});
+
+onMounted(() => {
+    let loginUid = localStorage.loginUid;
+    if (loginUid !== undefined) {
+        form.uid = loginUid;
+    }
+});
+
+const inputStatus = reactive([false, false]);
+const router = useRouter();
+
+async function form_submit() {
+    for (const i in inputStatus) inputStatus[i] = false;
+    let uid = form.uid;
+    let pwd = form.pwd;
+    if (uid === "") {
+        inputStatus[0] = true;
+        return;
+    }
+    if (pwd === "") {
+        inputStatus[1] = true;
+        return;
+    }
+    storageAccount(uid, true);
+
+    running_start()
+    pwd = SHA256(pwd).toString(Hex);
+    try {
+        let resp = await http.login(uid, pwd);
+        console.log("Login:", resp);
+        switch (resp["code"]) {
+            case 0: {
+                await router.push({name: "index"});
+                break;
+            }
+            case 1: {
+                Message.error("密码错误");
+                inputStatus[1] = true;
+                break;
+            }
+            case 2: {
+                Message.error("账号不存在");
+                for (const i in inputStatus) inputStatus[i] = false;
+                break;
+            }
+        }
+    } catch (error) {
+        console.error("form_submit:", error);
+        Message.error("服务器错误");
+    }
+    running_stop();
+}
+
+function storageAccount(uid, allow) {
+    if (allow) {
+        localStorage.loginUid = uid;
+    } else {
+        localStorage.removeItem("loginUid");
+    }
+}
+
+const appSettings = inject("appSettings");
+const running = reactive({
+    show: false
+});
+
+function running_start() {
+    running.show = true;
+    setThemeColor(appSettings.darkTheme ? "#0c0c0d" : "#808080");
+}
+
+function running_stop() {
+    running.show = false;
+    setThemeColor(window.getComputedStyle(document.body).backgroundColor);
+}
+</script>
+
 <template>
     <a-layout>
         <a-layout-content style="padding: 0;overflow: visible;">
@@ -40,99 +132,6 @@
         <i class="fas fa-spinner fa-spin"></i>
     </div>
 </template>
-
-<script>
-import {Message} from '@arco-design/web-vue';
-import SHA256 from 'crypto-js/sha256';
-import Hex from 'crypto-js/enc-hex';
-import router from "/src/router.js";
-import http from "/src/scripts/server-api";
-
-export default {
-    name: "LoginRoute",
-    data() {
-        return {
-            form: {
-                uid: "",
-                pwd: ""
-            },
-            inputStatus: [false, false],
-            running: {
-                show: false
-            }
-        }
-    },
-    inject: ["appSettings"],
-    beforeMount() {
-        this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
-    },
-    mounted() {
-        let loginUid = localStorage.loginUid;
-        if (loginUid !== undefined) {
-            this.form.uid = loginUid;
-        }
-
-    },
-    methods: {
-        async form_submit() {
-            for (const i in this.inputStatus) this.inputStatus[i] = false;
-            let uid = this.form.uid;
-            let pwd = this.form.pwd;
-            if (uid === "") {
-                this.inputStatus[0] = true;
-                return;
-            }
-            if (pwd === "") {
-                this.inputStatus[1] = true;
-                return;
-            }
-            this.storageAccount(uid, true);
-
-            this.running_start()
-            pwd = SHA256(pwd).toString(Hex);
-            try {
-                let resp = await http.login(uid, pwd);
-                console.log("Login:", resp);
-                switch (resp["code"]) {
-                    case 0: {
-                        await router.push({name: "index"});
-                        break;
-                    }
-                    case 1: {
-                        Message.error("密码错误");
-                        this.inputStatus[1] = true;
-                        break;
-                    }
-                    case 2: {
-                        Message.error("账号不存在");
-                        for (const i in this.inputStatus) this.inputStatus[i] = false;
-                        break;
-                    }
-                }
-            } catch (error) {
-                console.error("form_submit:", error);
-                Message.error("服务器错误");
-            }
-            this.running_stop();
-        },
-        storageAccount(uid, allow) {
-            if (allow) {
-                localStorage.loginUid = uid;
-            } else {
-                localStorage.removeItem("loginUid");
-            }
-        },
-        running_start() {
-            this.setThemeColor(this.appSettings.darkTheme ? "#0c0c0d" : "#808080");
-            this.running.show = true;
-        },
-        running_stop() {
-            this.running.show = false;
-            this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
-        }
-    }
-}
-</script>
 
 <style scoped>
 .register-col {

@@ -19,7 +19,7 @@
 
 <script>
 import Switch from "/src/components/v2ray/MySwitch.vue";
-import {Notification} from '@arco-design/web-vue';
+import { Notification } from '@arco-design/web-vue';
 import http from "/src/scripts/server-api";
 
 export default {

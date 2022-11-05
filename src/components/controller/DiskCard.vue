@@ -15,9 +15,9 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, PropType} from "vue";
+import { defineComponent, PropType } from "vue";
 import BaseCard from "./BaseCard.vue";
-import {colors} from "./scripts/progressColor";
+import { colors } from "./scripts/progressColor";
 
 interface DiskValueType {
     label: string,

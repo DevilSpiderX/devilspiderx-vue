@@ -35,9 +35,9 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, PropType} from "vue";
+import { defineComponent, PropType } from "vue";
 import BaseCard from "./BaseCard.vue";
-import {IconArrowRise, IconArrowFall} from "@arco-design/web-vue/es/icon";
+import { IconArrowFall, IconArrowRise } from "@arco-design/web-vue/es/icon";
 
 interface NetworkValueType {
     uploadSpeed: number,

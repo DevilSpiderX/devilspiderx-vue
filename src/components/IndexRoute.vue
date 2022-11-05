@@ -1,12 +1,66 @@
+<script setup>
+import { inject, reactive, watch } from "vue";
+import { useRouter } from "vue-router";
+import { IconClose, IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
+import { setThemeColor } from "../plugins/myPlugins.js";
+import http from "../scripts/server-api.js";
+import { Notification } from "@arco-design/web-vue";
+
+setThemeColor(window.getComputedStyle(document.body).backgroundColor);
+
+const appSettings = inject("appSettings");
+const drawer = reactive({
+    visible: false,
+    empty_form: {}
+});
+
+watch(() => appSettings.darkTheme, (newVal) =>
+    setThemeColor(newVal && drawer.visible ? "#2a2a2b" : window.getComputedStyle(document.body).backgroundColor)
+);
+
+watch(() => drawer.visible, (newVal) =>
+    setThemeColor(newVal && appSettings.darkTheme ?
+        "#2a2a2b" : window.getComputedStyle(document.body).backgroundColor)
+);
+
+const router = useRouter();
+
+async function on_logoutButton_clicked() {
+    try {
+        let resp = await http.logout();
+        console.log("Logout:", resp);
+        switch (resp["code"]) {
+            case 0: {
+                sessionStorage.setItem("user_status", "0");
+                Notification.success("登出成功");
+                break;
+            }
+            case 1: {
+                Notification.error("您还未登录过");
+                break;
+            }
+        }
+        await router.push({name: "login"});
+    } catch (error) {
+        console.error("on_logoutButton_clicked:", error);
+        Notification.error("服务器错误");
+    }
+}
+
+function on_exit_clicked() {
+    window.open("about:blank", "_self").close();
+}
+
+</script>
+
 <template>
     <a-layout>
         <a-layout-header style="border-bottom: 1px solid #84858d55;">
-            <a-page-header @back="open_drawer">
+            <a-page-header @back="drawer.visible = true">
                 <template #back-icon>
                     <span style="font-size: 1.2rem;position: relative">
-                        <i class="fa-solid fa-bars fa-fw">
-
-                        </i></span>
+                        <i class="fa-solid fa-bars fa-fw"></i>
+                    </span>
                 </template>
                 <template #title>
                     <span style="font-weight:700;"> DevilSpiderX </span>
@@ -97,7 +151,7 @@
                 </a-button>
             </a-row>
         </template>
-        <a-form :model="drawer.form" auto-label-width>
+        <a-form :model="drawer.empty_form" auto-label-width>
             <a-form-item label="深色模式">
                 <a-switch v-model="appSettings.darkTheme" :disabled="appSettings.themeFollowSystem"/>
             </a-form-item>
@@ -107,67 +161,6 @@
         </a-form>
     </a-drawer>
 </template>
-
-<script>
-import {Notification} from '@arco-design/web-vue';
-import {IconMoonFill, IconSunFill, IconClose} from "@arco-design/web-vue/es/icon";
-import router from "/src/router.js";
-import http from "/src/scripts/server-api";
-
-export default {
-    name: "IndexRoute",
-    components: {IconMoonFill, IconSunFill, IconClose},
-    data() {
-        return {
-            drawer: {
-                visible: false,
-                form: {}
-            }
-        }
-    },
-    inject: ["appSettings"],
-    watch: {
-        "appSettings.darkTheme"() {
-            this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
-        }
-    },
-    beforeMount() {
-        this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
-    },
-    mounted() {
-    },
-    methods: {
-        open_drawer() {
-            this.drawer.visible = true;
-        },
-        async on_logoutButton_clicked() {
-            try {
-                let resp = await http.logout();
-                console.log("Logout:", resp);
-                switch (resp["code"]) {
-                    case 0: {
-                        sessionStorage.setItem("user_status", "0");
-                        Notification.success("登出成功");
-                        break;
-                    }
-                    case 1: {
-                        Notification.error("您还未登录过");
-                        break;
-                    }
-                }
-                await router.push({name: "login"});
-            } catch (error) {
-                console.error("on_logoutButton_clicked:", error);
-                Notification.error("服务器错误");
-            }
-        },
-        on_exit_clicked() {
-            window.open("about:blank", "_self").close();
-        },
-
-    }
-}
-</script>
 
 <style scoped>
 .my-button {

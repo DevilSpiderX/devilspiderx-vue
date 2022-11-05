@@ -36,7 +36,7 @@
 
 <script>
 import router from "../../router.js";
-import {Message} from "@arco-design/web-vue";
+import { Message } from "@arco-design/web-vue";
 import CpuCard from "./CpuCard.vue";
 import MemoryCard from "./MemoryCard.vue";
 import NetworkCard from "./NetworkCard.vue";

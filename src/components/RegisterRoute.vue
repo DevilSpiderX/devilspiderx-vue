@@ -1,3 +1,86 @@
+<script setup>
+import { inject, reactive } from "vue";
+import { useRouter } from "vue-router";
+import { Message } from "@arco-design/web-vue";
+import http from "/src/scripts/server-api";
+import { setThemeColor } from "../plugins/myPlugins.js";
+
+setThemeColor(window.getComputedStyle(document.body).backgroundColor);
+
+const inputStatus = reactive([false, false, false]);
+const form = reactive({
+    uid: "",
+    pwd: "",
+    pwd_a: ""
+});
+const router = useRouter();
+
+async function form_submit() {
+    for (const i in inputStatus) inputStatus[i] = false;
+    let uid = form.uid;
+    let pwd = form.pwd;
+    let pwd_a = form.pwd_a;
+    if (uid === "") {
+        inputStatus[0] = true;
+        return;
+    }
+    if (pwd === "") {
+        inputStatus[1] = true;
+        return;
+    }
+    if (pwd_a === "") {
+        inputStatus[2] = true;
+        return;
+    }
+    if (pwd !== pwd_a) {
+        Message.error("两次输入的密码不相同");
+        inputStatus[1] = true;
+        inputStatus[2] = true;
+        return;
+    }
+    running_start();
+    try {
+        let resp = await http.register(uid, pwd);
+        console.log("Register:", resp);
+        switch (resp["code"]) {
+            case 0: {
+                await router.push({name: "login"});
+                break;
+            }
+            case 1: {
+                Message.error("注册失败");
+                for (const i in inputStatus) inputStatus[i] = true;
+                break;
+            }
+            case 4: {
+                Message.error("用户名已存在\n请换一个用户名");
+                inputStatus[0] = true;
+                break;
+            }
+        }
+    } catch (error) {
+        console.error("form_submit:", error);
+        Message.error("服务器错误");
+    }
+    running_stop();
+}
+
+const appSettings = inject("appSettings");
+const running = reactive({
+    show: false
+});
+
+function running_start() {
+    running.show = true;
+    setThemeColor(appSettings.darkTheme ? "#0c0c0d" : "#808080");
+}
+
+function running_stop() {
+    running.show = false;
+    setThemeColor(window.getComputedStyle(document.body).backgroundColor);
+}
+</script>
+
 <template>
     <a-layout>
         <a-layout-content style="padding: 0;overflow: visible;">
@@ -48,92 +131,6 @@
         <i class="fas fa-spinner fa-spin"></i>
     </div>
 </template>
-
-<script>
-import {Message} from "@arco-design/web-vue";
-import http from "/src/scripts/server-api";
-import router from "/src/router.js";
-
-export default {
-    name: "RegisterRoute",
-    data() {
-        return {
-            form: {
-                uid: "",
-                pwd: "",
-                pwd_a: ""
-            },
-            inputStatus: [false, false, false],
-            running: {
-                show: false
-            }
-        }
-    },
-    inject: ["appSettings"],
-    beforeMount() {
-        this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
-    },
-    methods: {
-        async form_submit() {
-            for (const i in this.inputStatus) this.inputStatus[i] = false;
-            let uid = this.form.uid;
-            let pwd = this.form.pwd;
-            let pwd_a = this.form.pwd_a;
-            if (uid === "") {
-                this.inputStatus[0] = true;
-                return;
-            }
-            if (pwd === "") {
-                this.inputStatus[1] = true;
-                return;
-            }
-            if (pwd_a === "") {
-                this.inputStatus[2] = true;
-                return;
-            }
-            if (pwd !== pwd_a) {
-                Message.error("两次输入的密码不相同");
-                this.inputStatus[1] = true;
-                this.inputStatus[2] = true;
-                return;
-            }
-            this.running_start();
-            try {
-                let resp = await http.register(uid, pwd);
-                console.log("Register:", resp);
-                switch (resp["code"]) {
-                    case 0: {
-                        await router.push({name: "login"});
-                        break;
-                    }
-                    case 1: {
-                        Message.error("注册失败");
-                        for (const i in this.inputStatus) this.inputStatus[i] = true;
-                        break;
-                    }
-                    case 4: {
-                        Message.error("用户名已存在\n请换一个用户名");
-                        this.inputStatus[0] = true;
-                        break;
-                    }
-                }
-            } catch (error) {
-                console.error("form_submit:", error);
-                Message.error("服务器错误");
-            }
-            this.running_stop();
-        },
-        running_start() {
-            this.setThemeColor(this.appSettings.darkTheme ? "#0c0c0d" : "#808080");
-            this.running.show = true;
-        },
-        running_stop() {
-            this.running.show = false;
-            this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
-        }
-    }
-}
-</script>
 
 <style scoped>
 .register-col {
