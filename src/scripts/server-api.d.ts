@@ -39,3 +39,5 @@ declare namespace http {
 
     async function user_status(): Promise<any>;
 }
+
+export default http;

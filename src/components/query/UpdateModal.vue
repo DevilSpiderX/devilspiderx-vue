@@ -1,3 +1,72 @@
+<script setup>
+import { reactive, ref, watch } from "vue";
+
+const props = defineProps({
+    visible: Boolean,
+    data: Object
+})
+const emit = defineEmits(["submit", "update:visible"]);
+
+watch(() => props.visible, newVal => {
+    if (newVal) {
+        window_resize();
+        window.addEventListener("resize", window_resize);
+    } else {
+        window.removeEventListener("resize", window_resize);
+    }
+});
+
+const form = reactive({
+    id: -1,
+    name: "",
+    account: "",
+    password: "",
+    remark: ""
+});
+
+watch(() => props.data, newVal => {
+    Object.assign(form, newVal);
+});
+
+function Close() {
+    emit('update:visible', false);
+}
+
+const inputNameStatus = ref(false);
+
+function form_submit() {
+    inputNameStatus.value = false;
+    if (form.name === "") {
+        inputNameStatus.value = true;
+        return;
+    }
+    emit('submit', form);
+}
+
+const width = ref("50%");
+
+function window_resize() {
+    let winWidth = window.innerWidth;
+    if (winWidth < 576) {
+        width.value = "90%";
+    } else if (winWidth < 768) {
+        width.value = "83.3%";
+    } else if (winWidth < 992) {
+        width.value = "62.5%";
+    } else if (winWidth < 1200) {
+        width.value = "48%";
+    } else if (winWidth < 1920) {
+        width.value = "40%";
+    } else if (winWidth >= 1920) {
+        width.value = "25%";
+    }
+}
+
+function cancel_click() {
+    Close();
+}
+</script>
+
 <template>
     <a-modal :visible="visible" title="修改密码记录" :width="width"
              @update:visible="value=>$emit('update:visible',value)">
@@ -43,80 +112,6 @@
         </template>
     </a-modal>
 </template>
-
-<script>
-export default {
-    name: "UpdateModal",
-    data() {
-        return {
-            form: {
-                id: -1,
-                name: "",
-                account: "",
-                password: "",
-                remark: ""
-            },
-            inputNameStatus: false,
-            width: "50%"
-        }
-    },
-    props: {
-        visible: Boolean,
-        data: Object
-    },
-    watch: {
-        visible(newVal) {
-            if (newVal) {
-                this.window_resize();
-                window.addEventListener("resize", this.window_resize);
-            } else {
-                window.removeEventListener("resize", this.window_resize);
-            }
-        },
-        data(newVal) {
-            Object.assign(this.form, newVal);
-        }
-    },
-    emits: ["submit", "update:visible"],
-    methods: {
-        Open() {
-            this.$emit('update:visible', true);
-        },
-        Close() {
-            this.$emit('update:visible', false);
-        },
-        form_submit() {
-            this.inputNameStatus = false;
-            if (this.form.name === "") {
-                this.inputNameStatus = true;
-                return;
-            }
-            let form_data = {};
-            Object.assign(form_data, this.form)
-            this.$emit('submit', form_data);
-        },
-        window_resize() {
-            let width = window.innerWidth;
-            if (width < 576) {
-                this.width = "90%";
-            } else if (width < 768) {
-                this.width = "83.3%";
-            } else if (width < 992) {
-                this.width = "62.5%";
-            } else if (width < 1200) {
-                this.width = "48%";
-            } else if (width < 1920) {
-                this.width = "40%";
-            } else if (width >= 1920) {
-                this.width = "25%";
-            }
-        },
-        cancel_click() {
-            this.Close();
-        }
-    }
-}
-</script>
 
 <style scoped>
 </style>

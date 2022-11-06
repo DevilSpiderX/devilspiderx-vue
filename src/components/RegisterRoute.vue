@@ -3,7 +3,7 @@ import { inject, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { Message } from "@arco-design/web-vue";
 import http from "/src/scripts/server-api";
-import { setThemeColor } from "../plugins/myPlugins.js";
+import { setThemeColor } from "../plugins/dsxPlugins";
 
 setThemeColor(window.getComputedStyle(document.body).backgroundColor);
 

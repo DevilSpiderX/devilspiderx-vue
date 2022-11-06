@@ -1,6 +1,6 @@
 <script setup>
 import { onBeforeMount, provide, reactive, watch } from "vue";
-import { changeTheme } from "./plugins/myPlugins.js";
+import { changeTheme } from "./plugins/dsxPlugins";
 
 const appSettings = reactive({
     darkTheme: false,
@@ -67,7 +67,7 @@ body {
 
 @font-face {
     font-family: MiSans-Normal;
-    src: url("./font/MiSans-Normal.ttf");
+    src: url("fonts/MiSans-Normal.ttf");
 }
 
 :root {

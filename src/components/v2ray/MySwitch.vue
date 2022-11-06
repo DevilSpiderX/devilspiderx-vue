@@ -1,3 +1,39 @@
+<script setup>
+import { computed, onMounted, reactive } from "vue";
+
+const style = reactive({});
+
+const props = defineProps({
+    width: String,
+    height: String,
+    fontSize: String,
+    modalStatus: Boolean
+});
+const emit = defineEmits(["update:modalStatus"]);
+
+const status = computed({
+    get() {
+        return props.modalStatus ? "on" : "off";
+    },
+    set(newVal) {
+        emit("update:modalStatus", newVal === "on");
+    }
+});
+
+onMounted(() => {
+    if (props.width !== undefined) {
+        style["--width"] = props.width;
+    }
+    if (props.height !== undefined) {
+        style["--height"] = props.height;
+    }
+    if (props.fontSize !== undefined) {
+        style["--font-size"] = props.fontSize;
+    }
+});
+
+</script>
+
 <template>
     <div class="switch" tabindex="0" :data-status="status" :style="style">
         <div class="switch-container">
@@ -11,61 +47,6 @@
         </div>
     </div>
 </template>
-
-<script>
-export default {
-    name: "MySwitch",
-    data() {
-        return {
-            status: "off",
-            style: ""
-        }
-    },
-    props: {
-        width: String,
-        height: String,
-        "font-size": String,
-        modalStatus: Boolean
-    },
-    emits: ["update:modalStatus"],
-    watch: {
-        status(newVal) {
-            this.$emit("update:modalStatus", newVal === "on");
-        },
-        modalStatus(newVal) {
-            this.status = newVal ? "on" : "off";
-        }
-    },
-    methods: {
-        switch_modal() {
-            if (this.is_on()) {
-                this.switch_off();
-            } else {
-                this.switch_on();
-            }
-        },
-        switch_on() {
-            this.status = "on";
-        },
-        switch_off() {
-            this.status = "off";
-        },
-        is_on() {
-            return this.status === "on";
-        }
-    }, mounted() {
-        if (this.width !== undefined) {
-            this.style += `--width:${this.width};`;
-        }
-        if (this.height !== undefined) {
-            this.style += `--height:${this.height};`;
-        }
-        if (this.fontSize !== undefined) {
-            this.style += `--font-size:${this.fontSize};`;
-        }
-    }
-}
-</script>
 
 <style scoped>
 .switch {

@@ -1,3 +1,36 @@
+<script setup lang="ts">
+import { computed } from "vue";
+import BaseCard from "./BaseCard.vue";
+import { CpuValueType } from "./scripts/Types";
+import { colors } from "./scripts/progressColor";
+
+const props = withDefaults(
+    defineProps<{ value: CpuValueType }>(),
+    {
+        value: () => ({
+            name: "",
+            physicalNum: 0,
+            logicalNum: 0,
+            usedRate: 0,
+            is64bit: true,
+            cpuTemperature: 0
+        })
+    }
+);
+
+const progressColor = computed(() => {
+    let rate = props.value.usedRate;
+    if (rate < 0.7) {
+        return colors[0];
+    } else if (rate < 0.9) {
+        return colors[1];
+    } else {
+        return colors[2];
+    }
+})
+
+</script>
+
 <template>
     <base-card>
         <template #header>
@@ -27,52 +60,6 @@
         </div>
     </base-card>
 </template>
-
-<script lang="ts">
-import { defineComponent, PropType } from "vue";
-import BaseCard from "./BaseCard.vue";
-import { colors } from "./scripts/progressColor.js";
-
-interface CpuValueTYpe {
-    name: string,
-    physicalNum: number,
-    logicalNum: number,
-    usedRate: number,
-    is64bit: boolean,
-    cpuTemperature: number
-}
-
-export default defineComponent({
-    name: "CpuCard",
-    components: {BaseCard},
-    props: {
-        value: {
-            type: Object as PropType<CpuValueTYpe>,
-            required: true,
-            default: {
-                name: "",
-                physicalNum: 0,
-                logicalNum: 0,
-                usedRate: 0,
-                is64bit: true,
-                cpuTemperature: 0
-            }
-        }
-    },
-    computed: {
-        progressColor() {
-            let rate = this.value.usedRate;
-            if (rate < 0.7) {
-                return colors[0];
-            } else if (rate < 0.9) {
-                return colors[1];
-            } else {
-                return colors[2];
-            }
-        }
-    }
-})
-</script>
 
 <style scoped>
 @import url(/src/components/controller/styles/card-normal.css);

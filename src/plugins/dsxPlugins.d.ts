@@ -8,10 +8,11 @@ declare function changeTheme(themeName: string): void;
 
 declare function sleep(duration: number): Promise<any>;
 
-export { setThemeColor, getTheme, changeTheme, sleep };
+declare const isTouchDevice: boolean;
 
-declare namespace MyPlugins {
+declare namespace DsxPlugins {
     function install(app: App): void;
 }
 
-export default MyPlugins;
+export default DsxPlugins;
+export { setThemeColor, getTheme, changeTheme, sleep, isTouchDevice };

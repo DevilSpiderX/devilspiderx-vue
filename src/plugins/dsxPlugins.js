@@ -1,4 +1,4 @@
-export function setThemeColor(color) {
+function setThemeColor(color) {
     let meta = document.querySelector("meta[name=theme-color]");
     if (meta === null) {
         meta = document.createElement("meta");
@@ -12,12 +12,12 @@ export function setThemeColor(color) {
     }
 }
 
-export function getTheme() {
+function getTheme() {
     let arcoTheme = document.body.getAttribute("arco-theme");
     return arcoTheme === null ? "light" : arcoTheme;
 }
 
-export function changeTheme(themeName) {
+function changeTheme(themeName) {
     if (themeName) {
         document.body.setAttribute("arco-theme", themeName);
         return;
@@ -30,7 +30,7 @@ export function changeTheme(themeName) {
     }
 }
 
-export function sleep(duration) {
+function sleep(duration) {
     return new Promise(resolve => {
         setTimeout(() => {
             resolve(duration);
@@ -38,14 +38,14 @@ export function sleep(duration) {
     });
 }
 
-const MyPlugins = {
+const isTouchDevice = "ontouchstart" in window && navigator.maxTouchPoints !== 0;
+
+const DsxPlugins = {
     install(app) {
-        app.config.globalProperties.setThemeColor = setThemeColor;
-        app.config.globalProperties.getTheme = getTheme;
-        app.config.globalProperties.changeTheme = changeTheme;
-        app.config.globalProperties.isTouchDevice = "ontouchstart" in window && navigator.maxTouchPoints !== 0;
-        app.config.globalProperties.sleep = sleep;
-    }
+        app.config.globalProperties.$dsxPlugins = this;
+    },
+    setThemeColor, getTheme, changeTheme, sleep, isTouchDevice
 }
 
-export default MyPlugins;
+export default DsxPlugins;
+export { setThemeColor, getTheme, changeTheme, sleep, isTouchDevice }

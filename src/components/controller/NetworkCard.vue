@@ -1,3 +1,33 @@
+<script setup lang="ts">
+import { computed } from "vue";
+import { IconArrowFall, IconArrowRise } from "@arco-design/web-vue/es/icon";
+import BaseCard from "./BaseCard.vue";
+import { NetworkValueType } from "./scripts/Types";
+
+const props = withDefaults(
+    defineProps<{ value: NetworkValueType }>(),
+    {
+        value: () => ({
+            uploadSpeed: 0,
+            downloadSpeed: 0,
+            format: {
+                uploadSpeed: {value: 0, unit: "B/s"},
+                downloadSpeed: {value: 0, unit: "B/s"}
+            }
+        })
+    }
+)
+
+const precision_upload = computed(() => {
+    return props.value.format.uploadSpeed.unit === "B/s" ? 0 : 2;
+});
+
+const precision_download = computed(() => {
+    return props.value.format.downloadSpeed.unit === "B/s" ? 0 : 2;
+});
+
+</script>
+
 <template>
     <base-card>
         <template #header>
@@ -33,48 +63,6 @@
         </div>
     </base-card>
 </template>
-
-<script lang="ts">
-import { defineComponent, PropType } from "vue";
-import BaseCard from "./BaseCard.vue";
-import { IconArrowFall, IconArrowRise } from "@arco-design/web-vue/es/icon";
-
-interface NetworkValueType {
-    uploadSpeed: number,
-    downloadSpeed: number,
-    format: {
-        uploadSpeed: { value: number, unit: string },
-        downloadSpeed: { value: number, unit: string }
-    }
-}
-
-export default defineComponent({
-    name: "NetworkCard",
-    components: {BaseCard, IconArrowRise, IconArrowFall},
-    props: {
-        value: {
-            type: Object as PropType<NetworkValueType>,
-            required: true,
-            default: {
-                uploadSpeed: 0,
-                downloadSpeed: 0,
-                format: {
-                    uploadSpeed: {value: 0, unit: "B/s"},
-                    downloadSpeed: {value: 0, unit: "B/s"}
-                }
-            }
-        }
-    },
-    computed: {
-        precision_upload() {
-            return this.value.format.uploadSpeed.unit === "B/s" ? 0 : 2;
-        },
-        precision_download() {
-            return this.value.format.downloadSpeed.unit === "B/s" ? 0 : 2;
-        }
-    }
-})
-</script>
 
 <style scoped>
 @import url(/src/components/controller/styles/card-normal.css);

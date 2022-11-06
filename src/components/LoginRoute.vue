@@ -5,7 +5,7 @@ import { Message } from '@arco-design/web-vue';
 import SHA256 from 'crypto-js/sha256';
 import Hex from 'crypto-js/enc-hex';
 import http from "/src/scripts/server-api";
-import { setThemeColor } from "../plugins/myPlugins.js";
+import { setThemeColor } from "../plugins/dsxPlugins";
 
 setThemeColor(window.getComputedStyle(document.body).backgroundColor);
 

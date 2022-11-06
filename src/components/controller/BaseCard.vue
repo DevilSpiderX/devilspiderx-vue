@@ -7,12 +7,6 @@
     </div>
 </template>
 
-<script>
-export default {
-    name: "BaseCard"
-}
-</script>
-
 <style scoped>
 .base-card {
     --card-bg-color: var(--color-bg-2);

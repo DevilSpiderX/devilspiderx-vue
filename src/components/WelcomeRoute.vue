@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import { setThemeColor, sleep } from "../plugins/myPlugins.js";
+import { setThemeColor, sleep } from "../plugins/dsxPlugins";
 import http from "../scripts/server-api.js";
 
 setThemeColor(window.getComputedStyle(document.body).backgroundColor);

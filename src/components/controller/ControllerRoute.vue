@@ -1,3 +1,116 @@
+<script setup>
+import { onMounted, onUnmounted, reactive, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import CpuCard from "./CpuCard.vue";
+import MemoryCard from "./MemoryCard.vue";
+import NetworkCard from "./NetworkCard.vue";
+import DiskCard from "./DiskCard.vue";
+import { isTouchDevice, setThemeColor } from "../../plugins/dsxPlugins";
+import http from "../../scripts/server-api";
+import { Message } from "@arco-design/web-vue";
+
+setThemeColor(window.getComputedStyle(document.body).backgroundColor);
+
+const router = useRouter();
+const route = useRoute();
+const cd = ref(Object.hasOwn(route.query, "cd") ? Number(route.query.cd) : 1500);
+watch(cd, newVal => {
+    if (ws.websocket !== null) {
+        console.log("更改数据刷新速率", newVal, "ms");
+        ws.websocket.send(JSON.stringify({"cmd": "start", "cd": newVal}));
+    }
+});
+const empty_show = ref(true);
+const values = reactive({
+    cpu: undefined,
+    memory: undefined,
+    network: undefined,
+    disk: []
+});
+const ws = {
+    websocket: null,
+    token: "",
+    time_str: "",
+    WsOnOPen() {
+        Message.success({content: "WebSocket成功接入服务器", duration: 1000});
+        console.log(Date() + "\nWebSocket成功接入服务器");
+        if (ws.websocket !== null) {
+            ws.websocket.send(JSON.stringify({"cmd": "start", "cd": cd.value}));
+        }
+    },
+    WsOnClose() {
+        Message.success({content: "WebSocket连接已关闭", duration: 1000});
+        console.log(Date() + "\n连接已关闭");
+    },
+    WsOnError(event) {
+        Message.error({content: "WebSocket发生错误", duration: 1000});
+        console.log(event);
+        console.log(Date() + "\nWebSocket发生错误，使用POST请求获取信息");
+        // getHardware();
+    },
+    WsOnMessage(msgEvent) {
+        empty_show.value = false;
+        Object.assign(values, JSON.parse(msgEvent.data));
+    }
+};
+
+(async () => {
+    try {
+        let resp = await http.token();
+        console.log("token:", resp);
+        if (resp["code"] === 0) {
+            ws.token = resp["data"]["token"];
+            ws.time_str = resp["data"]["timeStr"];
+            let wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
+            ws.websocket = new WebSocket(`${wsProtocol}//${location.host}/websocket/getServerInfo/${ws.token}/${ws.time_str}`);
+            ws.websocket.onopen = ws.WsOnOPen;
+            ws.websocket.onclose = ws.WsOnClose;
+            ws.websocket.onerror = ws.WsOnError;
+            ws.websocket.onmessage = ws.WsOnMessage;
+        } else {
+            await router.push({name: "login"});
+        }
+    } catch (error) {
+        console.error("beforeCreate:", error);
+        Message.error("服务器错误");
+        router.back();
+    }
+})();
+
+onMounted(() => {
+    window.addEventListener('resize', window_resize);//等相对单位dvh标准出来之后删除
+});
+
+onUnmounted(() => {
+    if (ws.websocket instanceof WebSocket && ws.websocket.readyState === WebSocket.OPEN) {
+        ws.websocket.close();
+    }
+    window.removeEventListener('resize', window_resize);//等相对单位dvh标准出来之后删除
+});
+
+const mainCard = reactive({
+    height: window.innerHeight - 1,//等相对单位dvh标准出来之后删除
+    class: {
+        'scrollBar-hide': true
+    }
+});
+
+function main_card_mouse_enter() {
+    if (!isTouchDevice) {
+        mainCard.class["scrollBar-hide"] = false;
+    }
+}
+
+function main_card_mouse_leave() {
+    mainCard.class["scrollBar-hide"] = true;
+}
+
+function window_resize() {//等相对单位dvh标准出来之后删除
+    mainCard.height = window.innerHeight - 1;
+}
+
+</script>
+
 <template>
     <a-layout>
         <a-card class="main-card" :class="mainCard.class" :header-style="{height:'auto'}"
@@ -33,119 +146,6 @@
         </a-card>
     </a-layout>
 </template>
-
-<script>
-import router from "../../router.js";
-import { Message } from "@arco-design/web-vue";
-import CpuCard from "./CpuCard.vue";
-import MemoryCard from "./MemoryCard.vue";
-import NetworkCard from "./NetworkCard.vue";
-import DiskCard from "./DiskCard.vue";
-import http from "/src/scripts/server-api";
-
-export default {
-    name: "ControllerRoute",
-    components: {CpuCard, MemoryCard, NetworkCard, DiskCard},
-    data() {
-        return {
-            cd: 1500,
-            ws: {
-                websocket: null,
-                token: "",
-                time_str: ""
-            },
-            values: {
-                cpu: undefined,
-                memory: undefined,
-                network: undefined,
-                disk: []
-            },
-            mainCard: {
-                height: window.innerHeight - 1,//等相对单位dvh标准出来之后删除
-                class: {
-                    'scrollBar-hide': true
-                }
-            },
-            empty_show: true
-        }
-    },
-    watch: {
-        'ws.websocket'(websocket, old) {
-            if (old instanceof WebSocket && old.readyState === WebSocket.OPEN) {
-                old.close();
-            }
-            if (websocket instanceof WebSocket) {
-                websocket.onopen = this.WsOnOPen;
-                websocket.onclose = this.WsOnClose;
-                websocket.onerror = this.WsOnError;
-                websocket.onmessage = this.WsOnMessage;
-            }
-        }
-    },
-    async beforeCreate() {
-        try {
-            let resp = await http.token();
-            console.log("token:", resp);
-            if (resp["code"] === 0) {
-                this.ws.token = resp["data"]["token"];
-                this.ws.time_str = resp["data"]["timeStr"];
-                let wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
-                this.ws.websocket = new WebSocket(`${wsProtocol}//${location.host}/websocket/getServerInfo/${this.ws.token}/${this.ws.time_str}`);
-            } else {
-                await router.push({name: "login"});
-            }
-        } catch (error) {
-            console.error("beforeCreate:", error);
-            Message.error("服务器错误");
-            router.back();
-        }
-    },
-    beforeMount() {
-        this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
-    },
-    mounted() {
-        window.addEventListener('resize', this.window_resize);//等相对单位dvh标准出来之后删除
-    },
-    unmounted() {
-        if (this.ws.websocket instanceof WebSocket && this.ws.websocket.readyState === WebSocket.OPEN) {
-            this.ws.websocket.close();
-        }
-        window.removeEventListener('resize', this.window_resize);//等相对单位dvh标准出来之后删除
-    },
-    methods: {
-        WsOnOPen() {
-            Message.success({content: "WebSocket成功接入服务器", duration: 1000});
-            console.log(Date() + "\nWebSocket成功接入服务器");
-            this.ws.websocket.send(JSON.stringify({"cmd": "start", "cd": this.cd}));
-        },
-        WsOnClose() {
-            Message.success({content: "WebSocket连接已关闭", duration: 1000});
-            console.log(Date() + "\n连接已关闭");
-        },
-        WsOnError(event) {
-            Message.error({content: "WebSocket发生错误", duration: 1000});
-            console.log(event);
-            console.log(Date() + "\nWebSocket发生错误，使用POST请求获取信息");
-            // getHardware();
-        },
-        WsOnMessage(msgEvent) {
-            this.empty_show = false;
-            this.values = JSON.parse(msgEvent.data);
-        },
-        main_card_mouse_enter() {
-            if (!this.isTouchDevice) {
-                this.mainCard.class["scrollBar-hide"] = false;
-            }
-        },
-        main_card_mouse_leave() {
-            this.mainCard.class["scrollBar-hide"] = true;
-        },
-        window_resize() {//等相对单位dvh标准出来之后删除
-            this.mainCard.height = window.innerHeight - 1;
-        }
-    }
-}
-</script>
 
 <style scoped>
 @import url(/src/components/controller/styles/card-transition.css);

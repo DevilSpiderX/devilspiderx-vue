@@ -2,7 +2,7 @@
 import { inject, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import { IconClose, IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
-import { setThemeColor } from "../plugins/myPlugins.js";
+import { setThemeColor } from "../plugins/dsxPlugins";
 import http from "../scripts/server-api.js";
 import { Notification } from "@arco-design/web-vue";
 

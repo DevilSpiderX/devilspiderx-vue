@@ -1,3 +1,77 @@
+<script setup>
+import { onMounted, ref } from "vue";
+import Switch from "/src/components/v2ray/MySwitch.vue";
+import { Notification } from '@arco-design/web-vue';
+import http from "/src/scripts/server-api";
+import { setThemeColor } from "../../plugins/dsxPlugins";
+
+setThemeColor(window.getComputedStyle(document.body).backgroundColor);
+
+const switchStatus = ref(false);
+
+onMounted(async () => {
+    try {
+        let resp = await http.v2rayState();
+        console.log("v2rayState:", resp);
+        switchStatus.value = resp["code"] === 1;
+    } catch (ignored) {
+    }
+});
+
+async function on_switch_clicked() {
+    try {
+        if (switchStatus.value) {
+            let resp = await http.v2rayStop();
+            console.log("v2rayStop:", resp);
+            switch (resp["code"]) {
+                case 0: {
+                    switchStatus.value = false;
+                    break;
+                }
+                case 1: {
+                    Notification.error(resp["msg"]);
+                    break;
+                }
+                case 2: {
+                    switchStatus.value = false;
+                    Notification.error(resp["msg"]);
+                    break;
+                }
+                case 101: {
+                    Notification.error("没有管理员权限");
+                    break;
+                }
+            }
+        } else {
+            let resp = await http.v2rayStart();
+            console.log("v2rayStart:", resp);
+            switch (resp["code"]) {
+                case 0: {
+                    switchStatus.value = true;
+                    break;
+                }
+                case 1: {
+                    Notification.error(resp["msg"]);
+                    break;
+                }
+                case 2: {
+                    switchStatus.value = true;
+                    Notification.error(resp["msg"]);
+                    break;
+                }
+                case 101: {
+                    Notification.error("没有管理员权限");
+                    break;
+                }
+            }
+        }
+    } catch (error) {
+        console.error("on_switch_clicked:", error);
+        Notification.error("服务器错误")
+    }
+}
+</script>
+
 <template>
     <a-layout>
         <a-layout-content>
@@ -16,86 +90,6 @@
         </a-layout-content>
     </a-layout>
 </template>
-
-<script>
-import Switch from "/src/components/v2ray/MySwitch.vue";
-import { Notification } from '@arco-design/web-vue';
-import http from "/src/scripts/server-api";
-
-export default {
-    name: "V2rayRoute",
-    components: {
-        Switch
-    },
-    data() {
-        return {
-            switchStatus: false
-        }
-    },
-    methods: {
-        async on_switch_clicked() {
-            try {
-                if (this.switchStatus) {
-                    let resp = await http.v2rayStop();
-                    console.log("v2rayStop:", resp);
-                    switch (resp["code"]) {
-                        case 0: {
-                            this.switchStatus = false;
-                            break;
-                        }
-                        case 1: {
-                            Notification.error(resp["msg"]);
-                            break;
-                        }
-                        case 2: {
-                            this.switchStatus = false;
-                            Notification.error(resp["msg"]);
-                            break;
-                        }
-                        case 101: {
-                            Notification.error("没有管理员权限");
-                            break;
-                        }
-                    }
-                } else {
-                    let resp = await http.v2rayStart();
-                    console.log("v2rayStart:", resp);
-                    switch (resp["code"]) {
-                        case 0: {
-                            this.switchStatus = true;
-                            break;
-                        }
-                        case 1: {
-                            Notification.error(resp["msg"]);
-                            break;
-                        }
-                        case 2: {
-                            this.switchStatus = true;
-                            Notification.error(resp["msg"]);
-                            break;
-                        }
-                        case 101: {
-                            Notification.error("没有管理员权限");
-                            break;
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error("on_switch_clicked:", error);
-                Notification.error("服务器错误")
-            }
-        }
-    },
-    beforeMount() {
-        this.setThemeColor(window.getComputedStyle(document.body).backgroundColor);
-    },
-    async mounted() {
-        let resp = await http.v2rayState();
-        console.log("v2rayState:", resp);
-        this.switchStatus = resp["code"] === 1;
-    }
-}
-</script>
 
 <style scoped>
 

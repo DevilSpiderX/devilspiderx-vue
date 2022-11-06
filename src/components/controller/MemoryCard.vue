@@ -1,3 +1,57 @@
+<script setup lang="ts">
+import { computed } from "vue";
+import BaseCard from "./BaseCard.vue";
+import { MemoryValueType } from "./scripts/Types";
+import { colors } from "./scripts/progressColor";
+
+const props = withDefaults(
+    defineProps<{ value: MemoryValueType }>(),
+    {
+        value: () => ({
+            total: 1,
+            used: 0,
+            free: 0,
+            format: {
+                total: {value: 0, unit: "B"},
+                used: {value: 0, unit: "B"},
+                free: {value: 0, unit: "B"}
+            }
+        })
+    }
+)
+
+const usedStr = computed(() => {
+    let data = props.value.format.used;
+    return `${data.value} ${data.unit}`;
+});
+
+const freeStr = computed(() => {
+    let data = props.value.format.free;
+    return `${data.value} ${data.unit}`;
+});
+
+const totalStr = computed(() => {
+    let data = props.value.format.total;
+    return `${data.value} ${data.unit}`;
+});
+
+const usedPercent = computed(() => {
+    return props.value.used / props.value.total;
+});
+
+const progressColor = computed(() => {
+    let rate = usedPercent.value;
+    if (rate < 0.7) {
+        return colors[0];
+    } else if (rate < 0.9) {
+        return colors[1];
+    } else {
+        return colors[2];
+    }
+});
+
+</script>
+
 <template>
     <base-card>
         <template #header>
@@ -23,71 +77,6 @@
         </div>
     </base-card>
 </template>
-
-<script lang="ts">
-import { defineComponent, PropType } from "vue";
-import BaseCard from "./BaseCard.vue";
-import { colors } from "./scripts/progressColor";
-
-interface MemoryValueType {
-    total: number,
-    used: number,
-    free: number,
-    format: {
-        total: { value: number, unit: string },
-        used: { value: number, unit: string },
-        free: { value: number, unit: string }
-    }
-}
-
-export default defineComponent({
-    name: "MemoryCard",
-    components: {BaseCard},
-    props: {
-        value: {
-            type: Object as PropType<MemoryValueType>,
-            required: true,
-            default: {
-                total: 1,
-                used: 0,
-                free: 0,
-                format: {
-                    total: {value: 0, unit: "B"},
-                    used: {value: 0, unit: "B"},
-                    free: {value: 0, unit: "B"}
-                }
-            }
-        }
-    },
-    computed: {
-        usedStr() {
-            let data = this.value.format.used;
-            return `${data.value} ${data.unit}`;
-        },
-        freeStr() {
-            let data = this.value.format.free;
-            return `${data.value} ${data.unit}`;
-        },
-        totalStr() {
-            let data = this.value.format.total;
-            return `${data.value} ${data.unit}`;
-        },
-        usedPercent() {
-            return this.value.used / this.value.total;
-        },
-        progressColor() {
-            let rate = this.usedPercent;
-            if (rate < 0.7) {
-                return colors[0];
-            } else if (rate < 0.9) {
-                return colors[1];
-            } else {
-                return colors[2];
-            }
-        }
-    }
-})
-</script>
 
 <style scoped>
 @import url(/src/components/controller/styles/card-normal.css);
