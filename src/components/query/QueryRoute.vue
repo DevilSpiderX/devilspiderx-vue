@@ -7,6 +7,7 @@ import AddModal from "./AddModal.vue";
 import UpdateModal from "./UpdateModal.vue";
 import { setThemeColor } from "../../plugins/dsxPlugins";
 import http from "/src/scripts/server-api";
+import { useAppConfigs } from "/src/store/AppConfigsStore";
 
 setThemeColor(window.getComputedStyle(document.body).backgroundColor);
 
@@ -35,15 +36,16 @@ onMounted(() => {
 
 
 onUnmounted(() => {
-    window.sessionStorage.removeItem('history_query_key');
+    appConfigs.query.history = undefined;
     window.removeEventListener('resize', window_resize);//等相对单位dvh标准出来之后删除
 });
 
 const key = ref("");
 const searching = ref(false);
+const appConfigs = useAppConfigs();
 
 async function Search() {
-    window.sessionStorage['history_query_key'] = key.value;
+    appConfigs.query.history = key.value;
     searching.value = true;
     try {
         QuerySucceed(await http.query(key.value));
@@ -90,15 +92,15 @@ async function detectKey() {
     try {
         if (Object.hasOwn(routeQuery, "key")) {
             key.value = routeQuery.key;
-            window.sessionStorage['history_query_key'] = key.value;
+            appConfigs.query.history = key.value;
             searching.value = true;
             QuerySucceed(await http.query(key.value));
         } else {
-            let hQKey = window.sessionStorage['history_query_key'];
-            if (hQKey !== undefined) {
-                key.value = hQKey;
+            let history = appConfigs.query.history;
+            if (history !== undefined) {
+                key.value = history;
                 searching.value = true;
-                QuerySucceed(await http.query(hQKey));
+                QuerySucceed(await http.query(history));
             }
         }
     } catch (error) {
@@ -192,16 +194,16 @@ async function add_submit(form_data) {
     console.log("addPasswords:", resp);
     switch (resp["code"]) {
         case 0: {
-            let hQKey = window.sessionStorage['history_query_key'];
-            hQKey = hQKey === undefined || hQKey === '' ? name : `${hQKey} ${name}`;
-            window.sessionStorage['history_query_key'] = hQKey;
+            let history = appConfigs.query.history;
+            history = history === undefined || history === "" ? name : `${history} ${name}`;
+            appConfigs.query.history = history;
             searching.value = true;
-            key.value = hQKey;
+            key.value = history;
             addModal.visible = false;
             addModal.clean = true;
             Message.success("添加成功");
             try {
-                QuerySucceed(await http.query(hQKey));
+                QuerySucceed(await http.query(history));
             } catch (error) {
                 console.error("add_submit:", error);
                 QueryError();
@@ -238,16 +240,16 @@ function update_submit(form_data) {
             console.log("updatePasswords:", resp);
             switch (resp["code"]) {
                 case 0: {
-                    let hQKey = window.sessionStorage['history_query_key'];
-                    hQKey = hQKey === undefined || hQKey === '' ? name :
-                        hQKey.indexOf(name) === -1 ? `${hQKey} ${name}` : hQKey;
-                    window.sessionStorage['history_query_key'] = hQKey;
+                    let history = appConfigs.query.history;
+                    history = history === undefined || history === "" ? name :
+                        history.indexOf(name) === -1 ? `${history} ${name}` : history;
+                    appConfigs.query.history = history;
                     searching.value = true;
-                    key.value = hQKey;
+                    key.value = history;
                     updateModal.visible = false;
                     Message.success("修改成功");
                     try {
-                        QuerySucceed(await http.query(hQKey))
+                        QuerySucceed(await http.query(history))
                     } catch (error) {
                         console.error("okUpdate:", error);
                         QueryError();
@@ -291,7 +293,7 @@ async function table_page_change(page) {
                         </a-col>
                         <a-col flex="auto" style="max-width: calc(100% - 105px)">
                             <a-input-search v-model="key" size="large" allow-clear :button-props="{type:'secondary'}"
-                                            search-button @keydown.enter="Search" @search="Search" :loading="searching">
+                                search-button @keydown.enter="Search" @search="Search" :loading="searching">
                                 <template #prefix>
                                     <i class="fas fa-terminal fa-fw"></i>
                                 </template>
@@ -305,8 +307,8 @@ async function table_page_change(page) {
             <a-row justify="center">
                 <a-col :xs="24" :sm="22" :md="20" :lg="18" :xl="16" :xxl="14">
                     <a-table :columns="table.columns" :data="table.data" :scroll="{y:table.maxHeight+'px'}" row-key="id"
-                             page-position="bottom" :pagination="table.paginationProps" :loading="searching"
-                             @page-change="table_page_change">
+                        page-position="bottom" :pagination="table.paginationProps" :loading="searching"
+                        @page-change="table_page_change">
                         <template #empty>
                             <a-empty />
                         </template>

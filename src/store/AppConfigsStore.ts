@@ -7,6 +7,9 @@ interface State {
         uid: string | undefined,
         admin: boolean,
         login: boolean
+    },
+    query: {
+        history: string | undefined
     }
 }
 
@@ -18,6 +21,9 @@ export const useAppConfigs = defineStore("appConfigs", {
             uid: undefined,
             admin: false,
             login: false
+        },
+        query: {
+            history: undefined
         }
     }),
     getters: {
