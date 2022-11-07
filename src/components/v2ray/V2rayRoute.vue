@@ -82,7 +82,7 @@ async function on_switch_clicked() {
                             <div style="font-weight: 700;font-size: 1.4rem;text-align: center;">V2Ray开关</div>
                         </template>
                         <div class="card-body">
-                            <Switch v-model:modal-status="switchStatus" @click="on_switch_clicked"/>
+                            <Switch v-model:modal-status="switchStatus" @click="on_switch_clicked" />
                         </div>
                     </a-card>
                 </a-col>

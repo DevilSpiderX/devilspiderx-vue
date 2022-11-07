@@ -127,21 +127,21 @@ function window_resize() {//等相对单位dvh标准出来之后删除
             <a-row :gutter="10" align="stretch">
                 <transition-group name="body">
                     <a-col :xs="24" :md="12" :xl="8" class="my-col" v-if="values.cpu">
-                        <cpu-card :value="values.cpu"/>
+                        <cpu-card :value="values.cpu" />
                     </a-col>
                     <a-col :xs="24" :md="12" :xl="8" class="my-col" v-if="values.memory">
-                        <memory-card :value="values.memory"/>
+                        <memory-card :value="values.memory" />
                     </a-col>
                     <a-col :xs="24" :md="12" :xl="8" class="my-col" v-if="values.network">
-                        <network-card :value="values.network"/>
+                        <network-card :value="values.network" />
                     </a-col>
                     <a-col :xs="24" :md="12" :xl="8" class="my-col" v-for="(disk,index) in values.disk" :key="index+3">
-                        <disk-card :value="disk" :disk-index="index"/>
+                        <disk-card :value="disk" :disk-index="index" />
                     </a-col>
                 </transition-group>
             </a-row>
             <template #cover>
-                <a-empty v-if="empty_show"/>
+                <a-empty v-if="empty_show" />
             </template>
         </a-card>
     </a-layout>

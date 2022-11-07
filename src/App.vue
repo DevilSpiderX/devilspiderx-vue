@@ -1,61 +1,47 @@
 <script setup>
-import { onBeforeMount, provide, reactive, watch } from "vue";
+import { onBeforeMount, ref, watch } from "vue";
 import { changeTheme } from "./plugins/dsxPlugins";
+import { useAppConfigs } from "./store/AppConfigsStore";
+import http from "./scripts/server-api.js";
 
-const appSettings = reactive({
-    darkTheme: false,
-    themeFollowSystem: false
-});
-provide("appSettings", appSettings);
-{
-    let settings = window.localStorage.getItem("appSettings");
-    if (settings === null) {
-        window.localStorage.setItem("appSettings", JSON.stringify(appSettings));
-    } else {
-        Object.assign(appSettings, JSON.parse(settings));
-    }
-}
+window.appInited = ref(false);
+const appConfigs = useAppConfigs();
 
-watch(appSettings, newVal => {
-    console.log('App配置已被修改', newVal);
-    window.localStorage.setItem("appSettings", JSON.stringify(appSettings));
-});
-
-watch(() => appSettings.darkTheme, newVal => {
-    changeTheme(newVal ? "dark" : "light");
-});
-
-watch(() => appSettings.themeFollowSystem, newVal => {
-    if (newVal) {
-        setThemeFollowSystem();
-    }
-});
-
-onBeforeMount(() => {
-    if (appSettings.darkTheme) {
-        changeTheme("dark");
-    }
-    if (appSettings.themeFollowSystem) {
-        setThemeFollowSystem();
-    }
-    window.matchMedia('(prefers-color-scheme:dark)').addEventListener("change", prefers_color_scheme_change);
+watch(() => appConfigs.themeName, newVal => {
+    changeTheme(newVal);
 })
 
-function setThemeFollowSystem() {
-    appSettings.darkTheme = window.matchMedia('(prefers-color-scheme:dark)').matches;
-}
-
-function prefers_color_scheme_change(e) {
-    console.log(e)
-    if (appSettings.themeFollowSystem) {
-        setThemeFollowSystem();
+watch(() => appConfigs.themeFollowSystem, newVal => {
+    if (newVal) {
+        appConfigs.setThemeFollowSystem();
     }
-}
+});
+
+onBeforeMount(async () => {
+    if (appConfigs.darkTheme) {
+        changeTheme("dark");
+    }
+    if (appConfigs.themeFollowSystem) {
+        appConfigs.setThemeFollowSystem();
+    }
+    window.matchMedia('(prefers-color-scheme:dark)').onchange = event => {
+        if (appConfigs.themeFollowSystem) {
+            appConfigs.darkTheme = event.matches;
+        }
+    }
+    try {
+        let resp = await http.user_status();
+        console.log("user_status:", resp);
+        Object.assign(appConfigs.user, resp.data);
+    } catch (ignored) {
+    }
+    window.appInited.value = true;
+});
 
 </script>
 
 <template>
-    <router-view/>
+    <router-view />
 </template>
 
 <style>

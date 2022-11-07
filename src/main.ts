@@ -1,10 +1,12 @@
 import { createApp } from 'vue'
-import App from './App.vue'
 import "@arco-design/web-vue/dist/arco.min.css";
-import router from './router';
+import App from './App.vue'
+import router from './router/router';
+import pinia from './store/pinia';
 import DsxPlugins from "./plugins/dsxPlugins";
 
 const app = createApp(App);
-app.use(router);
-app.use(DsxPlugins);
+app.use(router)
+    .use(pinia)
+    .use(DsxPlugins);
 app.mount('#app');

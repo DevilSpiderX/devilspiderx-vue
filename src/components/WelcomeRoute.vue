@@ -1,8 +1,8 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { ref, watchEffect } from "vue";
 import { useRouter } from "vue-router";
-import { setThemeColor, sleep } from "../plugins/dsxPlugins";
-import http from "../scripts/server-api.js";
+import { setThemeColor, sleep } from "/src/plugins/dsxPlugins";
+import { useAppConfigs } from "/src/store/AppConfigsStore";
 
 setThemeColor(window.getComputedStyle(document.body).backgroundColor);
 
@@ -18,25 +18,20 @@ const logo = ref((() => {
 })());
 
 const router = useRouter();
+const appConfigs = useAppConfigs();
 
-onMounted(async () => {
-    let pushName;
-    try {
-        let resp = await http.user_status();
-        console.log("user_status:", resp);
-        let data = resp.data;
-        if (data["login"] && data["status"] === 1) {
+const unwatch = watchEffect(async () => {
+    if (window.appInited.value) {
+        let pushName = "login";
+        if (appConfigs.user.login) {
             pushName = "index";
-        } else {
-            pushName = "login";
         }
-    } catch (error) {
-        console.error("verify:", error);
-        pushName = "login";
+        await sleep(400);
+        await router.push({name: pushName});
+        unwatch();
     }
-    await sleep(400);
-    await router.push({name: pushName});
 });
+
 </script>
 
 <template>
@@ -44,7 +39,7 @@ onMounted(async () => {
         <div>
             <i class="fas fa-spider"></i>
             <p class="logo">
-                Good<br/>
+                Good<br />
                 {{ logo }}
             </p>
         </div>

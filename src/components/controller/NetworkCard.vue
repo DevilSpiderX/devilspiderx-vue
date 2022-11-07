@@ -41,7 +41,7 @@ const precision_download = computed(() => {
                     <a-statistic :value="value.format.uploadSpeed.value" :precision="precision_upload"
                                  :value-style="{color:'rgb(var(--green-7))',fontSize:'20px'}">
                         <template #prefix>
-                            <icon-arrow-rise/>
+                            <icon-arrow-rise />
                         </template>
                         <template #suffix>
                             {{ value.format.uploadSpeed.unit }}
@@ -52,7 +52,7 @@ const precision_download = computed(() => {
                     <a-statistic :value="value.format.downloadSpeed.value" :precision="precision_download"
                                  :value-style="{color:'rgb(var(--blue-7))',fontSize:'20px'}">>
                         <template #prefix>
-                            <icon-arrow-fall/>
+                            <icon-arrow-fall />
                         </template>
                         <template #suffix>
                             {{ value.format.downloadSpeed.unit }}

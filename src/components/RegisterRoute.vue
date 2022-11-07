@@ -1,9 +1,10 @@
 <script setup>
-import { inject, reactive } from "vue";
+import { reactive } from "vue";
 import { useRouter } from "vue-router";
 import { Message } from "@arco-design/web-vue";
 import http from "/src/scripts/server-api";
 import { setThemeColor } from "../plugins/dsxPlugins";
+import { useAppConfigs } from "/src/store/AppConfigsStore";
 
 setThemeColor(window.getComputedStyle(document.body).backgroundColor);
 
@@ -65,14 +66,14 @@ async function form_submit() {
     running_stop();
 }
 
-const appSettings = inject("appSettings");
+const appConfigs = useAppConfigs();
 const running = reactive({
     show: false
 });
 
 function running_start() {
     running.show = true;
-    setThemeColor(appSettings.darkTheme ? "#0c0c0d" : "#808080");
+    setThemeColor(appConfigs.darkTheme ? "#0c0c0d" : "#808080");
 }
 
 function running_stop() {

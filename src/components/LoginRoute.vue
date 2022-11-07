@@ -1,21 +1,23 @@
 <script setup>
-import { inject, onMounted, reactive } from "vue";
+import { onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { Message } from '@arco-design/web-vue';
 import SHA256 from 'crypto-js/sha256';
 import Hex from 'crypto-js/enc-hex';
 import http from "/src/scripts/server-api";
 import { setThemeColor } from "../plugins/dsxPlugins";
+import { useAppConfigs } from "/src/store/AppConfigsStore";
 
 setThemeColor(window.getComputedStyle(document.body).backgroundColor);
 
+const appConfigs = useAppConfigs();
 const form = reactive({
     uid: "",
     pwd: ""
 });
 
 onMounted(() => {
-    let loginUid = localStorage.loginUid;
+    let loginUid = appConfigs.user.uid;
     if (loginUid !== undefined) {
         form.uid = loginUid;
     }
@@ -36,7 +38,7 @@ async function form_submit() {
         inputStatus[1] = true;
         return;
     }
-    storageAccount(uid, true);
+    appConfigs.user.uid = uid;
 
     running_start()
     pwd = SHA256(pwd).toString(Hex);
@@ -45,6 +47,8 @@ async function form_submit() {
         console.log("Login:", resp);
         switch (resp["code"]) {
             case 0: {
+                appConfigs.user.login = true;
+                Object.assign(appConfigs.user.admin, resp.data);
                 await router.push({name: "index"});
                 break;
             }
@@ -66,22 +70,13 @@ async function form_submit() {
     running_stop();
 }
 
-function storageAccount(uid, allow) {
-    if (allow) {
-        localStorage.loginUid = uid;
-    } else {
-        localStorage.removeItem("loginUid");
-    }
-}
-
-const appSettings = inject("appSettings");
 const running = reactive({
     show: false
 });
 
 function running_start() {
     running.show = true;
-    setThemeColor(appSettings.darkTheme ? "#0c0c0d" : "#808080");
+    setThemeColor(appConfigs.darkTheme ? "#0c0c0d" : "#808080");
 }
 
 function running_stop() {

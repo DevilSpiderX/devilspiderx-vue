@@ -1,9 +1,9 @@
 <template>
     <div class="base-card">
         <header>
-            <slot name="header"/>
+            <slot name="header" />
         </header>
-        <slot/>
+        <slot />
     </div>
 </template>
 

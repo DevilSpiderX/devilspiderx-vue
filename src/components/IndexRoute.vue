@@ -1,25 +1,26 @@
 <script setup>
-import { inject, reactive, watch } from "vue";
+import { reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import { IconClose, IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
 import { setThemeColor } from "../plugins/dsxPlugins";
 import http from "../scripts/server-api.js";
 import { Notification } from "@arco-design/web-vue";
+import { useAppConfigs } from "/src/store/AppConfigsStore";
 
 setThemeColor(window.getComputedStyle(document.body).backgroundColor);
 
-const appSettings = inject("appSettings");
+const appConfigs = useAppConfigs();
 const drawer = reactive({
     visible: false,
     empty_form: {}
 });
 
-watch(() => appSettings.darkTheme, (newVal) =>
+watch(() => appConfigs.darkTheme, newVal =>
     setThemeColor(newVal && drawer.visible ? "#2a2a2b" : window.getComputedStyle(document.body).backgroundColor)
 );
 
-watch(() => drawer.visible, (newVal) =>
-    setThemeColor(newVal && appSettings.darkTheme ?
+watch(() => drawer.visible, newVal =>
+    setThemeColor(newVal && appConfigs.darkTheme ?
         "#2a2a2b" : window.getComputedStyle(document.body).backgroundColor)
 );
 
@@ -31,7 +32,7 @@ async function on_logoutButton_clicked() {
         console.log("Logout:", resp);
         switch (resp["code"]) {
             case 0: {
-                sessionStorage.setItem("user_status", "0");
+                appConfigs.user.login = false;
                 Notification.success("登出成功");
                 break;
             }
@@ -66,16 +67,16 @@ function on_exit_clicked() {
                     <span style="font-weight:700;"> DevilSpiderX </span>
                 </template>
                 <template #extra>
-                    <a-switch v-model="appSettings.darkTheme" :disabled="appSettings.themeFollowSystem"
+                    <a-switch v-model="appConfigs.darkTheme" :disabled="appConfigs.themeFollowSystem"
                               checked-color="#2f2f2f">
                         <template #unchecked-icon>
                             <span style="color: var(--color-text-3)">
-                                <icon-sun-fill/>
+                                <icon-sun-fill />
                             </span>
                         </template>
                         <template #checked-icon>
                              <span style="color: #2f2f2f">
-                                 <icon-moon-fill/>
+                                 <icon-moon-fill />
                              </span>
                         </template>
                     </a-switch>
@@ -109,7 +110,7 @@ function on_exit_clicked() {
                             </template>
                             V2Ray
                         </a-button>
-                        <a-button class="my-button" @contextmenu.prevent.stop long
+                        <a-button class="my-button" @contextmenu.prevent.stop long v-if="appConfigs.user.admin"
                                   @click="$router.push({name:'log'})">
                             <template #icon>
                                 <i class="fas fa-file-alt fa-fw"></i>
@@ -146,17 +147,17 @@ function on_exit_clicked() {
                 <h2 style="margin: 0;color: var(--color-text-1)">设置</h2>
                 <a-button class="drawer-close-button" shape="circle" size="small" @click="drawer.visible=false">
                     <template #icon>
-                        <icon-close/>
+                        <icon-close />
                     </template>
                 </a-button>
             </a-row>
         </template>
         <a-form :model="drawer.empty_form" auto-label-width>
             <a-form-item label="深色模式">
-                <a-switch v-model="appSettings.darkTheme" :disabled="appSettings.themeFollowSystem"/>
+                <a-switch v-model="appConfigs.darkTheme" :disabled="appConfigs.themeFollowSystem" />
             </a-form-item>
             <a-form-item label="主题跟随系统">
-                <a-switch v-model="appSettings.themeFollowSystem"/>
+                <a-switch v-model="appConfigs.themeFollowSystem" />
             </a-form-item>
         </a-form>
     </a-drawer>

@@ -212,7 +212,7 @@ async function add_submit(form_data) {
             Message.error({
                 content: () =>
                     <p style="margin:0">
-                        添加失败<br/>可能该名称已存在<br/>请尝试换一个名称再添加
+                        添加失败<br />可能该名称已存在<br />请尝试换一个名称再添加
                     </p>
             });
             addModal.visible = false;
@@ -308,11 +308,11 @@ async function table_page_change(page) {
                              page-position="bottom" :pagination="table.paginationProps" :loading="searching"
                              @page-change="table_page_change">
                         <template #empty>
-                            <a-empty/>
+                            <a-empty />
                         </template>
                         <template #td="{column, record}">
                             <td class="user-select-none"
-                                @contextmenu.prevent="table_cell_contextmenu(column,record,$event)"/>
+                                @contextmenu.prevent="table_cell_contextmenu(column,record,$event)" />
                         </template>
                     </a-table>
                 </a-col>
@@ -320,9 +320,9 @@ async function table_page_change(page) {
         </a-layout-content>
     </a-layout>
 
-    <vue3-menus v-model:open="tableMenu.open" :event="tableMenu.event" :menus="tableMenu.menus" minWidth="100"/>
-    <add-modal v-model:visible="addModal.visible" v-model:cleaning="addModal.cleaning" @submit="add_submit"/>
-    <update-modal v-model:visible="updateModal.visible" :data="updateModal.data" @submit="update_submit"/>
+    <vue3-menus v-model:open="tableMenu.open" :event="tableMenu.event" :menus="tableMenu.menus" minWidth="100" />
+    <add-modal v-model:visible="addModal.visible" v-model:cleaning="addModal.cleaning" @submit="add_submit" />
+    <update-modal v-model:visible="updateModal.visible" :data="updateModal.data" @submit="update_submit" />
 </template>
 
 <style scoped>
