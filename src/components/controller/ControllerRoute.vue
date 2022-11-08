@@ -1,15 +1,16 @@
 <script setup>
 import { onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { Message } from "@arco-design/web-vue";
 import CpuCard from "./CpuCard.vue";
 import MemoryCard from "./MemoryCard.vue";
 import NetworkCard from "./NetworkCard.vue";
 import DiskCard from "./DiskCard.vue";
-import { isTouchDevice, setThemeColor } from "../../plugins/dsxPlugins";
-import http from "../../scripts/server-api";
-import { Message } from "@arco-design/web-vue";
+import http from "/src/scripts/server-api";
+import { useAppConfigs } from "/src/store/AppConfigsStore";
 
-setThemeColor(window.getComputedStyle(document.body).backgroundColor);
+const appConfigs = useAppConfigs();
+appConfigs.statusBarColor = window.getComputedStyle(document.body).backgroundColor;
 
 const router = useRouter();
 const route = useRoute();
@@ -71,7 +72,7 @@ const ws = {
             await router.push({name: "login"});
         }
     } catch (error) {
-        console.error("beforeCreate:", error);
+        console.error("(beforeCreate)", `url:${error.config.url}`, error);
         Message.error("服务器错误");
         router.back();
     }
@@ -96,7 +97,7 @@ const mainCard = reactive({
 });
 
 function main_card_mouse_enter() {
-    if (!isTouchDevice) {
+    if (!appConfigs.isTouchDevice) {
         mainCard.class["scrollBar-hide"] = false;
     }
 }
@@ -114,8 +115,8 @@ function window_resize() {//等相对单位dvh标准出来之后删除
 <template>
     <a-layout>
         <a-card class="main-card" :class="mainCard.class" :header-style="{height:'auto'}"
-                :style="{height:mainCard.height+'px',backgroundColor:'var(--color-bg-1)'}"
-                @mouseenter="main_card_mouse_enter" @mouseleave="main_card_mouse_leave">
+            :style="{height:mainCard.height+'px',backgroundColor:'var(--color-bg-1)'}"
+            @mouseenter="main_card_mouse_enter" @mouseleave="main_card_mouse_leave">
             <template #title>
                 <div>
                     <h1 style="text-align: center;user-select: none;margin: 0;font-size: 1.5rem">

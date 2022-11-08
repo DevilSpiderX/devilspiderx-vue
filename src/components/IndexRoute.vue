@@ -2,26 +2,24 @@
 import { reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import { IconClose, IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
-import { setThemeColor } from "../plugins/dsxPlugins";
+import { Message } from "@arco-design/web-vue";
 import http from "../scripts/server-api.js";
-import { Notification } from "@arco-design/web-vue";
 import { useAppConfigs } from "/src/store/AppConfigsStore";
 
-setThemeColor(window.getComputedStyle(document.body).backgroundColor);
-
 const appConfigs = useAppConfigs();
+appConfigs.statusBarColor = window.getComputedStyle(document.body).backgroundColor;
+
 const drawer = reactive({
     visible: false,
     empty_form: {}
 });
 
-watch(() => appConfigs.darkTheme, newVal =>
-    setThemeColor(newVal && drawer.visible ? "#2a2a2b" : window.getComputedStyle(document.body).backgroundColor)
+watch(() => appConfigs.darkTheme, newVal => appConfigs.statusBarColor = newVal && drawer.visible ?
+    "#2a2a2b" : window.getComputedStyle(document.body).backgroundColor
 );
 
-watch(() => drawer.visible, newVal =>
-    setThemeColor(newVal && appConfigs.darkTheme ?
-        "#2a2a2b" : window.getComputedStyle(document.body).backgroundColor)
+watch(() => drawer.visible, newVal => appConfigs.statusBarColor = newVal && appConfigs.darkTheme ?
+    "#2a2a2b" : window.getComputedStyle(document.body).backgroundColor
 );
 
 const router = useRouter();
@@ -33,18 +31,18 @@ async function on_logoutButton_clicked() {
         switch (resp["code"]) {
             case 0: {
                 appConfigs.user.login = false;
-                Notification.success("登出成功");
+                Message.success("登出成功");
                 break;
             }
             case 1: {
-                Notification.error("您还未登录过");
+                Message.error("您还未登录过");
                 break;
             }
         }
         await router.push({name: "login"});
     } catch (error) {
-        console.error("on_logoutButton_clicked:", error);
-        Notification.error("服务器错误");
+        console.error("(on_logoutButton_clicked)", `url:${error.config.url}`, error);
+        Message.error("服务器错误");
     }
 }
 
@@ -60,7 +58,7 @@ function on_exit_clicked() {
             <a-page-header @back="drawer.visible = true">
                 <template #back-icon>
                     <span style="font-size: 1.2rem;position: relative">
-                        <i class="fa-solid fa-bars fa-fw"></i>
+                        <i class="fa-solid fa-bars fa-fw" />
                     </span>
                 </template>
                 <template #title>
@@ -68,16 +66,16 @@ function on_exit_clicked() {
                 </template>
                 <template #extra>
                     <a-switch v-model="appConfigs.darkTheme" :disabled="appConfigs.themeFollowSystem"
-                              checked-color="#2f2f2f">
+                        checked-color="#2f2f2f">
                         <template #unchecked-icon>
                             <span style="color: var(--color-text-3)">
                                 <icon-sun-fill />
                             </span>
                         </template>
                         <template #checked-icon>
-                             <span style="color: #2f2f2f">
-                                 <icon-moon-fill />
-                             </span>
+                            <span style="color: #2f2f2f">
+                                <icon-moon-fill />
+                            </span>
                         </template>
                     </a-switch>
                 </template>
@@ -87,52 +85,52 @@ function on_exit_clicked() {
             <a-row justify="center">
                 <a-col :xs="24" :sm="21" :md="16" :lg="14" :xl="12" :xxl="10">
                     <a-space direction="vertical" fill size="large">
-                        <a-button class="my-button" @contextmenu.prevent.stop long
-                                  @click="$router.push({name:'controller'})">
+                        <a-button class="my-button" long @contextmenu.prevent.stop
+                            @click="$router.push({name:'controller'})">
                             <template #icon>
-                                <i class="fas fa-sliders-h fa-fw"></i>
+                                <i class="fas fa-sliders-h fa-fw" />
                             </template>
                             控制中心
                         </a-button>
-                        <a-button class="my-button" @contextmenu.prevent.stop long
-                                  @click="$router.push({name:'query'})">
+                        <a-button class="my-button" long @contextmenu.prevent.stop
+                            @click="$router.push({name:'query'})">
                             <template #icon>
-                                <i class="fas fa-search fa-fw"></i>
+                                <i class="fas fa-search fa-fw" />
                             </template>
                             查&nbsp;&nbsp;询
                         </a-button>
-                        <a-button class="my-button" @contextmenu.prevent.stop long
-                                  @click="$router.push({name:'v2ray'})">
+                        <a-button class="my-button" long @contextmenu.prevent.stop
+                            @click="$router.push({name:'v2ray'})">
                             <template #icon>
                                 <!--suppress CheckImageSize -->
                                 <img src="/src/assets/v2rayN.png" alt="v2ray" width="27" height="27"
-                                     style="transform: translateY(4px);">
+                                    style="transform: translateY(4px);">
                             </template>
                             V2Ray
                         </a-button>
-                        <a-button class="my-button" @contextmenu.prevent.stop long v-if="appConfigs.user.admin"
-                                  @click="$router.push({name:'log'})">
+                        <a-button v-if="appConfigs.user.admin" class="my-button" long @contextmenu.prevent.stop
+                            @click="$router.push({name:'log'})">
                             <template #icon>
-                                <i class="fas fa-file-alt fa-fw"></i>
+                                <i class="fas fa-file-alt fa-fw" />
                             </template>
                             日&nbsp;&nbsp;志
                         </a-button>
-                        <a-button class="my-button" @contextmenu.prevent.stop long
-                                  @click="$router.push({name:'updatePwd'})">
+                        <a-button class="my-button" long @contextmenu.prevent.stop
+                            @click="$router.push({name:'updatePwd'})">
                             <template #icon>
-                                <i class="fas fa-edit fa-fw"></i>
+                                <i class="fas fa-edit fa-fw" />
                             </template>
                             修改密码
                         </a-button>
                         <a-button class="my-button" long @contextmenu.prevent.stop @click="on_logoutButton_clicked">
                             <template #icon>
-                                <i class="fas fa-sign-out-alt fa-fw"></i>
+                                <i class="fas fa-sign-out-alt fa-fw" />
                             </template>
                             退出登录
                         </a-button>
                         <a-button class="my-button exit-button" long @contextmenu.prevent.stop @click="on_exit_clicked">
                             <template #icon>
-                                <i class="fas fa-power-off fa-fw"></i>
+                                <i class="fas fa-power-off fa-fw" />
                             </template>
                             退&nbsp;&nbsp;出
                         </a-button>
@@ -142,9 +140,11 @@ function on_exit_clicked() {
         </a-layout-content>
     </a-layout>
     <a-drawer v-model:visible="drawer.visible" placement="left" :footer="false">
-        <template #header style="justify-content: space-between">
+        <template #header>
             <a-row justify="space-between" style="width: 100%;">
-                <h2 style="margin: 0;color: var(--color-text-1)">设置</h2>
+                <h2 style="margin: 0;color: var(--color-text-1)">
+                    设置
+                </h2>
                 <a-button class="drawer-close-button" shape="circle" size="small" @click="drawer.visible=false">
                     <template #icon>
                         <icon-close />

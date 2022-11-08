@@ -76,7 +76,7 @@ function cancel_click() {
 
 <template>
     <a-modal :visible="visible" title="添加密码记录" :width="width"
-             @update:visible="value=>$emit('update:visible',value)">
+        @update:visible="value=>$emit('update:visible',value)">
         <a-form :model="form" @submit="form_submit">
             <a-form-item field="name" hide-label>
                 <a-input placeholder="名称" v-model="form.name" allow-clear :error="inputNameStatus">

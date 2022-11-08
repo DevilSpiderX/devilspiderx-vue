@@ -1,10 +1,11 @@
 <script setup>
 import { ref, watchEffect } from "vue";
 import { useRouter } from "vue-router";
-import { setThemeColor, sleep } from "/src/plugins/dsxPlugins";
 import { useAppConfigs } from "/src/store/AppConfigsStore";
+import { sleep } from "/src/util/util";
 
-setThemeColor(window.getComputedStyle(document.body).backgroundColor);
+const appConfigs = useAppConfigs();
+appConfigs.statusBarColor = window.getComputedStyle(document.body).backgroundColor;
 
 const logo = ref((() => {
     let hour = new Date().getHours();
@@ -18,7 +19,6 @@ const logo = ref((() => {
 })());
 
 const router = useRouter();
-const appConfigs = useAppConfigs();
 
 const unwatch = watchEffect(async () => {
     if (window.appInited.value) {
@@ -37,9 +37,9 @@ const unwatch = watchEffect(async () => {
 <template>
     <div class="main">
         <div>
-            <i class="fas fa-spider"></i>
+            <i class="fas fa-spider" />
             <p class="logo">
-                Good<br />
+                Good<br>
                 {{ logo }}
             </p>
         </div>

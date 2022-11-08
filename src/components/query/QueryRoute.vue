@@ -5,11 +5,11 @@ import { Message, Modal } from '@arco-design/web-vue';
 import { Vue3Menus } from 'vue3-menus';
 import AddModal from "./AddModal.vue";
 import UpdateModal from "./UpdateModal.vue";
-import { setThemeColor } from "../../plugins/dsxPlugins";
 import http from "/src/scripts/server-api";
 import { useAppConfigs } from "/src/store/AppConfigsStore";
 
-setThemeColor(window.getComputedStyle(document.body).backgroundColor);
+const appConfigs = useAppConfigs();
+appConfigs.statusBarColor = window.getComputedStyle(document.body).backgroundColor;
 
 const table = reactive({
     maxHeight: window.innerHeight - 64,//等相对单位dvh标准出来之后删除
@@ -42,7 +42,6 @@ onUnmounted(() => {
 
 const key = ref("");
 const searching = ref(false);
-const appConfigs = useAppConfigs();
 
 async function Search() {
     appConfigs.query.history = key.value;
@@ -50,7 +49,7 @@ async function Search() {
     try {
         QuerySucceed(await http.query(key.value));
     } catch (error) {
-        console.error("Search:", error);
+        console.error("(Search)", `url:${error.config.url}`, error);
         QueryError();
     }
 }
@@ -80,7 +79,7 @@ function QuerySucceed(resp) {
 }
 
 function QueryError() {
-    Message.error("搜索出现错误");
+    Message.error("查询出现错误");
     searching.value = false;
 }
 
@@ -88,7 +87,6 @@ const route = useRoute();
 
 async function detectKey() {
     let routeQuery = route.query;
-    console.log("routeQuery=", routeQuery);
     try {
         if (Object.hasOwn(routeQuery, "key")) {
             key.value = routeQuery.key;
@@ -104,7 +102,7 @@ async function detectKey() {
             }
         }
     } catch (error) {
-        console.error("detectKey:", error);
+        console.error("(detectKey)", `url:${error.config.url}`, error);
         QueryError();
     }
 }
@@ -190,36 +188,41 @@ async function add_submit(form_data) {
     let account = form_data.account;
     let password = form_data.password;
     let remark = form_data.remark;
-    let resp = await http.addPasswords(name, account, password, remark);
-    console.log("addPasswords:", resp);
-    switch (resp["code"]) {
-        case 0: {
-            let history = appConfigs.query.history;
-            history = history === undefined || history === "" ? name : `${history} ${name}`;
-            appConfigs.query.history = history;
-            searching.value = true;
-            key.value = history;
-            addModal.visible = false;
-            addModal.clean = true;
-            Message.success("添加成功");
-            try {
-                QuerySucceed(await http.query(history));
-            } catch (error) {
-                console.error("add_submit:", error);
-                QueryError();
+    try {
+        let resp = await http.addPasswords(name, account, password, remark);
+        console.log("addPasswords:", resp);
+        switch (resp["code"]) {
+            case 0: {
+                let history = appConfigs.query.history;
+                history = history === undefined || history === "" ? name : `${history} ${name}`;
+                appConfigs.query.history = history;
+                searching.value = true;
+                key.value = history;
+                addModal.visible = false;
+                addModal.clean = true;
+                Message.success("添加成功");
+                try {
+                    QuerySucceed(await http.query(history));
+                } catch (error) {
+                    console.error("(add_submit)", `url:${error.config.url}`, error);
+                    QueryError();
+                }
+                break;
             }
-            break;
+            case 1: {
+                Message.error({
+                    content: () =>
+                        <p style="margin:0">
+                            添加失败<br />可能该名称已存在<br />请尝试换一个名称再添加
+                        </p>
+                });
+                addModal.visible = false;
+                break;
+            }
         }
-        case 1: {
-            Message.error({
-                content: () =>
-                    <p style="margin:0">
-                        添加失败<br />可能该名称已存在<br />请尝试换一个名称再添加
-                    </p>
-            });
-            addModal.visible = false;
-            break;
-        }
+    } catch (error) {
+        console.error("(add_submit)", `url:${error.config.url}`, error);
+        Message.error("服务器错误");
     }
 }
 
@@ -251,7 +254,7 @@ function update_submit(form_data) {
                     try {
                         QuerySucceed(await http.query(history))
                     } catch (error) {
-                        console.error("okUpdate:", error);
+                        console.error("(okUpdate)", `url:${error.config.url}`, error);
                         QueryError();
                     }
                     break;

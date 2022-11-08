@@ -61,7 +61,7 @@ const progressColor = computed(() => {
         <div class="my-card-body">
             <div>{{ value.label }}({{ value.mount }})</div>
             <a-progress :percent="usedPercent" :show-text="false" :stroke-width="22" size="large"
-                        :color="progressColor" />
+                :color="progressColor" />
             <div>{{ freeStr }}可用，共 {{ totalStr }}</div>
         </div>
     </base-card>

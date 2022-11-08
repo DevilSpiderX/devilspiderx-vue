@@ -1,15 +1,12 @@
 <script setup>
 import { onBeforeMount, ref, watch } from "vue";
-import { changeTheme } from "./plugins/dsxPlugins";
 import { useAppConfigs } from "./store/AppConfigsStore";
 import http from "./scripts/server-api.js";
 
 window.appInited = ref(false);
 const appConfigs = useAppConfigs();
 
-watch(() => appConfigs.themeName, newVal => {
-    changeTheme(newVal);
-})
+watch(() => appConfigs.themeName, newVal => document.body.setAttribute("arco-theme", newVal))
 
 watch(() => appConfigs.themeFollowSystem, newVal => {
     if (newVal) {
@@ -17,9 +14,17 @@ watch(() => appConfigs.themeFollowSystem, newVal => {
     }
 });
 
-onBeforeMount(async () => {
+const themeColorMetaElement = document.createElement("meta");
+themeColorMetaElement.setAttribute("name", "theme-color");
+document.head.append(themeColorMetaElement);
+
+watch(() => appConfigs.statusBarColor, color => {
+    themeColorMetaElement.setAttribute("content", color);
+});
+
+onBeforeMount(() => {
     if (appConfigs.darkTheme) {
-        changeTheme("dark");
+        document.body.setAttribute("arco-theme", "dark");
     }
     if (appConfigs.themeFollowSystem) {
         appConfigs.setThemeFollowSystem();
@@ -29,14 +34,20 @@ onBeforeMount(async () => {
             appConfigs.darkTheme = event.matches;
         }
     }
+    checkUserStatus();
+    window.appInited.value = true;
+});
+
+async function checkUserStatus() {
     try {
         let resp = await http.user_status();
         console.log("user_status:", resp);
         Object.assign(appConfigs.user, resp.data);
     } catch (ignored) {
     }
-    window.appInited.value = true;
-});
+}
+
+setInterval(checkUserStatus, appConfigs.user.checkIntervalTime);
 
 </script>
 

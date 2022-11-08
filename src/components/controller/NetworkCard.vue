@@ -39,7 +39,7 @@ const precision_download = computed(() => {
             <a-descriptions :column="1" :align="{label:'right'}" :label-style="{width:'calc(50% - 1px)'}">
                 <a-descriptions-item label="上传速度">
                     <a-statistic :value="value.format.uploadSpeed.value" :precision="precision_upload"
-                                 :value-style="{color:'rgb(var(--green-7))',fontSize:'20px'}">
+                        :value-style="{color:'rgb(var(--green-7))',fontSize:'20px'}">
                         <template #prefix>
                             <icon-arrow-rise />
                         </template>
@@ -50,7 +50,7 @@ const precision_download = computed(() => {
                 </a-descriptions-item>
                 <a-descriptions-item label="下载速度">
                     <a-statistic :value="value.format.downloadSpeed.value" :precision="precision_download"
-                                 :value-style="{color:'rgb(var(--blue-7))',fontSize:'20px'}">>
+                        :value-style="{color:'rgb(var(--blue-7))',fontSize:'20px'}">>
                         <template #prefix>
                             <icon-arrow-fall />
                         </template>

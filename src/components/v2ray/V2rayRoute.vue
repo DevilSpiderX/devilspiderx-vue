@@ -1,11 +1,12 @@
 <script setup>
 import { onMounted, ref } from "vue";
-import Switch from "/src/components/v2ray/MySwitch.vue";
 import { Notification } from '@arco-design/web-vue';
+import Switch from "/src/components/v2ray/MySwitch.vue";
 import http from "/src/scripts/server-api";
-import { setThemeColor } from "../../plugins/dsxPlugins";
+import { useAppConfigs } from "/src/store/AppConfigsStore";
 
-setThemeColor(window.getComputedStyle(document.body).backgroundColor);
+const appConfigs = useAppConfigs();
+appConfigs.statusBarColor = window.getComputedStyle(document.body).backgroundColor;
 
 const switchStatus = ref(false);
 
@@ -66,7 +67,7 @@ async function on_switch_clicked() {
             }
         }
     } catch (error) {
-        console.error("on_switch_clicked:", error);
+        console.error("(on_switch_clicked)", `url:${error.config.url}`, error);
         Notification.error("服务器错误")
     }
 }

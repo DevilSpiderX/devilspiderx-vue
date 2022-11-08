@@ -3,10 +3,10 @@ import { reactive } from "vue";
 import { useRouter } from "vue-router";
 import { Message } from "@arco-design/web-vue";
 import http from "/src/scripts/server-api";
-import { setThemeColor } from "../plugins/dsxPlugins";
 import { useAppConfigs } from "/src/store/AppConfigsStore";
 
-setThemeColor(window.getComputedStyle(document.body).backgroundColor);
+const appConfigs = useAppConfigs();
+appConfigs.statusBarColor = window.getComputedStyle(document.body).backgroundColor;
 
 const inputStatus = reactive([false, false, false]);
 const form = reactive({
@@ -60,25 +60,24 @@ async function form_submit() {
             }
         }
     } catch (error) {
-        console.error("form_submit:", error);
+        console.error("(form_submit)", `url:${error.config.url}`, error);
         Message.error("服务器错误");
     }
     running_stop();
 }
 
-const appConfigs = useAppConfigs();
 const running = reactive({
     show: false
 });
 
 function running_start() {
     running.show = true;
-    setThemeColor(appConfigs.darkTheme ? "#0c0c0d" : "#808080");
+    appConfigs.statusBarColor = appConfigs.darkTheme ? "#0c0c0d" : "#808080";
 }
 
 function running_stop() {
     running.show = false;
-    setThemeColor(window.getComputedStyle(document.body).backgroundColor);
+    appConfigs.statusBarColor = window.getComputedStyle(document.body).backgroundColor;
 }
 </script>
 
@@ -92,32 +91,34 @@ function running_stop() {
                             注&nbsp;&nbsp;册
                         </h1>
                         <a-form-item field="uid" hide-label>
-                            <a-input class="my-input" placeholder="账号" v-model="form.uid" allow-clear
-                                     :input-attrs="{style:{'font-size':'1.1rem'}}" :error="inputStatus[0]">
+                            <a-input v-model="form.uid" class="my-input" placeholder="账号" allow-clear
+                                :input-attrs="{style:{'font-size':'1.1rem'}}" :error="inputStatus[0]">
                                 <template #prefix>
-                                    <span><i class="fas fa-user fa-fw"></i></span>
+                                    <span><i class="fas fa-user fa-fw" /></span>
                                 </template>
                             </a-input>
                         </a-form-item>
                         <a-form-item field="pwd" hide-label>
-                            <a-input-password class="my-input" placeholder="密码" v-model="form.pwd" allow-clear
-                                              :input-attrs="{style:{'font-size':'1.1rem'}}" :error="inputStatus[1]">
+                            <a-input-password v-model="form.pwd" class="my-input" placeholder="密码" allow-clear
+                                :input-attrs="{style:{'font-size':'1.1rem'}}" :error="inputStatus[1]">
                                 <template #prefix>
-                                    <span><i class="fas fa-key fa-fw"></i></span>
+                                    <span><i class="fas fa-key fa-fw" /></span>
                                 </template>
                             </a-input-password>
                         </a-form-item>
                         <a-form-item field="pwd_a" hide-label>
-                            <a-input-password class="my-input" placeholder="再次输入密码" v-model="form.pwd_a"
-                                              allow-clear :input-attrs="{style:{'font-size':'1.1rem'}}"
-                                              :error="inputStatus[2]">
+                            <a-input-password v-model="form.pwd_a" class="my-input" placeholder="再次输入密码"
+                                allow-clear :input-attrs="{style:{'font-size':'1.1rem'}}"
+                                :error="inputStatus[2]">
                                 <template #prefix>
-                                    <span><i class="fas fa-key fa-fw"></i></span>
+                                    <span><i class="fas fa-key fa-fw" /></span>
                                 </template>
                             </a-input-password>
                         </a-form-item>
                         <a-row class="button-row" justify="space-around">
-                            <a-button type="primary" size="large" html-type="submit">注 册</a-button>
+                            <a-button type="primary" size="large" html-type="submit">
+                                注 册
+                            </a-button>
                             <a-button type="primary" size="large" html-type="button" @click="$router.back()">
                                 返 回
                             </a-button>
@@ -128,8 +129,8 @@ function running_stop() {
         </a-layout-content>
     </a-layout>
 
-    <div class="running" v-show="running.show">
-        <i class="fas fa-spinner fa-spin"></i>
+    <div v-show="running.show" class="running">
+        <i class="fas fa-spinner fa-spin" />
     </div>
 </template>
 
