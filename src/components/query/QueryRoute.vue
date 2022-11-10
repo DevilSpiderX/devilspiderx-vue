@@ -325,7 +325,12 @@ async function table_page_change(page) {
         </a-layout-content>
     </a-layout>
 
-    <vue3-menus v-model:open="tableMenu.open" :event="tableMenu.event" :menus="tableMenu.menus" minWidth="100" />
+    <vue3-menus v-model:open="tableMenu.open" :event="tableMenu.event" :menus="tableMenu.menus" minWidth="100"
+        v-slot="{activeIndex,menu,index}">
+        <div class="v3-menus-item v3-menus-available">
+            <span class="v3-menus-label">{{ menu.label }}</span>
+        </div>
+    </vue3-menus>
     <add-modal v-model:visible="addModal.visible" v-model:cleaning="addModal.cleaning" @submit="add_submit" />
     <update-modal v-model:visible="updateModal.visible" :data="updateModal.data" @submit="update_submit" />
 </template>
