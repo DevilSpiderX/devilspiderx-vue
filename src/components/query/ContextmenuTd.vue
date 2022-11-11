@@ -28,5 +28,6 @@ function handle_td_contextmenu(event: MouseEvent) {
 <style scoped>
 .user-select-none {
     user-select: none;
+    -webkit-user-select: none;
 }
 </style>

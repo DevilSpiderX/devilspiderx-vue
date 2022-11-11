@@ -1,5 +1,5 @@
 <script setup lang="jsx">
-import { nextTick, onMounted, onUnmounted, reactive, ref } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { Message, Modal } from '@arco-design/web-vue';
 import { Vue3Menus } from 'vue3-menus';
@@ -27,6 +27,10 @@ const table = reactive({
         hideOnSinglePage: true
     },
     bodyScrollWrap: null
+});
+
+const tableTotalPage = computed(() => {
+    return Math.ceil(table.data.length / table.paginationProps.pageSize);
 });
 
 onMounted(() => {
@@ -156,6 +160,9 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
     tableMenu.menus[1].click = () => {
         //假的删除，只是从表格上删除而已，服务器上根本没有删除api
         table.data.splice(recordIndex, 1);
+        if (table.paginationProps.current > tableTotalPage.value) {
+            table.paginationProps.current--;
+        }
     };
 
     //修改按钮
