@@ -24,7 +24,7 @@ export const useAppConfigs = defineStore("appConfigs", {
         user: {
             uid: undefined,
             admin: false,
-            login: true,
+            login: false,
             checkIntervalTime: 600 * 1000 //ms
         },
         query: {

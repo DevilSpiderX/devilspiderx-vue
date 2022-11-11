@@ -5,6 +5,7 @@ import legacy from '@vitejs/plugin-legacy';
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import { ArcoResolver } from 'unplugin-vue-components/resolvers';
+import { VitePWA } from "vite-plugin-pwa";
 
 let objExternals = {
     vue: "Vue",
@@ -29,6 +30,31 @@ export default defineConfig({
         }),
         legacy({
             targets: ['defaults']
+        }),
+        VitePWA({
+            manifest: {
+                "name": "DevilSpiderX",
+                "short_name": "DSX",
+                "start_url": "./",
+                "display": "standalone",
+                "background_color": "#ffffff",
+                "theme_color": "#ffffff",
+                "lang": "en",
+                "scope": "./",
+                icons: [
+                    {
+                        "src": "favicon.png",
+                        "sizes": "256x256",
+                        "type": "image/png"
+                    }
+                ]
+            },
+            workbox: {
+                cacheId: "DSX-cache",
+                navigateFallback: null,
+                globPatterns: ["**\/*.{js,css,html,ttf,png,jpg}"],
+                maximumFileSizeToCacheInBytes: 8000000
+            }
         })
     ],
     server: {
