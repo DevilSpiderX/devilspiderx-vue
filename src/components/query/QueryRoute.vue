@@ -7,6 +7,7 @@ import AddModal from "./AddModal.vue";
 import UpdateModal from "./UpdateModal.vue";
 import http from "/src/scripts/server-api";
 import { useAppConfigs } from "/src/store/AppConfigsStore";
+import ContextmenuTd from "./ContextmenuTd.vue";
 
 const appConfigs = useAppConfigs();
 appConfigs.statusBarColor = window.getComputedStyle(document.body).backgroundColor;
@@ -134,8 +135,10 @@ const updateModal = reactive({
     data: {}
 });
 
-function table_cell_contextmenu(column, record, event) {
+function table_cell_contextmenu(column, record, rowIndex, event) {
     if (record.id === -1) return;
+    const recordIndex = table.paginationProps.pageSize * (table.paginationProps.current - 1) + rowIndex;
+
     //复制按钮
     tableMenu.menus[0].click = () => {
         if (typeof navigator.clipboard === "object") {
@@ -152,7 +155,7 @@ function table_cell_contextmenu(column, record, event) {
     //删除按钮
     tableMenu.menus[1].click = () => {
         //假的删除，只是从表格上删除而已，服务器上根本没有删除api
-        table.data.splice(this.table.data.indexOf(record), 1);
+        table.data.splice(recordIndex, 1);
     };
 
     //修改按钮
@@ -315,9 +318,8 @@ async function table_page_change(page) {
                         <template #empty>
                             <a-empty />
                         </template>
-                        <template #td="{column, record}">
-                            <td class="user-select-none"
-                                @contextmenu.prevent="table_cell_contextmenu(column,record,$event)" />
+                        <template #td="scope">
+                            <contextmenu-td :value="scope" @contextmenu="table_cell_contextmenu" />
                         </template>
                     </a-table>
                 </a-col>
@@ -336,7 +338,5 @@ async function table_page_change(page) {
 </template>
 
 <style scoped>
-.user-select-none {
-    user-select: none;
-}
+
 </style>

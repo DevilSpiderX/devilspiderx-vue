@@ -24,7 +24,7 @@
     "vue3-menus": "^1.1.2"
   },
   "devDependencies": {
-    "@arco-design/web-vue": "^2.38.2",
+    "@arco-design/web-vue": "^2.38.3",
     "@vitejs/plugin-basic-ssl": "^0.1.2",
     "@vitejs/plugin-legacy": "^2.2.0",
     "@vitejs/plugin-vue": "^3.2.0",

@@ -33,6 +33,7 @@ declare module '@vue/runtime-core' {
     ASwitch: typeof import('@arco-design/web-vue')['Switch']
     ATable: typeof import('@arco-design/web-vue')['Table']
     BaseCard: typeof import('./src/components/controller/BaseCard.vue')['default']
+    ContextmenuTd: typeof import('./src/components/query/ContextmenuTd.vue')['default']
     ControllerRoute: typeof import('./src/components/controller/ControllerRoute.vue')['default']
     CpuCard: typeof import('./src/components/controller/CpuCard.vue')['default']
     DiskCard: typeof import('./src/components/controller/DiskCard.vue')['default']
