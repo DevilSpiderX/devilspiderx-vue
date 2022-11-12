@@ -54,7 +54,7 @@ async function Search() {
     try {
         QuerySucceed(await http.query(key.value));
     } catch (error) {
-        console.error("(Search)", `url:${error.config.url}`, error);
+        console.error("(Search)", `url:${error.config?.url}`, error);
         QueryError();
     }
 }
@@ -107,7 +107,7 @@ async function detectKey() {
             }
         }
     } catch (error) {
-        console.error("(detectKey)", `url:${error.config.url}`, error);
+        console.error("(detectKey)", `url:${error.config?.url}`, error);
         QueryError();
     }
 }
@@ -214,7 +214,7 @@ async function add_submit(form_data) {
                 try {
                     QuerySucceed(await http.query(history));
                 } catch (error) {
-                    console.error("(add_submit)", `url:${error.config.url}`, error);
+                    console.error("(add_submit)", `url:${error.config?.url}`, error);
                     QueryError();
                 }
                 break;
@@ -231,7 +231,7 @@ async function add_submit(form_data) {
             }
         }
     } catch (error) {
-        console.error("(add_submit)", `url:${error.config.url}`, error);
+        console.error("(add_submit)", `url:${error.config?.url}`, error);
         Message.error("服务器错误");
     }
 }
@@ -264,7 +264,7 @@ function update_submit(form_data) {
                     try {
                         QuerySucceed(await http.query(history))
                     } catch (error) {
-                        console.error("(okUpdate)", `url:${error.config.url}`, error);
+                        console.error("(okUpdate)", `url:${error.config?.url}`, error);
                         QueryError();
                     }
                     break;

@@ -67,7 +67,7 @@ async function on_switch_clicked() {
             }
         }
     } catch (error) {
-        console.error("(on_switch_clicked)", `url:${error.config.url}`, error);
+        console.error("(on_switch_clicked)", `url:${error.config?.url}`, error);
         Notification.error("服务器错误")
     }
 }

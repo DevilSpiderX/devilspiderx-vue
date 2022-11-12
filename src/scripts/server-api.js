@@ -1,64 +1,51 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
-async function login(uid, pwd) {
-    try {
-        let resp = await axios.post("/api/user/login", {uid: uid, pwd: pwd});
-        return Promise.resolve(resp.data);
-    } catch (error) {
-        return Promise.reject(error);
+function throwError(error) {
+    if (error instanceof AxiosError) {
+        error.status = error.response.status
     }
+    throw error
 }
 
-async function logout() {
-    try {
-        let resp = await axios.post("/api/user/logout");
-        return Promise.resolve(resp.data);
-    } catch (error) {
-        return Promise.reject(error);
-    }
+function login(uid, pwd) {
+    return axios.post("/api/user/login", {uid: uid, pwd: pwd})
+        .then(resp => resp.data).catch(error => throwError(error));
 }
 
-async function register(uid, pwd) {
+function logout() {
+    return axios.post("/api/user/logout")
+        .then(resp => resp.data).catch(error => throwError(error));
+}
+
+function register(uid, pwd) {
     let postBody = {
         uid: uid,
         pwd: pwd
     }
-    try {
-        let resp = await axios.post("/api/user/register", postBody)
-        return Promise.resolve(resp.data);
-    } catch (error) {
-        return Promise.reject(error);
-    }
+    return axios.post("/api/user/register", postBody)
+        .then(resp => resp.data).catch(error => throwError(error));
 }
 
-async function query(key) {
+function query(key) {
     let postBody = {
         key: key,
     }
-    try {
-        let resp = await axios.post("/api/query", postBody)
-        return Promise.resolve(resp.data);
-    } catch (error) {
-        return Promise.reject(error);
-    }
+    return axios.post("/api/query", postBody)
+        .then(resp => resp.data).catch(error => throwError(error));
 }
 
-async function addPasswords(name, account, password, remark) {
+function addPasswords(name, account, password, remark) {
     let postBody = {
         name: name,
         account: account,
         password: password,
         remark: remark,
     }
-    try {
-        let resp = await axios.post("/api/addPasswords", postBody)
-        return Promise.resolve(resp.data);
-    } catch (error) {
-        return Promise.reject(error);
-    }
+    return axios.post("/api/addPasswords", postBody)
+        .then(resp => resp.data).catch(error => throwError(error));
 }
 
-async function updatePasswords(id, name, account, password, remark) {
+function updatePasswords(id, name, account, password, remark) {
     let postBody = {
         id: id,
         name: name,
@@ -66,138 +53,78 @@ async function updatePasswords(id, name, account, password, remark) {
         password: password,
         remark: remark,
     }
-    try {
-        let resp = await axios.post("/api/updatePasswords", postBody)
-        return Promise.resolve(resp.data);
-    } catch (error) {
-        return Promise.reject(error);
-    }
+    return axios.post("/api/updatePasswords", postBody)
+        .then(resp => resp.data).catch(error => throwError(error));
 }
 
-async function os_reboot() {
-    try {
-        let resp = await axios.post("/api/os/reboot")
-        return Promise.resolve(resp.data);
-    } catch (error) {
-        return Promise.reject(error);
-    }
+function os_reboot() {
+    return axios.post("/api/os/reboot")
+        .then(resp => resp.data).catch(error => throwError(error));
 }
 
-async function os_shutdown() {
-    try {
-        let resp = await axios.post("/api/os/shutdown")
-        return Promise.resolve(resp.data);
-    } catch (error) {
-        return Promise.reject(error);
-    }
+function os_shutdown() {
+    return axios.post("/api/os/shutdown")
+        .then(resp => resp.data).catch(error => throwError(error));
 }
 
-async function v2rayStart() {
-    try {
-        let resp = await axios.post("/api/v2ray/start")
-        return Promise.resolve(resp.data);
-    } catch (error) {
-        return Promise.reject(error);
-    }
+function v2rayStart() {
+    return axios.post("/api/v2ray/start")
+        .then(resp => resp.data).catch(error => throwError(error));
 }
 
-async function v2rayStop() {
-    try {
-        let resp = await axios.post("/api/v2ray/stop")
-        return Promise.resolve(resp.data);
-    } catch (error) {
-        return Promise.reject(error);
-    }
+function v2rayStop() {
+    return axios.post("/api/v2ray/stop")
+        .then(resp => resp.data).catch(error => throwError(error));
 }
 
-async function v2rayState() {
-    try {
-        let resp = await axios.post("/api/v2ray/state")
-        return Promise.resolve(resp.data);
-    } catch (error) {
-        return Promise.reject(error);
-    }
+function v2rayState() {
+    return axios.post("/api/v2ray/state")
+        .then(resp => resp.data).catch(error => throwError(error));
 }
 
-async function cpu() {
-    try {
-        let resp = await axios.post("/api/ServerInfo/cpu")
-        return Promise.resolve(resp.data);
-    } catch (error) {
-        return Promise.reject(error);
-    }
+function cpu() {
+    return axios.post("/api/ServerInfo/cpu")
+        .then(resp => resp.data).catch(error => throwError(error));
 }
 
-async function memory() {
-    try {
-        let resp = await axios.post("/api/ServerInfo/memory")
-        return Promise.resolve(resp.data);
-    } catch (error) {
-        return Promise.reject(error);
-    }
+function memory() {
+    return axios.post("/api/ServerInfo/memory")
+        .then(resp => resp.data).catch(error => throwError(error));
 }
 
-async function network() {
-    try {
-        let resp = await axios.post("/api/ServerInfo/network")
-        return Promise.resolve(resp.data);
-    } catch (error) {
-        return Promise.reject(error);
-    }
+function network() {
+    return axios.post("/api/ServerInfo/network")
+        .then(resp => resp.data).catch(error => throwError(error));
 }
 
-async function network_size() {
-    try {
-        let resp = await axios.post("/api/ServerInfo/network/size")
-        return Promise.resolve(resp.data);
-    } catch (error) {
-        return Promise.reject(error);
-    }
+function network_size() {
+    return axios.post("/api/ServerInfo/network/size")
+        .then(resp => resp.data).catch(error => throwError(error));
 }
 
-async function disk() {
-    try {
-        let resp = await axios.post("/api/ServerInfo/disk")
-        return Promise.resolve(resp.data);
-    } catch (error) {
-        return Promise.reject(error);
-    }
+function disk() {
+    return axios.post("/api/ServerInfo/disk")
+        .then(resp => resp.data).catch(error => throwError(error));
 }
 
-async function disk_size() {
-    try {
-        let resp = await axios.post("/api/ServerInfo/disk/size")
-        return Promise.resolve(resp.data);
-    } catch (error) {
-        return Promise.reject(error);
-    }
+function disk_size() {
+    return axios.post("/api/ServerInfo/disk/size")
+        .then(resp => resp.data).catch(error => throwError(error));
 }
 
-async function token() {
-    try {
-        let resp = await axios.post("/api/ServerInfo/token")
-        return Promise.resolve(resp.data);
-    } catch (error) {
-        return Promise.reject(error);
-    }
+function token() {
+    return axios.post("/api/ServerInfo/token")
+        .then(resp => resp.data).catch(error => throwError(error));
 }
 
-async function logList() {
-    try {
-        let resp = await axios.post("/log")
-        return Promise.resolve(resp.data);
-    } catch (error) {
-        return Promise.reject(error);
-    }
+function logList() {
+    return axios.post("/log")
+        .then(resp => resp.data).catch(error => throwError(error));
 }
 
-async function user_status() {
-    try {
-        let resp = await axios.post("/api/user/status")
-        return Promise.resolve(resp.data);
-    } catch (error) {
-        return Promise.reject(error);
-    }
+function user_status() {
+    return axios.post("/api/user/status")
+        .then(resp => resp.data).catch(error => throwError(error));
 }
 
 

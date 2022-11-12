@@ -72,7 +72,7 @@ const ws = {
             await router.push({name: "login"});
         }
     } catch (error) {
-        console.error("(beforeCreate)", `url:${error.config.url}`, error);
+        console.error("(beforeCreate)", `url:${error.config?.url}`, error);
         Message.error("服务器错误");
         router.back();
     }

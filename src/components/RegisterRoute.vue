@@ -60,7 +60,7 @@ async function form_submit() {
             }
         }
     } catch (error) {
-        console.error("(form_submit)", `url:${error.config.url}`, error);
+        console.error("(form_submit)", `url:${error.config?.url}`, error);
         Message.error("服务器错误");
     }
     running_stop();
