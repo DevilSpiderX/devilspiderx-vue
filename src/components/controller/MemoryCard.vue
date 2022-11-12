@@ -5,7 +5,7 @@ import { MemoryValueType } from "./scripts/Types";
 import { colors } from "./scripts/progressColor";
 
 const props = withDefaults(
-    defineProps<{ value: MemoryValueType }>(),
+    defineProps<{ value: MemoryValueType, processCount: number }>(),
     {
         value: () => ({
             total: 1,
@@ -16,7 +16,8 @@ const props = withDefaults(
                 used: {value: 0, unit: "B"},
                 free: {value: 0, unit: "B"}
             }
-        })
+        }),
+        processCount: 0
     }
 )
 
@@ -64,6 +65,7 @@ const progressColor = computed(() => {
                 <a-descriptions-item label="已 用">{{ usedStr }}</a-descriptions-item>
                 <a-descriptions-item label="剩 余">{{ freeStr }}</a-descriptions-item>
                 <a-descriptions-item label="总 量">{{ totalStr }}</a-descriptions-item>
+                <a-descriptions-item label="进程数">{{ props.processCount }} 个</a-descriptions-item>
             </a-descriptions>
             <a-descriptions>
                 <a-descriptions-item label="使用率">

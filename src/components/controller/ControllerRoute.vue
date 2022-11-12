@@ -26,7 +26,8 @@ const values = reactive({
     cpu: undefined,
     memory: undefined,
     network: undefined,
-    disk: []
+    disk: [],
+    os: undefined
 });
 const ws = {
     websocket: null,
@@ -131,7 +132,7 @@ function window_resize() {//等相对单位dvh标准出来之后删除
                         <cpu-card :value="values.cpu" />
                     </a-col>
                     <a-col :xs="24" :md="12" :xl="8" class="my-col" v-if="values.memory">
-                        <memory-card :value="values.memory" />
+                        <memory-card :value="values.memory" :process-count="values.os?.processCount" />
                     </a-col>
                     <a-col :xs="24" :md="12" :xl="8" class="my-col" v-if="values.network">
                         <network-card :value="values.network" />
