@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { Progress as AProgress } from "@arco-design/web-vue";
 import BaseCard from "./BaseCard.vue";
 import { CpuValueType } from "./scripts/Types";
 import { colors } from "./scripts/progressColor";

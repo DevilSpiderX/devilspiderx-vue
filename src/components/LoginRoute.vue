@@ -1,9 +1,9 @@
 <script setup>
 import { onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
-import { Message } from '@arco-design/web-vue';
-import SHA256 from 'crypto-js/sha256';
-import Hex from 'crypto-js/enc-hex';
+import { Message } from "@arco-design/web-vue";
+import SHA256 from "crypto-js/sha256";
+import Hex from "crypto-js/enc-hex";
 import http from "/src/scripts/server-api";
 import { useAppConfigs } from "/src/store/AppConfigsStore";
 
@@ -39,7 +39,7 @@ async function form_submit() {
     }
     appConfigs.user.uid = uid;
 
-    running_start()
+    running_start();
     pwd = SHA256(pwd).toString(Hex);
     try {
         let resp = await http.login(uid, pwd);
@@ -48,7 +48,7 @@ async function form_submit() {
             case 0: {
                 appConfigs.user.login = true;
                 Object.assign(appConfigs.user, resp.data);
-                await router.push({name: "index"});
+                await router.push({ name: "index" });
                 break;
             }
             case 1: {
@@ -86,16 +86,16 @@ function running_stop() {
 
 <template>
     <a-layout>
-        <a-layout-content style="padding: 0;overflow: visible;">
+        <a-layout-content style="padding: 0; overflow: visible">
             <a-row justify="center">
                 <a-col class="register-col">
                     <a-form :model="form" @submit="form_submit">
-                        <h1 style="text-align: center;font-size: 2.5rem;color: var(--color-text-1);">
+                        <h1 style="text-align: center; font-size: 2.5rem; color: var(--color-text-1)">
                             登&nbsp;&nbsp;录
                         </h1>
                         <a-form-item field="uid" hide-label>
                             <a-input v-model="form.uid" class="my-input" placeholder="账号" allow-clear
-                                :input-attrs="{style:{'font-size':'1.1rem'}}" :error="inputStatus[0]">
+                                :input-attrs="{ style: { 'font-size': '1.1rem' } }" :error="inputStatus[0]">
                                 <template #prefix>
                                     <span><i class="fas fa-user fa-fw" /></span>
                                 </template>
@@ -103,7 +103,7 @@ function running_stop() {
                         </a-form-item>
                         <a-form-item field="pwd" hide-label>
                             <a-input-password v-model="form.pwd" class="my-input" placeholder="密码" allow-clear
-                                :input-attrs="{style:{'font-size':'1.1rem'}}" :error="inputStatus[1]">
+                                :input-attrs="{ style: { 'font-size': '1.1rem' } }" :error="inputStatus[1]">
                                 <template #prefix>
                                     <span><i class="fas fa-key fa-fw" /></span>
                                 </template>
@@ -114,7 +114,7 @@ function running_stop() {
                                 登 录
                             </a-button>
                             <a-button type="primary" size="large" html-type="button"
-                                @click="$router.push({name:'register'})">
+                                @click="$router.push({ name: 'register' })">
                                 注 册
                             </a-button>
                         </a-row>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import {Progress as AProgress} from "@arco-design/web-vue";
 import BaseCard from "./BaseCard.vue";
 import { MemoryValueType } from "./scripts/Types";
 import { colors } from "./scripts/progressColor";
@@ -65,7 +66,7 @@ const progressColor = computed(() => {
                 <a-descriptions-item label="已 用">{{ usedStr }}</a-descriptions-item>
                 <a-descriptions-item label="剩 余">{{ freeStr }}</a-descriptions-item>
                 <a-descriptions-item label="总 量">{{ totalStr }}</a-descriptions-item>
-                <a-descriptions-item label="进程数">{{ props.processCount }} 个</a-descriptions-item>
+                <a-descriptions-item label="进 程">{{ props.processCount }} 个</a-descriptions-item>
             </a-descriptions>
             <a-descriptions>
                 <a-descriptions-item label="使用率">

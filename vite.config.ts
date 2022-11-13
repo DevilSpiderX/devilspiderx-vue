@@ -5,13 +5,8 @@ import legacy from '@vitejs/plugin-legacy';
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import { ArcoResolver } from 'unplugin-vue-components/resolvers';
+import { vitePluginForArco } from '@arco-plugins/vite-vue';
 import { VitePWA } from "vite-plugin-pwa";
-
-let objExternals = {
-    vue: "Vue",
-    "crypto-js": "CryptoJS",
-    "vue3-menus": "Vue3Menus"
-}
 
 export default defineConfig({
     base: "./",
@@ -55,6 +50,9 @@ export default defineConfig({
                 globPatterns: ["**\/*.{js,css,html,ttf,png,jpg}"],
                 maximumFileSizeToCacheInBytes: 8000000
             }
+        }),
+        vitePluginForArco({
+            style: "css"
         })
     ],
     server: {

@@ -8,7 +8,7 @@ function throwError(error) {
 }
 
 function login(uid, pwd) {
-    return axios.post("/api/user/login", {uid: uid, pwd: pwd})
+    return axios.post("/api/user/login", { uid: uid, pwd: pwd })
         .then(resp => resp.data).catch(error => throwError(error));
 }
 
