@@ -2,8 +2,8 @@
 import { reactive } from "vue";
 import { useRouter } from "vue-router";
 import { Message } from "@arco-design/web-vue";
-import http from "/src/scripts/server-api";
-import { useAppConfigs } from "/src/store/AppConfigsStore";
+import http from "@/scripts/server-api";
+import { useAppConfigs } from "@/store/AppConfigsStore";
 
 const appConfigs = useAppConfigs();
 appConfigs.statusBarColor = window.getComputedStyle(document.body).backgroundColor;
@@ -45,7 +45,7 @@ async function form_submit() {
         console.log("Register:", resp);
         switch (resp["code"]) {
             case 0: {
-                await router.push({name: "login"});
+                await router.push({ name: "login" });
                 break;
             }
             case 1: {
@@ -92,7 +92,7 @@ function running_stop() {
                         </h1>
                         <a-form-item field="uid" hide-label>
                             <a-input v-model="form.uid" class="my-input" placeholder="账号" allow-clear
-                                :input-attrs="{style:{'font-size':'1.1rem'}}" :error="inputStatus[0]">
+                                :input-attrs="{ style: { 'font-size': '1.1rem' } }" :error="inputStatus[0]">
                                 <template #prefix>
                                     <span><i class="fas fa-user fa-fw" /></span>
                                 </template>
@@ -100,16 +100,15 @@ function running_stop() {
                         </a-form-item>
                         <a-form-item field="pwd" hide-label>
                             <a-input-password v-model="form.pwd" class="my-input" placeholder="密码" allow-clear
-                                :input-attrs="{style:{'font-size':'1.1rem'}}" :error="inputStatus[1]">
+                                :input-attrs="{ style: { 'font-size': '1.1rem' } }" :error="inputStatus[1]">
                                 <template #prefix>
                                     <span><i class="fas fa-key fa-fw" /></span>
                                 </template>
                             </a-input-password>
                         </a-form-item>
                         <a-form-item field="pwd_a" hide-label>
-                            <a-input-password v-model="form.pwd_a" class="my-input" placeholder="再次输入密码"
-                                allow-clear :input-attrs="{style:{'font-size':'1.1rem'}}"
-                                :error="inputStatus[2]">
+                            <a-input-password v-model="form.pwd_a" class="my-input" placeholder="再次输入密码" allow-clear
+                                :input-attrs="{ style: { 'font-size': '1.1rem' } }" :error="inputStatus[2]">
                                 <template #prefix>
                                     <span><i class="fas fa-key fa-fw" /></span>
                                 </template>

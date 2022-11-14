@@ -16,9 +16,9 @@ const props = withDefaults(
             free: 0,
             used: 0,
             format: {
-                total: {value: 0, unit: "B"},
-                free: {value: 0, unit: "B"},
-                used: {value: 0, unit: "B"}
+                total: { value: 0, unit: "B" },
+                free: { value: 0, unit: "B" },
+                used: { value: 0, unit: "B" }
             }
         })
     }
@@ -68,7 +68,7 @@ const progressColor = computed(() => {
 </template>
 
 <style scoped>
-@import url(/src/components/controller/styles/card-normal.css);
+@import url(./styles/card-normal.css);
 
 .my-card-body {
     font-size: 16px;

@@ -2,7 +2,7 @@
 import { onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { Modal } from "@arco-design/web-vue";
-import { useAppConfigs } from "/src/store/AppConfigsStore";
+import { useAppConfigs } from "@/store/AppConfigsStore";
 
 const appConfigs = useAppConfigs();
 appConfigs.statusBarColor = appConfigs.darkTheme ? "#17171a" : "#777a7f";

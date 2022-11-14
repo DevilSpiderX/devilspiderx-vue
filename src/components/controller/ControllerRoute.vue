@@ -6,8 +6,8 @@ import CpuCard from "./CpuCard.vue";
 import MemoryCard from "./MemoryCard.vue";
 import NetworkCard from "./NetworkCard.vue";
 import DiskCard from "./DiskCard.vue";
-import http from "/src/scripts/server-api";
-import { useAppConfigs } from "/src/store/AppConfigsStore";
+import http from "@/scripts/server-api";
+import { useAppConfigs } from "@/store/AppConfigsStore";
 
 const appConfigs = useAppConfigs();
 appConfigs.statusBarColor = window.getComputedStyle(document.body).backgroundColor;
@@ -150,7 +150,7 @@ function window_resize() {//等相对单位dvh标准出来之后删除
 </template>
 
 <style scoped>
-@import url(/src/components/controller/styles/card-transition.css);
+@import url(./styles/card-transition.css);
 
 .main-card {
     box-sizing: border-box;

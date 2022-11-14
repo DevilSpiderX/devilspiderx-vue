@@ -40,7 +40,7 @@ const progressColor = computed(() => {
             </div>
         </template>
         <div class="my-card-body">
-            <a-descriptions :column="2" :value-style="{fontSize:'16px'}">
+            <a-descriptions :column="2" :value-style="{ fontSize: '16px' }">
                 <a-descriptions-item label="名 称" :span="2">
                     <span style="font-size: 14px">{{ value.name }}</span>
                 </a-descriptions-item>
@@ -52,7 +52,7 @@ const progressColor = computed(() => {
             <a-descriptions>
                 <a-descriptions-item label="使用率" :span="2">
                     <a-progress :percent="value.usedRate" :stroke-width="22" size="large" :color="progressColor">
-                        <template #text="{percent}">
+                        <template #text="{ percent }">
                             {{ (percent * 100).toFixed(2) }}%
                         </template>
                     </a-progress>
@@ -63,5 +63,5 @@ const progressColor = computed(() => {
 </template>
 
 <style scoped>
-@import url(/src/components/controller/styles/card-normal.css);
+@import url(./styles/card-normal.css);
 </style>

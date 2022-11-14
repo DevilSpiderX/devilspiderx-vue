@@ -4,8 +4,8 @@ import { useRouter } from "vue-router";
 import { Message } from "@arco-design/web-vue";
 import SHA256 from "crypto-js/sha256";
 import Hex from "crypto-js/enc-hex";
-import http from "/src/scripts/server-api";
-import { useAppConfigs } from "/src/store/AppConfigsStore";
+import http from "@/scripts/server-api";
+import { useAppConfigs } from "@/store/AppConfigsStore";
 
 const appConfigs = useAppConfigs();
 appConfigs.statusBarColor = window.getComputedStyle(document.body).backgroundColor;

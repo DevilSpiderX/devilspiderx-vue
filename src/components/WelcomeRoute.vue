@@ -1,8 +1,8 @@
 <script setup>
 import { ref, watchEffect } from "vue";
 import { useRouter } from "vue-router";
-import { useAppConfigs } from "/src/store/AppConfigsStore";
-import { sleep } from "/src/util/util";
+import { useAppConfigs } from "@/store/AppConfigsStore";
+import { sleep } from "@/util/util";
 
 const appConfigs = useAppConfigs();
 appConfigs.statusBarColor = window.getComputedStyle(document.body).backgroundColor;
@@ -27,7 +27,7 @@ const unwatch = watchEffect(async () => {
             pushName = "index";
         }
         await sleep(400);
-        await router.push({name: pushName});
+        await router.push({ name: pushName });
         unwatch();
     }
 });

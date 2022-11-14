@@ -3,8 +3,8 @@ import { reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import { IconClose, IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
 import { Message } from "@arco-design/web-vue";
-import http from "../scripts/server-api.js";
-import { useAppConfigs } from "/src/store/AppConfigsStore";
+import http from "@/scripts/server-api";
+import { useAppConfigs } from "@/store/AppConfigsStore";
 
 const appConfigs = useAppConfigs();
 appConfigs.statusBarColor = window.getComputedStyle(document.body).backgroundColor;
@@ -39,7 +39,7 @@ async function on_logoutButton_clicked() {
                 break;
             }
         }
-        await router.push({name: "login"});
+        await router.push({ name: "login" });
     } catch (error) {
         console.error("(on_logoutButton_clicked)", `url:${error.config?.url}`, error);
         Message.error("服务器错误");
@@ -86,37 +86,37 @@ function on_exit_clicked() {
                 <a-col :xs="24" :sm="21" :md="16" :lg="14" :xl="12" :xxl="10">
                     <a-space direction="vertical" fill size="large">
                         <a-button class="my-button" long @contextmenu.prevent.stop
-                            @click="$router.push({name:'controller'})">
+                            @click="$router.push({ name: 'controller' })">
                             <template #icon>
                                 <i class="fas fa-sliders-h fa-fw" />
                             </template>
                             控制中心
                         </a-button>
                         <a-button class="my-button" long @contextmenu.prevent.stop
-                            @click="$router.push({name:'query'})">
+                            @click="$router.push({ name: 'query' })">
                             <template #icon>
                                 <i class="fas fa-search fa-fw" />
                             </template>
                             查&nbsp;&nbsp;询
                         </a-button>
                         <a-button class="my-button" long @contextmenu.prevent.stop
-                            @click="$router.push({name:'v2ray'})">
+                            @click="$router.push({ name: 'v2ray' })">
                             <template #icon>
                                 <!--suppress CheckImageSize -->
-                                <img src="/src/assets/v2rayN.png" alt="v2ray" width="27" height="27"
+                                <img src="@/assets/v2rayN.png" alt="v2ray" width="27" height="27"
                                     style="transform: translateY(4px);">
                             </template>
                             V2Ray
                         </a-button>
                         <a-button v-if="appConfigs.user.admin" class="my-button" long @contextmenu.prevent.stop
-                            @click="$router.push({name:'log'})">
+                            @click="$router.push({ name: 'log' })">
                             <template #icon>
                                 <i class="fas fa-file-alt fa-fw" />
                             </template>
                             日&nbsp;&nbsp;志
                         </a-button>
                         <a-button class="my-button" long @contextmenu.prevent.stop
-                            @click="$router.push({name:'updatePwd'})">
+                            @click="$router.push({ name: 'updatePwd' })">
                             <template #icon>
                                 <i class="fas fa-edit fa-fw" />
                             </template>
@@ -145,7 +145,7 @@ function on_exit_clicked() {
                 <h2 style="margin: 0;color: var(--color-text-1)">
                     设置
                 </h2>
-                <a-button class="drawer-close-button" shape="circle" size="small" @click="drawer.visible=false">
+                <a-button class="drawer-close-button" shape="circle" size="small" @click="drawer.visible = false">
                     <template #icon>
                         <icon-close />
                     </template>

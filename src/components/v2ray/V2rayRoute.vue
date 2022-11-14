@@ -1,9 +1,9 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { Notification } from '@arco-design/web-vue';
-import Switch from "/src/components/v2ray/MySwitch.vue";
-import http from "/src/scripts/server-api";
-import { useAppConfigs } from "/src/store/AppConfigsStore";
+import Switch from "./MySwitch.vue";
+import http from "@/scripts/server-api";
+import { useAppConfigs } from "@/store/AppConfigsStore";
 
 const appConfigs = useAppConfigs();
 appConfigs.statusBarColor = window.getComputedStyle(document.body).backgroundColor;
@@ -77,7 +77,7 @@ async function on_switch_clicked() {
     <a-layout>
         <a-layout-content>
             <a-row justify="center">
-                <a-col :style="{marginTop: '7rem',maxWidth:'480px'}">
+                <a-col :style="{ marginTop: '7rem', maxWidth: '480px' }">
                     <a-card style="box-shadow: var(--box-shadow-light)">
                         <template #title>
                             <div style="font-weight: 700;font-size: 1.4rem;text-align: center;">V2Ray开关</div>
@@ -93,7 +93,6 @@ async function on_switch_clicked() {
 </template>
 
 <style scoped>
-
 .card-body {
     display: flex;
     display: -webkit-flex;

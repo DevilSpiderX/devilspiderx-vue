@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import path from 'path';
 import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
 import legacy from '@vitejs/plugin-legacy';
@@ -10,6 +11,11 @@ import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
     base: "./",
+    resolve: {
+        alias: {
+            "@": path.resolve(__dirname, "src")
+        }
+    },
     plugins: [
         vue(),
         vueJsx(),
@@ -58,7 +64,7 @@ export default defineConfig({
     server: {
         host: "0.0.0.0",
         proxy: {
-            "/api": {target: `http://localhost:10048`},
+            "/api": { target: `http://localhost:10048` },
             "/websocket": {
                 target: 'ws://localhost:10048',
                 ws: true

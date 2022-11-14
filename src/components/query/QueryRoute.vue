@@ -5,8 +5,8 @@ import { Message, Modal } from '@arco-design/web-vue';
 import { Vue3Menus } from 'vue3-menus';
 import AddModal from "./AddModal.vue";
 import UpdateModal from "./UpdateModal.vue";
-import http from "/src/scripts/server-api";
-import { useAppConfigs } from "/src/store/AppConfigsStore";
+import http from "@/scripts/server-api";
+import { useAppConfigs } from "@/store/AppConfigsStore";
 import ContextmenuTd from "./ContextmenuTd.vue";
 
 const appConfigs = useAppConfigs();

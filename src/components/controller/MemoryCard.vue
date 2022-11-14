@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import {Progress as AProgress} from "@arco-design/web-vue";
+import { Progress as AProgress } from "@arco-design/web-vue";
 import BaseCard from "./BaseCard.vue";
 import { MemoryValueType } from "./scripts/Types";
 import { colors } from "./scripts/progressColor";
@@ -13,9 +13,9 @@ const props = withDefaults(
             used: 0,
             free: 0,
             format: {
-                total: {value: 0, unit: "B"},
-                used: {value: 0, unit: "B"},
-                free: {value: 0, unit: "B"}
+                total: { value: 0, unit: "B" },
+                used: { value: 0, unit: "B" },
+                free: { value: 0, unit: "B" }
             }
         }),
         processCount: 0
@@ -62,7 +62,7 @@ const progressColor = computed(() => {
             </div>
         </template>
         <div class="my-card-body">
-            <a-descriptions :column="2" :value-style="{fontSize:'16px'}">
+            <a-descriptions :column="2" :value-style="{ fontSize: '16px' }">
                 <a-descriptions-item label="已 用">{{ usedStr }}</a-descriptions-item>
                 <a-descriptions-item label="剩 余">{{ freeStr }}</a-descriptions-item>
                 <a-descriptions-item label="总 量">{{ totalStr }}</a-descriptions-item>
@@ -71,7 +71,7 @@ const progressColor = computed(() => {
             <a-descriptions>
                 <a-descriptions-item label="使用率">
                     <a-progress :percent="usedPercent" :stroke-width="22" size="large" :color="progressColor">
-                        <template #text="{percent}">
+                        <template #text="{ percent }">
                             {{ (percent * 100).toFixed(2) }}%
                         </template>
                     </a-progress>
@@ -82,5 +82,5 @@ const progressColor = computed(() => {
 </template>
 
 <style scoped>
-@import url(/src/components/controller/styles/card-normal.css);
+@import url(./styles/card-normal.css);
 </style>
