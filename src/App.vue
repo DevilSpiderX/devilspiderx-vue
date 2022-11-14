@@ -56,14 +56,22 @@ setInterval(checkUserStatus, appConfigs.user.checkIntervalTime);
 </template>
 
 <style>
-body {
-    font-family: MiSans-Normal, Inter, "-apple-system", BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "noto sans", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-    background-color: var(--color-bg-1);
+html,
+body,
+div#app {
+    width: 100%;
+    height: 100%;
     margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "MiSans Normal", Inter, "-apple-system", BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "noto sans", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    background-color: var(--color-bg-1);
 }
 
 @font-face {
-    font-family: MiSans-Normal;
+    font-family: "MiSans Normal";
     src: url("fonts/MiSans-Normal.ttf");
 }
 

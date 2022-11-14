@@ -172,7 +172,7 @@ function on_exit_clicked() {
     border-radius: var(--border-radius-large);
     padding: 0.7rem 1.2rem;
     font-size: 1.5rem;
-    font-family: MiSans-Normal, system-ui;
+    font-family: "MiSans Normal", system-ui;
     line-height: 1.5;
     height: 60px;
     box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
