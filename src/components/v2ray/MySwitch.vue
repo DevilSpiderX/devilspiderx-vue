@@ -38,11 +38,15 @@ onMounted(() => {
     <div class="switch" tabindex="0" :data-status="status" :style="style">
         <div class="switch-container">
             <div class="switch-lever-0">
-                <span><slot name="ON">ON</slot></span>
+                <span>
+                    <slot name="ON">ON</slot>
+                </span>
             </div>
             <div class="switch-lever-1"></div>
             <div class="switch-lever-2">
-                <span><slot name="OFF">OFF</slot></span>
+                <span>
+                    <slot name="OFF">OFF</slot>
+                </span>
             </div>
         </div>
     </div>
@@ -77,7 +81,7 @@ onMounted(() => {
     font-size: var(--font-size);
     font-weight: 500;
     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out,
-    background-position .4s ease-in-out;
+        background-position .4s ease-in-out;
     user-select: none;
 }
 
@@ -125,5 +129,4 @@ body[arco-theme='dark'] .switch {
 body[arco-theme='dark'] .switch-lever-2 {
     color: white;
 }
-
 </style>

@@ -16,22 +16,24 @@ interface State {
     isTouchDevice: boolean
 }
 
+const stateDefault: State = {
+    darkTheme: false,
+    themeFollowSystem: false,
+    statusBarColor: "",
+    user: {
+        uid: undefined,
+        admin: false,
+        login: false,
+        checkIntervalTime: 600 * 1000 //ms
+    },
+    query: {
+        history: undefined
+    },
+    isTouchDevice: "ontouchstart" in window && navigator.maxTouchPoints !== 0
+};
+
 export const useAppConfigs = defineStore("appConfigs", {
-    state: (): State => ({
-        darkTheme: false,
-        themeFollowSystem: false,
-        statusBarColor: "",
-        user: {
-            uid: undefined,
-            admin: false,
-            login: false,
-            checkIntervalTime: 600 * 1000 //ms
-        },
-        query: {
-            history: undefined
-        },
-        isTouchDevice: "ontouchstart" in window && navigator.maxTouchPoints !== 0
-    }),
+    state: (): State => stateDefault,
     getters: {
         themeName: (state): string => state.darkTheme ? "dark" : "light"
     },

@@ -13,12 +13,11 @@ const appConfigs = useAppConfigs();
 appConfigs.statusBarColor = window.getComputedStyle(document.body).backgroundColor;
 
 const table = reactive({
-    maxHeight: window.innerHeight - 64,//等相对单位dvh标准出来之后删除
     columns: [
-        {title: "名称", dataIndex: "name"},
-        {title: "账号", dataIndex: "account", ellipsis: true, tooltip: true},
-        {title: "密码", dataIndex: "password", ellipsis: true, tooltip: true},
-        {title: "备注", dataIndex: "remark", ellipsis: true, tooltip: true}
+        { title: "名称", dataIndex: "name" },
+        { title: "账号", dataIndex: "account", ellipsis: true, tooltip: true },
+        { title: "密码", dataIndex: "password", ellipsis: true, tooltip: true },
+        { title: "备注", dataIndex: "remark", ellipsis: true, tooltip: true }
     ],
     data: [],
     paginationProps: {
@@ -34,15 +33,14 @@ const tableTotalPage = computed(() => {
 });
 
 onMounted(() => {
+    document.body.classList.add("no-scrollbar");
     detectKey();
     table.bodyScrollWrap = document.querySelector('.arco-scrollbar-container.arco-table-body');
-    window.addEventListener('resize', window_resize);//等相对单位dvh标准出来之后删除
 });
 
-
 onUnmounted(() => {
+    document.body.classList.remove("no-scrollbar");
     appConfigs.query.history = undefined;
-    window.removeEventListener('resize', window_resize);//等相对单位dvh标准出来之后删除
 });
 
 const key = ref("");
@@ -77,7 +75,7 @@ function QuerySucceed(resp) {
             break;
         }
         case 100: {
-            router.push({name: "login"});
+            router.push({ name: "login" });
             break;
         }
     }
@@ -120,9 +118,9 @@ const tableMenu = reactive({
     open: false,
     event: {},
     menus: [
-        {label: "复制", click: null},
-        {label: "删除", click: null},
-        {label: "修改", click: null}
+        { label: "复制", click: null },
+        { label: "删除", click: null },
+        { label: "修改", click: null }
     ],
     Open: async () => {
         tableMenu.open = false;
@@ -174,9 +172,9 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
     };
 
     //滚动表格消除菜单
-    table.bodyScrollWrap.addEventListener("scroll", tableMenu.Close, {once: true});
+    table.bodyScrollWrap.addEventListener("scroll", tableMenu.Close, { once: true });
     //窗体尺寸变化消除菜单
-    window.addEventListener("resize", tableMenu.Close, {once: true});
+    window.addEventListener("resize", tableMenu.Close, { once: true });
 
     tableMenu.event = event;
     tableMenu.Open();
@@ -278,10 +276,6 @@ function update_submit(form_data) {
     });
 }
 
-function window_resize() {//等相对单位dvh标准出来之后删除
-    table.maxHeight = window.innerHeight - 64;
-}
-
 async function table_page_change(page) {
     table.paginationProps.current = page;
     await nextTick();
@@ -291,13 +285,13 @@ async function table_page_change(page) {
 </script>
 
 <template>
-    <a-layout>
+    <a-layout style="height:100%">
         <a-layout-header style="padding:8px">
             <a-row justify="center">
                 <a-col :xs="24" :sm="17" :md="15" :lg="13" :xl="11" :xxl="9">
                     <a-row>
                         <a-col flex="105px">
-                            <a-button size="large" @click="addModal.visible=true">
+                            <a-button size="large" @click="addModal.visible = true">
                                 <template #icon>
                                     <i class="fas fa-plus fa-fw"></i>
                                 </template>
@@ -305,7 +299,7 @@ async function table_page_change(page) {
                             </a-button>
                         </a-col>
                         <a-col flex="auto" style="max-width: calc(100% - 105px)">
-                            <a-input-search v-model="key" size="large" allow-clear :button-props="{type:'secondary'}"
+                            <a-input-search v-model="key" size="large" allow-clear :button-props="{ type: 'secondary' }"
                                 search-button @keydown.enter="Search" @search="Search" :loading="searching">
                                 <template #prefix>
                                     <i class="fas fa-terminal fa-fw"></i>
@@ -316,11 +310,11 @@ async function table_page_change(page) {
                 </a-col>
             </a-row>
         </a-layout-header>
-        <a-layout-content>
-            <a-row justify="center">
-                <a-col :xs="24" :sm="22" :md="20" :lg="18" :xl="16" :xxl="14">
-                    <a-table :columns="table.columns" :data="table.data" :scroll="{y:table.maxHeight+'px'}" row-key="id"
-                        page-position="bottom" :pagination="table.paginationProps" :loading="searching"
+        <a-layout-content style="height:calc(100% - 52px)">
+            <a-row justify="center" style="height:100%">
+                <a-col :xs="24" :sm="22" :md="20" :lg="18" :xl="16" :xxl="14" style="height:100%">
+                    <a-table :columns="table.columns" :data="table.data" :scroll="{ y: 'calc(100% - 12px)' }"
+                        row-key="id" page-position="bottom" :pagination="table.paginationProps" :loading="searching"
                         @page-change="table_page_change">
                         <template #empty>
                             <a-empty />
@@ -335,7 +329,7 @@ async function table_page_change(page) {
     </a-layout>
 
     <vue3-menus v-model:open="tableMenu.open" :event="tableMenu.event" :menus="tableMenu.menus" minWidth="100"
-        v-slot="{activeIndex,menu,index}">
+        v-slot="{ activeIndex, menu, index }">
         <div class="v3-menus-item v3-menus-available">
             <span class="v3-menus-label">{{ menu.label }}</span>
         </div>
@@ -344,6 +338,8 @@ async function table_page_change(page) {
     <update-modal v-model:visible="updateModal.visible" :data="updateModal.data" @submit="update_submit" />
 </template>
 
-<style scoped>
-
+<style>
+body.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
 </style>

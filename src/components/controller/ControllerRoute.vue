@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUnmounted, reactive, ref, watch } from "vue";
+import { isReactive, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { Message } from "@arco-design/web-vue";
 import CpuCard from "./CpuCard.vue";
@@ -12,15 +12,24 @@ import { useAppConfigs } from "@/store/AppConfigsStore";
 const appConfigs = useAppConfigs();
 appConfigs.statusBarColor = window.getComputedStyle(document.body).backgroundColor;
 
-const router = useRouter();
-const route = useRoute();
-const cd = ref(Object.hasOwn(route.query, "cd") ? Number(route.query.cd) : 1500);
-watch(cd, newVal => {
-    if (ws.websocket !== null) {
-        console.log("更改数据刷新速率", newVal, "ms");
-        ws.websocket.send(JSON.stringify({"cmd": "start", "cd": newVal}));
+const props = defineProps({
+    cd: {
+        type: Number,
+        default: 1500
     }
 });
+
+watch(() => props.cd, newVal => {
+    if (ws.websocket !== null) {
+        console.log("更改数据刷新速率", newVal, "ms");
+        ws.websocket.send(JSON.stringify({ "cmd": "start", "cd": newVal }));
+    }
+});
+
+function setCD(cdValue) {
+    router.replace({ query: { cd: cdValue } })
+}
+
 const empty_show = ref(true);
 const values = reactive({
     cpu: undefined,
@@ -34,18 +43,18 @@ const ws = {
     token: "",
     time_str: "",
     WsOnOPen() {
-        Message.success({content: "WebSocket成功接入服务器", duration: 1000});
+        Message.success({ content: "WebSocket成功接入服务器", duration: 1000 });
         console.log(Date() + "\nWebSocket成功接入服务器");
         if (ws.websocket !== null) {
-            ws.websocket.send(JSON.stringify({"cmd": "start", "cd": cd.value}));
+            ws.websocket.send(JSON.stringify({ "cmd": "start", "cd": props.cd }));
         }
     },
     WsOnClose() {
-        Message.success({content: "WebSocket连接已关闭", duration: 1000});
+        Message.success({ content: "WebSocket连接已关闭", duration: 1000 });
         console.log(Date() + "\n连接已关闭");
     },
     WsOnError(event) {
-        Message.error({content: "WebSocket发生错误", duration: 1000});
+        Message.error({ content: "WebSocket发生错误", duration: 1000 });
         console.log(event);
         console.log(Date() + "\nWebSocket发生错误，使用POST请求获取信息");
         // getHardware();
@@ -56,6 +65,7 @@ const ws = {
     }
 };
 
+const router = useRouter();
 (async () => {
     try {
         let resp = await http.token();
@@ -70,7 +80,7 @@ const ws = {
             ws.websocket.onerror = ws.WsOnError;
             ws.websocket.onmessage = ws.WsOnMessage;
         } else {
-            await router.push({name: "login"});
+            await router.push({ name: "login" });
         }
     } catch (error) {
         console.error("(beforeCreate)", `url:${error.config?.url}`, error);
@@ -79,19 +89,13 @@ const ws = {
     }
 })();
 
-onMounted(() => {
-    window.addEventListener('resize', window_resize);//等相对单位dvh标准出来之后删除
-});
-
 onUnmounted(() => {
     if (ws.websocket instanceof WebSocket && ws.websocket.readyState === WebSocket.OPEN) {
         ws.websocket.close();
     }
-    window.removeEventListener('resize', window_resize);//等相对单位dvh标准出来之后删除
 });
 
 const mainCard = reactive({
-    height: window.innerHeight - 1,//等相对单位dvh标准出来之后删除
     class: {
         'scrollBar-hide': true
     }
@@ -106,18 +110,13 @@ function main_card_mouse_enter() {
 function main_card_mouse_leave() {
     mainCard.class["scrollBar-hide"] = true;
 }
-
-function window_resize() {//等相对单位dvh标准出来之后删除
-    mainCard.height = window.innerHeight - 1;
-}
-
 </script>
 
 <template>
-    <a-layout>
-        <a-card class="main-card" :class="mainCard.class" :header-style="{height:'auto'}"
-            :style="{height:mainCard.height+'px',backgroundColor:'var(--color-bg-1)'}"
-            @mouseenter="main_card_mouse_enter" @mouseleave="main_card_mouse_leave">
+    <a-layout style="height:100%">
+        <a-card class="main-card" :class="mainCard.class" :header-style="{ height: 'auto' }"
+            :style="{ height: '100%', backgroundColor: 'var(--color-bg-1)' }" @mouseenter="main_card_mouse_enter"
+            @mouseleave="main_card_mouse_leave">
             <template #title>
                 <div>
                     <h1 style="text-align: center;user-select: none;margin: 0;font-size: 1.5rem">
@@ -137,7 +136,8 @@ function window_resize() {//等相对单位dvh标准出来之后删除
                     <a-col :xs="24" :md="12" :xl="8" class="my-col" v-if="values.network">
                         <network-card :value="values.network" />
                     </a-col>
-                    <a-col :xs="24" :md="12" :xl="8" class="my-col" v-for="(disk,index) in values.disk" :key="index+3">
+                    <a-col :xs="24" :md="12" :xl="8" class="my-col" v-for="(disk, index) in values.disk"
+                        :key="index + 3">
                         <disk-card :value="disk" :disk-index="index" />
                     </a-col>
                 </transition-group>

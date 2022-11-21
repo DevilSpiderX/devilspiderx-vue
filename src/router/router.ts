@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from "vue-router";
+import { createRouter, createWebHashHistory, RouteLocationNormalized } from "vue-router";
 
 const routes = [
     {
@@ -10,49 +10,52 @@ const routes = [
         name: "login",
         path: "/login",
         component: () => import("../components/LoginRoute.vue"),
-        meta: {title: "登录 - DevilSpiderX"}
+        meta: { title: "登录 - DevilSpiderX" }
     },
     {
         name: "register",
         path: "/register",
         component: () => import("../components/RegisterRoute.vue"),
-        meta: {title: "注册 - DevilSpiderX"}
+        meta: { title: "注册 - DevilSpiderX" }
     },
     {
         name: "index",
         path: "/index",
         component: () => import("../components/IndexRoute.vue"),
-        meta: {title: "主页 - DevilSpiderX"}
+        meta: { title: "主页 - DevilSpiderX" }
     },
     {
         name: "controller",
         path: "/controller",
         component: () => import("../components/controller/ControllerRoute.vue"),
-        meta: {title: "控制中心 - DevilSpiderX"}
+        meta: { title: "控制中心 - DevilSpiderX" },
+        props: (route: RouteLocationNormalized) => ({
+            cd: Object.hasOwn(route.query, "cd") ? Number(route.query.cd) : undefined
+        })
     },
     {
         name: "query",
         path: "/query",
         component: () => import("../components/query/QueryRoute.vue"),
-        meta: {title: "查询 - DevilSpiderX"}
+        meta: { title: "查询 - DevilSpiderX" }
     },
     {
         name: "v2ray",
         path: "/v2ray",
         component: () => import("../components/v2ray/V2rayRoute.vue"),
-        meta: {title: "V2ray - DevilSpiderX"}
+        meta: { title: "V2ray - DevilSpiderX" }
     },
     {
         name: "log",
         path: "/log",
         component: () => import("../components/LogRoute.vue"),
-        meta: {title: "日志 - DevilSpiderX"}
+        meta: { title: "日志 - DevilSpiderX" }
     },
     {
         name: "updatePwd",
         path: "/updatePwd",
         component: () => import("../components/UpdatePwdRoute.vue"),
-        meta: {title: "修改密码 - DevilSpiderX"}
+        meta: { title: "修改密码 - DevilSpiderX" }
     }
 ]
 
@@ -68,7 +71,6 @@ const router = createRouter({
 });
 
 router.beforeEach(function (to, from, next) {
-    document.body.setAttribute("data-route", to.path);
     if (Object.hasOwn(to.meta, "title")) {
         document.title = String(to.meta["title"]);
     } else {
