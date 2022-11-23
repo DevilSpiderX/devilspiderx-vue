@@ -40,7 +40,7 @@ onBeforeMount(() => {
 
 async function checkUserStatus() {
     try {
-        let resp = await http.user_status();
+        let resp = await http.user.status();
         console.log("user_status:", resp);
         Object.assign(appConfigs.user, resp.data);
     } catch (ignored) {

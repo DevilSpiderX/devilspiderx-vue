@@ -42,7 +42,7 @@ async function form_submit() {
     running_start();
     pwd = SHA256(pwd).toString(Hex);
     try {
-        let resp = await http.login(uid, pwd);
+        let resp = await http.user.login(uid, pwd);
         console.log("Login:", resp);
         switch (resp["code"]) {
             case 0: {

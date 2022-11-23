@@ -12,7 +12,7 @@ const switchStatus = ref(false);
 
 onMounted(async () => {
     try {
-        let resp = await http.v2rayState();
+        let resp = await http.v2ray.state();
         console.log("v2rayState:", resp);
         switchStatus.value = resp["code"] === 1;
     } catch (ignored) {
@@ -22,7 +22,7 @@ onMounted(async () => {
 async function on_switch_clicked() {
     try {
         if (switchStatus.value) {
-            let resp = await http.v2rayStop();
+            let resp = await http.v2ray.stop();
             console.log("v2rayStop:", resp);
             switch (resp["code"]) {
                 case 0: {
@@ -44,7 +44,7 @@ async function on_switch_clicked() {
                 }
             }
         } else {
-            let resp = await http.v2rayStart();
+            let resp = await http.v2ray.start();
             console.log("v2rayStart:", resp);
             switch (resp["code"]) {
                 case 0: {

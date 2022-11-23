@@ -26,7 +26,7 @@ const router = useRouter();
 
 async function on_logoutButton_clicked() {
     try {
-        let resp = await http.logout();
+        let resp = await http.user.logout();
         console.log("Logout:", resp);
         switch (resp["code"]) {
             case 0: {

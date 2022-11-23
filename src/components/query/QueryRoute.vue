@@ -50,7 +50,7 @@ async function Search() {
     appConfigs.query.history = key.value;
     searching.value = true;
     try {
-        QuerySucceed(await http.query(key.value));
+        QuerySucceed(await http.query.get(key.value));
     } catch (error) {
         console.error("(Search)", `url:${error.config?.url}`, error);
         QueryError();
@@ -74,7 +74,8 @@ function QuerySucceed(resp) {
             table.data = [];
             break;
         }
-        case 100: {
+        case 100:
+        default: {
             router.push({ name: "login" });
             break;
         }
@@ -95,13 +96,13 @@ async function detectKey() {
             key.value = routeQuery.key;
             appConfigs.query.history = key.value;
             searching.value = true;
-            QuerySucceed(await http.query(key.value));
+            QuerySucceed(await http.query.get(key.value));
         } else {
             let history = appConfigs.query.history;
             if (history !== undefined) {
                 key.value = history;
                 searching.value = true;
-                QuerySucceed(await http.query(history));
+                QuerySucceed(await http.query.get(history));
             }
         }
     } catch (error) {
@@ -155,11 +156,25 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
     };
 
     //删除按钮
-    tableMenu.menus[1].click = () => {
-        //假的删除，只是从表格上删除而已，服务器上根本没有删除api
-        table.data.splice(recordIndex, 1);
-        if (table.paginationProps.current > tableTotalPage.value) {
-            table.paginationProps.current--;
+    tableMenu.menus[1].click = async () => {
+        let resp = await http.query.Delete(record.id);
+        switch (resp.code) {
+            case 0: {
+                table.data.splice(recordIndex, 1);
+                if (table.paginationProps.current > tableTotalPage.value) {
+                    table.paginationProps.current--;
+                }
+                break;
+            }
+            case 1: {
+                Message.error("删除失败");
+                break;
+            }
+            case 100:
+            default: {
+                router.push({ name: "login" });
+                break;
+            }
         }
     };
 
@@ -197,7 +212,7 @@ async function add_submit(form_data) {
     let password = form_data.password;
     let remark = form_data.remark;
     try {
-        let resp = await http.addPasswords(name, account, password, remark);
+        let resp = await http.query.add(name, account, password, remark);
         console.log("addPasswords:", resp);
         switch (resp["code"]) {
             case 0: {
@@ -210,7 +225,7 @@ async function add_submit(form_data) {
                 addModal.clean = true;
                 Message.success("添加成功");
                 try {
-                    QuerySucceed(await http.query(history));
+                    QuerySucceed(await http.query.get(history));
                 } catch (error) {
                     console.error("(add_submit)", `url:${error.config?.url}`, error);
                     QueryError();
@@ -225,6 +240,11 @@ async function add_submit(form_data) {
                         </p>
                 });
                 addModal.visible = false;
+                break;
+            }
+            case 100:
+            default: {
+                router.push({ name: "login" });
                 break;
             }
         }
@@ -247,7 +267,7 @@ function update_submit(form_data) {
             let account = form_data.account;
             let password = form_data.password;
             let remark = form_data.remark;
-            let resp = await http.updatePasswords(id, name, account, password, remark);
+            let resp = await http.query.update(id, name, account, password, remark);
             console.log("updatePasswords:", resp);
             switch (resp["code"]) {
                 case 0: {
@@ -260,7 +280,7 @@ function update_submit(form_data) {
                     updateModal.visible = false;
                     Message.success("修改成功");
                     try {
-                        QuerySucceed(await http.query(history))
+                        QuerySucceed(await http.query.get(history));
                     } catch (error) {
                         console.error("(okUpdate)", `url:${error.config?.url}`, error);
                         QueryError();
@@ -269,6 +289,11 @@ function update_submit(form_data) {
                 }
                 case 1: {
                     Message.error(resp["msg"]);
+                    break;
+                }
+                case 100:
+                default: {
+                    router.push({ name: "login" });
                     break;
                 }
             }

@@ -41,7 +41,7 @@ async function form_submit() {
     }
     running_start();
     try {
-        let resp = await http.register(uid, pwd);
+        let resp = await http.user.register(uid, pwd);
         console.log("Register:", resp);
         switch (resp["code"]) {
             case 0: {

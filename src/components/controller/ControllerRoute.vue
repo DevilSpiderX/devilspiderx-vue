@@ -68,7 +68,7 @@ const ws = {
 const router = useRouter();
 (async () => {
     try {
-        let resp = await http.token();
+        let resp = await http.serverInfo.token();
         console.log("token:", resp);
         if (resp["code"] === 0) {
             ws.token = resp["data"]["token"];
