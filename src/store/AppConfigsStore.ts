@@ -1,6 +1,10 @@
 import { defineStore } from 'pinia';
 
 interface State {
+    window: {
+        width: number,
+        height: number
+    },
     darkTheme: boolean,
     themeFollowSystem: boolean,
     statusBarColor: string,
@@ -13,10 +17,17 @@ interface State {
     query: {
         history: string | undefined
     },
-    isTouchDevice: boolean
+    isTouchDevice: boolean,
+    log: {
+        fontSize: number
+    }
 }
 
 const stateDefault: State = {
+    window: {
+        width: window.innerWidth,
+        height: window.innerHeight
+    },
     darkTheme: false,
     themeFollowSystem: false,
     statusBarColor: "",
@@ -29,7 +40,10 @@ const stateDefault: State = {
     query: {
         history: undefined
     },
-    isTouchDevice: "ontouchstart" in window && navigator.maxTouchPoints !== 0
+    isTouchDevice: "ontouchstart" in window && navigator.maxTouchPoints !== 0,
+    log: {
+        fontSize: 16
+    }
 };
 
 export const useAppConfigs = defineStore("appConfigs", {
@@ -48,7 +62,8 @@ export const useAppConfigs = defineStore("appConfigs", {
             "darkTheme",
             "themeFollowSystem",
             "user.uid",
-            "isTouchDevice"
+            "isTouchDevice",
+            "log"
         ]
     }
 });

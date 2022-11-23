@@ -80,7 +80,7 @@ const router = useRouter();
             ws.websocket.onerror = ws.WsOnError;
             ws.websocket.onmessage = ws.WsOnMessage;
         } else {
-            await router.push({ name: "login" });
+            router.push({ name: "login" });
         }
     } catch (error) {
         console.error("(beforeCreate)", `url:${error.config?.url}`, error);

@@ -1,20 +1,12 @@
 <script setup>
-import { reactive, ref, watch } from "vue";
+import { reactive, ref, watch, watchEffect } from "vue";
+import { useAppConfigs } from "@/store/AppConfigsStore";
 
 const props = defineProps({
     visible: Boolean,
     data: Object
 })
 const emit = defineEmits(["submit", "update:visible"]);
-
-watch(() => props.visible, newVal => {
-    if (newVal) {
-        window_resize();
-        window.addEventListener("resize", window_resize);
-    } else {
-        window.removeEventListener("resize", window_resize);
-    }
-});
 
 const form = reactive({
     id: -1,
@@ -44,9 +36,9 @@ function form_submit() {
 }
 
 const width = ref("50%");
-
-function window_resize() {
-    let winWidth = window.innerWidth;
+const appConfigs = useAppConfigs();
+watchEffect(() => {
+    let winWidth = appConfigs.window.width;
     if (winWidth < 576) {
         width.value = "90%";
     } else if (winWidth < 768) {
@@ -60,7 +52,7 @@ function window_resize() {
     } else if (winWidth >= 1920) {
         width.value = "25%";
     }
-}
+});
 
 function cancel_click() {
     Close();
@@ -68,8 +60,7 @@ function cancel_click() {
 </script>
 
 <template>
-    <a-modal :visible="visible" title="修改密码记录" :width="width"
-        @update:visible="value=>$emit('update:visible',value)">
+    <a-modal :visible="visible" title="修改密码记录" :width="width" @update:visible="value => $emit('update:visible', value)">
         <a-form :model="form" @submit="form_submit">
             <a-form-item field="id" label="ID" v-show="false">
                 <a-input-number placeholder="id" v-model="form.id" :min="0"></a-input-number>
@@ -114,4 +105,5 @@ function cancel_click() {
 </template>
 
 <style scoped>
+
 </style>

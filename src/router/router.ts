@@ -48,7 +48,7 @@ const routes = [
     {
         name: "log",
         path: "/log",
-        component: () => import("../components/LogRoute.vue"),
+        component: () => import("../components/log/LogRoute.vue"),
         meta: { title: "日志 - DevilSpiderX" }
     },
     {

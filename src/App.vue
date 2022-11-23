@@ -6,6 +6,11 @@ import http from "./scripts/server-api.js";
 window.appInited = ref(false);
 const appConfigs = useAppConfigs();
 
+window.addEventListener("resize", () => {
+    appConfigs.window.width = window.innerWidth;
+    appConfigs.window.height = window.innerHeight;
+})
+
 watch(() => appConfigs.themeName, newVal => document.body.setAttribute("arco-theme", newVal))
 
 watch(() => appConfigs.themeFollowSystem, newVal => {
@@ -84,5 +89,9 @@ body {
     --box-shadow-light: 0px 0px 12px #0000001f;
     --box-shadow-lighter: 0px 0px 6px #0000001f;
     --box-shadow-dark: 0px 16px 48px 16px #00000014, 0px 12px 32px #0000001f, 0px 8px 16px -8px #00000029;
+}
+
+body.no-scrollbar::-webkit-scrollbar {
+    display: none;
 }
 </style>

@@ -362,9 +362,3 @@ async function table_page_change(page) {
     <add-modal v-model:visible="addModal.visible" v-model:cleaning="addModal.cleaning" @submit="add_submit" />
     <update-modal v-model:visible="updateModal.visible" :data="updateModal.data" @submit="update_submit" />
 </template>
-
-<style>
-body.no-scrollbar::-webkit-scrollbar {
-    display: none;
-}
-</style>

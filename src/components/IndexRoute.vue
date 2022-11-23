@@ -39,7 +39,7 @@ async function on_logoutButton_clicked() {
                 break;
             }
         }
-        await router.push({ name: "login" });
+        router.push({ name: "login" });
     } catch (error) {
         console.error("(on_logoutButton_clicked)", `url:${error.config?.url}`, error);
         Message.error("服务器错误");

@@ -45,7 +45,7 @@ async function form_submit() {
         console.log("Register:", resp);
         switch (resp["code"]) {
             case 0: {
-                await router.push({ name: "login" });
+                router.push({ name: "login" });
                 break;
             }
             case 1: {

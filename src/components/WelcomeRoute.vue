@@ -27,7 +27,7 @@ const unwatch = watchEffect(async () => {
             pushName = "index";
         }
         await sleep(400);
-        await router.push({ name: pushName });
+        router.push({ name: pushName });
         unwatch();
     }
 });

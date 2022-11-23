@@ -48,7 +48,7 @@ async function form_submit() {
             case 0: {
                 appConfigs.user.login = true;
                 Object.assign(appConfigs.user, resp.data);
-                await router.push({ name: "index" });
+                router.push({ name: "index" });
                 break;
             }
             case 1: {
