@@ -311,45 +311,57 @@ async function table_page_change(page) {
 
 <template>
     <a-layout style="height:100%">
-        <a-layout-header style="padding:8px">
-            <a-row justify="center">
-                <a-col :xs="24" :sm="17" :md="15" :lg="13" :xl="11" :xxl="9">
-                    <a-row>
-                        <a-col flex="105px">
-                            <a-button size="large" @click="addModal.visible = true">
-                                <template #icon>
-                                    <i class="fas fa-plus fa-fw"></i>
-                                </template>
-                                添加
-                            </a-button>
-                        </a-col>
-                        <a-col flex="auto" style="max-width: calc(100% - 105px)">
-                            <a-input-search v-model="key" size="large" allow-clear :button-props="{ type: 'secondary' }"
-                                search-button @keydown.enter="Search" @search="Search" :loading="searching">
-                                <template #prefix>
-                                    <i class="fas fa-terminal fa-fw"></i>
-                                </template>
-                            </a-input-search>
+        <a-layout-header style="border-bottom: 1px solid #84858d55;">
+            <a-page-header @back="$router.back">
+                <template #title>
+                    <span> 密码查询 </span>
+                </template>
+            </a-page-header>
+        </a-layout-header>
+        <a-layout-content style="height:calc(100% - 63px)">
+            <a-layout style="height:100%">
+                <a-layout-header style="padding:8px">
+                    <a-row justify="center">
+                        <a-col :xs="24" :sm="17" :md="15" :lg="13" :xl="11" :xxl="9">
+                            <a-row>
+                                <a-col flex="105px">
+                                    <a-button size="large" @click="addModal.visible = true">
+                                        <template #icon>
+                                            <i class="fas fa-plus fa-fw"></i>
+                                        </template>
+                                        添加
+                                    </a-button>
+                                </a-col>
+                                <a-col flex="auto" style="max-width: calc(100% - 105px)">
+                                    <a-input-search v-model="key" size="large" allow-clear
+                                        :button-props="{ type: 'secondary' }" search-button @keydown.enter="Search"
+                                        @search="Search" :loading="searching">
+                                        <template #prefix>
+                                            <i class="fas fa-terminal fa-fw"></i>
+                                        </template>
+                                    </a-input-search>
+                                </a-col>
+                            </a-row>
                         </a-col>
                     </a-row>
-                </a-col>
-            </a-row>
-        </a-layout-header>
-        <a-layout-content style="height:calc(100% - 52px)">
-            <a-row justify="center" style="height:100%">
-                <a-col :xs="24" :sm="22" :md="20" :lg="18" :xl="16" :xxl="14" style="height:100%">
-                    <a-table :columns="table.columns" :data="table.data" :scroll="{ y: 'calc(100% - 12px)' }"
-                        row-key="id" page-position="bottom" :pagination="table.paginationProps" :loading="searching"
-                        @page-change="table_page_change">
-                        <template #empty>
-                            <a-empty />
-                        </template>
-                        <template #td="scope">
-                            <contextmenu-td :value="scope" @contextmenu="table_cell_contextmenu" />
-                        </template>
-                    </a-table>
-                </a-col>
-            </a-row>
+                </a-layout-header>
+                <a-layout-content style="height:calc(100% - 52px)">
+                    <a-row justify="center" style="height:100%">
+                        <a-col :xs="24" :sm="22" :md="20" :lg="18" :xl="16" :xxl="14" style="height:100%">
+                            <a-table :columns="table.columns" :data="table.data" :scroll="{ y: 'calc(100% - 12px)' }"
+                                row-key="id" page-position="bottom" :pagination="table.paginationProps"
+                                :loading="searching" @page-change="table_page_change">
+                                <template #empty>
+                                    <a-empty />
+                                </template>
+                                <template #td="scope">
+                                    <contextmenu-td :value="scope" @contextmenu="table_cell_contextmenu" />
+                                </template>
+                            </a-table>
+                        </a-col>
+                    </a-row>
+                </a-layout-content>
+            </a-layout>
         </a-layout-content>
     </a-layout>
 

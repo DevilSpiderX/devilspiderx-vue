@@ -97,7 +97,7 @@ function on_exit_clicked() {
                             <template #icon>
                                 <i class="fas fa-search fa-fw" />
                             </template>
-                            查&nbsp;&nbsp;询
+                            密码查询
                         </a-button>
                         <a-button class="my-button" long @contextmenu.prevent.stop
                             @click="$router.push({ name: 'v2ray' })">
