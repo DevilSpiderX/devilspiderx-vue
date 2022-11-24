@@ -74,22 +74,26 @@ const collapseList = reactive({
         <a-layout-header style="border-bottom: 1px solid #84858d55;">
             <a-page-header @back="$router.back">
                 <template #title>
-                    <span style="font-weight:700;"> DevilSpiderX </span>
+                    <span> 日志 </span>
                 </template>
                 <template #extra>
-                    <a-space v-if="appConfigs.window.width > 576">
-                        <a-select v-model="logName" :options="logSelectOptions" style="width: 11em" />
-                        <a-tooltip :content="String(logFontSize)" mini>
-                            <a-button shape="round" @click="logFontSizeModal.visible = true">字体大小</a-button>
-                        </a-tooltip>
-                    </a-space>
-                    <a-button v-if="appConfigs.window.width <= 576" @click="collapseList.show = !collapseList.show">
-                        <template #icon>
-                            <span style="font-size: 1.2rem;position: relative">
-                                <i class="fa-solid fa-bars fa-fw" />
-                            </span>
-                        </template>
-                    </a-button>
+                    <template v-if="appConfigs.window.width > 576">
+                        <a-space>
+                            <a-select v-model="logName" :options="logSelectOptions" style="width: 11em" />
+                            <a-tooltip :content="String(logFontSize)" mini>
+                                <a-button shape="round" @click="logFontSizeModal.visible = true">字体大小</a-button>
+                            </a-tooltip>
+                        </a-space>
+                    </template>
+                    <template v-else>
+                        <a-button type="text" @click="collapseList.show = !collapseList.show">
+                            <template #icon>
+                                <span style="font-size: 1.2rem;color:var(--color-text-2)">
+                                    <i class="fa-solid fa-bars fa-fw" />
+                                </span>
+                            </template>
+                        </a-button>
+                    </template>
                 </template>
             </a-page-header>
         </a-layout-header>
@@ -117,7 +121,7 @@ const collapseList = reactive({
         </a-layout-content>
     </a-layout>
     <a-modal title="日志字体大小" v-model:visible="logFontSizeModal.visible" width="auto" simple :footer="false">
-        <a-input-number v-model="logFontSize" :min="12" :max="50" mode="button" />
+        <a-input-number v-model="logFontSize" :min="12" :max="50" mode="button" read-only />
     </a-modal>
 </template>
 

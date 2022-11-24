@@ -68,16 +68,23 @@ async function on_switch_clicked() {
         }
     } catch (error) {
         console.error("(on_switch_clicked)", `url:${error.config?.url}`, error);
-        Notification.error("服务器错误")
+        Notification.error("服务器错误");
     }
 }
 </script>
 
 <template>
     <a-layout>
+        <a-layout-header style="border-bottom: 1px solid #84858d55;">
+            <a-page-header @back="$router.back">
+                <template #title>
+                    <span> V2Ray </span>
+                </template>
+            </a-page-header>
+        </a-layout-header>
         <a-layout-content>
             <a-row justify="center">
-                <a-col :style="{ marginTop: '7rem', maxWidth: '480px' }">
+                <a-col :style="{ marginTop: '5rem', maxWidth: '480px' }">
                     <a-card style="box-shadow: var(--box-shadow-light)">
                         <template #title>
                             <div style="font-weight: 700;font-size: 1.4rem;text-align: center;">V2Ray开关</div>

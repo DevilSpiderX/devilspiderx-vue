@@ -62,7 +62,7 @@ function on_exit_clicked() {
                     </span>
                 </template>
                 <template #title>
-                    <span style="font-weight:700;"> DevilSpiderX </span>
+                    <span> DevilSpiderX </span>
                 </template>
                 <template #extra>
                     <a-switch v-model="appConfigs.darkTheme" :disabled="appConfigs.themeFollowSystem"
