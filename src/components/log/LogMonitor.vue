@@ -1,31 +1,37 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watchEffect } from 'vue';
 
 const props = defineProps({
     text: {
         type: String,
-        default: ""
+        default: "",
+        request: true
     },
     fontSize: {
         type: Number,
-        default: 16
+        default: 16,
+        request: false
+    },
+    loading: {
+        type: Boolean,
+        default: false,
+        request: false
     }
 });
-
-const scrollbarOuterStyle = {
-    boxSizing: "border-box",
-    width: "100%",
-    height: "100%",
-    boxShadow: "var(--shadow2-center)",
-    border: "1px solid #ced4da",
-    borderRadius: ".25rem"
-};
 
 const scrollbarStyle = {
     overflow: "auto",
     width: "100%",
     height: "100%",
     borderRadius: ".25rem"
+};
+
+const scrollbarOuterStyle = {
+    boxSizing: "border-box",
+    boxShadow: "var(--shadow2-center)",
+    border: "1px solid #ced4da",
+    ...scrollbarStyle,
+    overflow: "hidden"
 };
 
 const logWrapperStyle = computed(() => ({
@@ -46,11 +52,14 @@ defineExpose({
 </script>
 
 <template>
-    <a-scrollbar :outer-style="scrollbarOuterStyle" :style="scrollbarStyle" ref="scrollbarRef">
-        <div class="log-wrapper" :style="logWrapperStyle">
-            {{ $props.text }}
-        </div>
-    </a-scrollbar>
+    <a-spin :loading="$props.loading" :style="scrollbarStyle">
+        <a-scrollbar :style="scrollbarStyle" :outer-style="scrollbarOuterStyle" ref="scrollbarRef">
+            <a-empty v-if="$props.text === ''" />
+            <div v-else class="log-wrapper" :style="logWrapperStyle">
+                {{ $props.text }}
+            </div>
+        </a-scrollbar>
+    </a-spin>
 </template>
 
 <style scoped>
@@ -60,6 +69,7 @@ defineExpose({
     box-sizing: border-box;
     width: 100%;
     height: auto;
+    min-height: 100%;
     padding: 1rem;
     word-break: normal;
     white-space: pre-wrap;

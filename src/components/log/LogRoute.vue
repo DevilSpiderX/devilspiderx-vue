@@ -16,14 +16,20 @@ onUnmounted(() => {
     document.body.classList.remove("no-scrollbar");
 });
 
+const log = reactive({
+    list: [],
+    name: "now.log",
+    text: "",
+    fontSize: toRef(appConfigs.log, "fontSize"),
+    loading: false
+});
 
-const logList = ref([]);
 const router = useRouter();
 (async () => {
     try {
         let resp = await http.log.list();
         console.log("logList:", resp);
-        logList.value = resp;
+        log.list = resp;
     } catch (error) {
         console.error("(setup)", `url:${error.config?.url}`, error);
         router.push({ name: "login" });
@@ -31,27 +37,30 @@ const router = useRouter();
 })();
 const logSelectOptions = computed(() => {
     const result = [];
-    for (const logName of logList.value) {
+    for (const logName of log.list) {
         result.push({ value: logName, label: logName.replaceAll(".log", "") })
     }
     return result;
 });
 
 
-const logName = ref("now.log");
-const logText = ref("");
 const logMonitor = ref();
 watchEffect(async () => {
-    let resp = await http.log.logFile(logName.value);
-    if (Object.hasOwn(resp, "code") && (resp.code === 100 || resp.code === 101)) {
-        router.push({ name: "login" });
-        return;
+    log.loading = true;
+    try {
+        let resp = await http.log.logFile(log.name);
+        if (Object.hasOwn(resp, "code") && (resp.code === 100 || resp.code === 101)) {
+            router.push({ name: "login" });
+            return;
+        }
+        log.text = resp;
+        logMonitor.value.backTop();
+    } catch (error) {
+        console.error("获取日志出现错误", `url:${error.config?.url}`, error)
+        log.text = '';
     }
-    logText.value = resp;
-    logMonitor.value.backTop();
+    log.loading = false;
 })
-
-const logFontSize = toRef(appConfigs.log, "fontSize");
 
 const logFontSizeModal = reactive({
     visible: false
@@ -71,29 +80,33 @@ const collapseList = reactive({
 
 <template>
     <a-layout style="height:100%">
-        <a-layout-header style="border-bottom: 1px solid #84858d55;">
+        <a-layout-header style="border-bottom: 1px solid #84858d55;max-height: 65px">
             <a-page-header @back="$router.back">
                 <template #title>
                     <span> 日志 </span>
                 </template>
                 <template #extra>
-                    <template v-if="appConfigs.window.width > 576">
-                        <a-space>
-                            <a-select v-model="logName" :options="logSelectOptions" style="width: 11em" />
-                            <a-tooltip :content="String(logFontSize)" mini>
-                                <a-button shape="round" @click="logFontSizeModal.visible = true">字体大小</a-button>
-                            </a-tooltip>
-                        </a-space>
-                    </template>
-                    <template v-else>
-                        <a-button type="text" @click="collapseList.show = !collapseList.show">
-                            <template #icon>
-                                <span style="font-size: 1.2rem;color:var(--color-text-2)">
-                                    <i class="fa-solid fa-bars fa-fw" />
-                                </span>
+                    <a-button v-if="appConfigs.window.width <= 576" type="text"
+                        @click="collapseList.show = !collapseList.show">
+                        <template #icon>
+                            <span style="font-size: 1.2rem;color:var(--color-text-2)">
+                                <i class="fa-solid fa-bars fa-fw" />
+                            </span>
+                        </template>
+                    </a-button>
+                    <a-space v-else>
+                        <span v-show="appConfigs.window.width > 768">日志:</span>
+                        <a-select v-model="log.name" :options="logSelectOptions" style="width: 11em" />
+                        <a-tooltip v-if="appConfigs.window.width <= 768" :content="String(log.fontSize)" mini>
+                            <a-button shape="round" @click="logFontSizeModal.visible = true">字体大小</a-button>
+                        </a-tooltip>
+                        <a-input-number v-else v-model="log.fontSize" :min="12" :max="50" mode="button" read-only
+                            style="max-width: 13em">
+                            <template #prefix>
+                                <span>字体大小</span>
                             </template>
-                        </a-button>
-                    </template>
+                        </a-input-number>
+                    </a-space>
                 </template>
             </a-page-header>
         </a-layout-header>
@@ -102,11 +115,11 @@ const collapseList = reactive({
                 <div class="collapseList" v-show="collapseList.show">
                     <a-form :model="collapseList" auto-label-width>
                         <a-form-item label="日志：">
-                            <a-select v-model="logName" :options="logSelectOptions"
+                            <a-select v-model="log.name" :options="logSelectOptions"
                                 @change="collapseList.show = false" />
                         </a-form-item>
                         <a-form-item label="字体大小：">
-                            <a-input-number v-model="logFontSize" :min="12" :max="50" mode="button" read-only />
+                            <a-input-number v-model="log.fontSize" :min="12" :max="50" mode="button" read-only />
                         </a-form-item>
                     </a-form>
                 </div>
@@ -115,13 +128,13 @@ const collapseList = reactive({
         <a-layout-content style="height:calc(100% - 65px)">
             <a-row justify="center" align="center" style="height:100%">
                 <a-col style="height:calc(100% - 16px)" :xs="24" :sm="23" :md="22" :lg="21" :xl="20" :xxl="19">
-                    <log-monitor width="100%" height="100%" :text="logText" :font-size="logFontSize" ref="logMonitor" />
+                    <log-monitor :text="log.text" :font-size="log.fontSize" ref="logMonitor" :loading="log.loading" />
                 </a-col>
             </a-row>
         </a-layout-content>
     </a-layout>
     <a-modal title="日志字体大小" v-model:visible="logFontSizeModal.visible" width="auto" simple :footer="false">
-        <a-input-number v-model="logFontSize" :min="12" :max="50" mode="button" read-only />
+        <a-input-number v-model="log.fontSize" :min="12" :max="50" mode="button" read-only style="max-width: 15em" />
     </a-modal>
 </template>
 
@@ -148,10 +161,12 @@ const collapseList = reactive({
 .collapse-enter-from,
 .collapse-leave-to {
     transform: scaleY(0);
+    opacity: 0;
 }
 
 .collapse-enter-to,
 .collapse-leave-from {
     transform: scaleY(1);
+    opacity: 1;
 }
 </style>

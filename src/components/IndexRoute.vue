@@ -54,7 +54,7 @@ function on_exit_clicked() {
 
 <template>
     <a-layout>
-        <a-layout-header style="border-bottom: 1px solid #84858d55;">
+        <a-layout-header style="border-bottom: 1px solid #84858d55">
             <a-page-header @back="drawer.visible = true">
                 <template #back-icon>
                     <span style="font-size: 1.2rem;position: relative">

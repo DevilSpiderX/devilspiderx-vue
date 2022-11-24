@@ -1,6 +1,6 @@
 <script setup>
-import { isReactive, onMounted, onUnmounted, reactive, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { onUnmounted, reactive, ref, watch } from "vue";
+import { useRouter } from "vue-router";
 import { Message } from "@arco-design/web-vue";
 import CpuCard from "./CpuCard.vue";
 import MemoryCard from "./MemoryCard.vue";
@@ -23,6 +23,7 @@ watch(() => props.cd, newVal => {
     if (ws.websocket !== null) {
         console.log("更改数据刷新速率", newVal, "ms");
         ws.websocket.send(JSON.stringify({ "cmd": "start", "cd": newVal }));
+        Message.success(`数据刷新速率：${newVal}ms`);
     }
 });
 
@@ -110,43 +111,84 @@ function main_card_mouse_enter() {
 function main_card_mouse_leave() {
     mainCard.class["scrollBar-hide"] = true;
 }
+
+const speedModal = reactive({
+    visible: false
+});
+
+function speed_modal_input_change(val) {
+    setCD(val);
+    speedModal.visible = false;
+}
+
 </script>
 
 <template>
     <a-layout style="height:100%">
-        <a-card class="main-card" :class="mainCard.class" :header-style="{ height: 'auto' }"
-            :style="{ height: '100%', backgroundColor: 'var(--color-bg-1)' }" @mouseenter="main_card_mouse_enter"
-            @mouseleave="main_card_mouse_leave">
-            <template #title>
-                <div>
-                    <h1 style="text-align: center;user-select: none;margin: 0;font-size: 1.5rem">
-                        <i class="fas fa-server fa-fw"></i>
-                        服务器状态监控
-                    </h1>
-                </div>
-            </template>
-            <a-row :gutter="10" align="stretch">
-                <transition-group name="body">
-                    <a-col :xs="24" :md="12" :xl="8" class="my-col" v-if="values.cpu">
-                        <cpu-card :value="values.cpu" />
-                    </a-col>
-                    <a-col :xs="24" :md="12" :xl="8" class="my-col" v-if="values.memory">
-                        <memory-card :value="values.memory" :process-count="values.os?.processCount" />
-                    </a-col>
-                    <a-col :xs="24" :md="12" :xl="8" class="my-col" v-if="values.network">
-                        <network-card :value="values.network" />
-                    </a-col>
-                    <a-col :xs="24" :md="12" :xl="8" class="my-col" v-for="(disk, index) in values.disk"
-                        :key="index + 3">
-                        <disk-card :value="disk" :disk-index="index" />
-                    </a-col>
-                </transition-group>
-            </a-row>
-            <template #cover>
-                <a-empty v-if="empty_show" />
-            </template>
-        </a-card>
+        <a-layout-header style="border-bottom: 1px solid #84858d55;max-height: 65px">
+            <a-page-header @back="$router.back">
+                <template #title>
+                    <span> 控制中心 </span>
+                </template>
+                <template #extra>
+                    <a-tooltip v-if="appConfigs.window.width <= 576" :content="String($props.cd)" mini>
+                        <a-button shape="round" @click="speedModal.visible = true">刷新速率</a-button>
+                    </a-tooltip>
+                    <a-input-number v-else :model-value="$props.cd" @update:model-value="val => setCD(val)" :min="500"
+                        hide-button style="max-width: 12em">
+                        <template #prefix>
+                            <span>刷新速率</span>
+                        </template>
+                        <template #suffix>
+                            <span>ms</span>
+                        </template>
+                    </a-input-number>
+                </template>
+            </a-page-header>
+        </a-layout-header>
+        <a-layout-content style="height: calc(100% - 65px)">
+            <a-card class="main-card" :class="mainCard.class" :header-style="{ height: 'auto' }"
+                :style="{ height: '100%', backgroundColor: 'var(--color-bg-1)' }" @mouseenter="main_card_mouse_enter"
+                @mouseleave="main_card_mouse_leave">
+                <template #title>
+                    <div>
+                        <h1 style="text-align: center;user-select: none;margin: 0;font-size: 1.5rem">
+                            <i class="fas fa-server fa-fw"></i>
+                            服务器状态监控
+                        </h1>
+                    </div>
+                </template>
+                <a-row :gutter="10" align="stretch">
+                    <transition-group name="body">
+                        <a-col :xs="24" :md="12" :xl="8" class="my-col" v-if="values.cpu">
+                            <cpu-card :value="values.cpu" />
+                        </a-col>
+                        <a-col :xs="24" :md="12" :xl="8" class="my-col" v-if="values.memory">
+                            <memory-card :value="values.memory" :process-count="values.os?.processCount" />
+                        </a-col>
+                        <a-col :xs="24" :md="12" :xl="8" class="my-col" v-if="values.network">
+                            <network-card :value="values.network" />
+                        </a-col>
+                        <a-col :xs="24" :md="12" :xl="8" class="my-col" v-for="(disk, index) in values.disk"
+                            :key="index + 3">
+                            <disk-card :value="disk" :disk-index="index" />
+                        </a-col>
+                    </transition-group>
+                </a-row>
+                <template #cover>
+                    <a-empty v-if="empty_show" />
+                </template>
+            </a-card>
+        </a-layout-content>
     </a-layout>
+    <a-modal title="数据刷新速率" v-model:visible="speedModal.visible" width="auto" simple :footer="false">
+        <a-input-number :model-value="$props.cd" @update:model-value="speed_modal_input_change" :min="500" hide-button
+            style="max-width: 15em">
+            <template #suffix>
+                <span>ms</span>
+            </template>
+        </a-input-number>
+    </a-modal>
 </template>
 
 <style scoped>

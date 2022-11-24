@@ -75,7 +75,7 @@ async function on_switch_clicked() {
 
 <template>
     <a-layout>
-        <a-layout-header style="border-bottom: 1px solid #84858d55;">
+        <a-layout-header style="border-bottom: 1px solid #84858d55">
             <a-page-header @back="$router.back">
                 <template #title>
                     <span> V2Ray </span>

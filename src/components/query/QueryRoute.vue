@@ -311,7 +311,7 @@ async function table_page_change(page) {
 
 <template>
     <a-layout style="height:100%">
-        <a-layout-header style="border-bottom: 1px solid #84858d55;">
+        <a-layout-header style="border-bottom: 1px solid #84858d55;max-height: 63px">
             <a-page-header @back="$router.back">
                 <template #title>
                     <span> 密码查询 </span>
