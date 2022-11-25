@@ -126,8 +126,8 @@ const collapseList = reactive({
             </transition>
         </div>
         <a-layout-content style="height:calc(100% - 65px)">
-            <a-row justify="center" align="center" style="height:100%">
-                <a-col style="height:calc(100% - 16px)" :xs="24" :sm="23" :md="22" :lg="21" :xl="20" :xxl="19">
+            <a-row justify="center" style="height:100%">
+                <a-col style="height:calc(100% - 3px)" :xs="24" :sm="23" :md="22" :lg="21" :xl="20" :xxl="19">
                     <log-monitor :text="log.text" :font-size="log.fontSize" ref="logMonitor" :loading="log.loading" />
                 </a-col>
             </a-row>
