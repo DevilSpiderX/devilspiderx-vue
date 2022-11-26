@@ -124,17 +124,17 @@ function speed_modal_input_change(val) {
 </script>
 
 <template>
-    <a-layout style="height:100%">
-        <a-layout-header style="border-bottom: 1px solid #84858d55;max-height: 65px">
-            <a-page-header @back="$router.back">
+    <ALayout style="height:100%">
+        <ALayoutHeader style="border-bottom: 1px solid #84858d55;max-height: 65px">
+            <APageHeader @back="$router.back">
                 <template #title>
                     <span> 控制中心 </span>
                 </template>
                 <template #extra>
-                    <a-tooltip v-if="appConfigs.window.width <= 576" :content="String($props.cd)" mini>
-                        <a-button shape="round" @click="speedModal.visible = true">刷新速率</a-button>
-                    </a-tooltip>
-                    <a-input-number v-else :model-value="$props.cd" @update:model-value="val => setCD(val)" :min="500"
+                    <ATooltip v-if="appConfigs.window.width <= 576" :content="String($props.cd)" mini>
+                        <AButton shape="round" @click="speedModal.visible = true">刷新速率</AButton>
+                    </ATooltip>
+                    <AInputNumber v-else :model-value="$props.cd" @update:model-value="val => setCD(val)" :min="500"
                         hide-button style="max-width: 12em">
                         <template #prefix>
                             <span>刷新速率</span>
@@ -142,12 +142,12 @@ function speed_modal_input_change(val) {
                         <template #suffix>
                             <span>ms</span>
                         </template>
-                    </a-input-number>
+                    </AInputNumber>
                 </template>
-            </a-page-header>
-        </a-layout-header>
-        <a-layout-content style="height: calc(100% - 65px)">
-            <a-card class="main-card" :class="mainCard.class" :header-style="{ height: 'auto' }"
+            </APageHeader>
+        </ALayoutHeader>
+        <ALayoutContent style="height: calc(100% - 65px)">
+            <ACard class="main-card" :class="mainCard.class" :header-style="{ height: 'auto' }"
                 :style="{ height: '100%', backgroundColor: 'var(--color-bg-1)' }" @mouseenter="main_card_mouse_enter"
                 @mouseleave="main_card_mouse_leave">
                 <template #title>
@@ -158,37 +158,37 @@ function speed_modal_input_change(val) {
                         </h1>
                     </div>
                 </template>
-                <a-row :gutter="10" align="stretch">
-                    <transition-group name="body">
-                        <a-col :xs="24" :md="12" :xl="8" class="my-col" v-if="values.cpu">
-                            <cpu-card :value="values.cpu" />
-                        </a-col>
-                        <a-col :xs="24" :md="12" :xl="8" class="my-col" v-if="values.memory">
-                            <memory-card :value="values.memory" :process-count="values.os?.processCount" />
-                        </a-col>
-                        <a-col :xs="24" :md="12" :xl="8" class="my-col" v-if="values.network">
-                            <network-card :value="values.network" />
-                        </a-col>
-                        <a-col :xs="24" :md="12" :xl="8" class="my-col" v-for="(disk, index) in values.disk"
+                <ARow :gutter="10" align="stretch">
+                    <TransitionGroup name="body">
+                        <ACol :xs="24" :md="12" :xl="8" class="my-col" v-if="values.cpu">
+                            <CpuCard :value="values.cpu" />
+                        </ACol>
+                        <ACol :xs="24" :md="12" :xl="8" class="my-col" v-if="values.memory">
+                            <MemoryCard :value="values.memory" :process-count="values.os?.processCount" />
+                        </ACol>
+                        <ACol :xs="24" :md="12" :xl="8" class="my-col" v-if="values.network">
+                            <NetworkCard :value="values.network" />
+                        </ACol>
+                        <ACol :xs="24" :md="12" :xl="8" class="my-col" v-for="(disk, index) in values.disk"
                             :key="index + 3">
-                            <disk-card :value="disk" :disk-index="index" />
-                        </a-col>
-                    </transition-group>
-                </a-row>
+                            <DiskCard :value="disk" :disk-index="index" />
+                        </ACol>
+                    </TransitionGroup>
+                </ARow>
                 <template #cover>
-                    <a-empty v-if="empty_show" />
+                    <AEmpty v-if="empty_show" />
                 </template>
-            </a-card>
-        </a-layout-content>
-    </a-layout>
-    <a-modal title="数据刷新速率" v-model:visible="speedModal.visible" width="auto" simple :footer="false">
-        <a-input-number :model-value="$props.cd" @update:model-value="speed_modal_input_change" :min="500" hide-button
+            </ACard>
+        </ALayoutContent>
+    </ALayout>
+    <AModal title="数据刷新速率" v-model:visible="speedModal.visible" width="auto" simple :footer="false">
+        <AInputNumber :model-value="$props.cd" @update:model-value="speed_modal_input_change" :min="500" hide-button
             style="max-width: 15em">
             <template #suffix>
                 <span>ms</span>
             </template>
-        </a-input-number>
-    </a-modal>
+        </AInputNumber>
+    </AModal>
 </template>
 
 <style scoped>

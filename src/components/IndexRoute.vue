@@ -53,9 +53,9 @@ function on_exit_clicked() {
 </script>
 
 <template>
-    <a-layout>
-        <a-layout-header style="border-bottom: 1px solid #84858d55">
-            <a-page-header @back="drawer.visible = true">
+    <ALayout>
+        <ALayoutHeader style="border-bottom: 1px solid #84858d55">
+            <APageHeader @back="drawer.visible = true">
                 <template #back-icon>
                     <span style="font-size: 1.2rem;position: relative">
                         <i class="fa-solid fa-bars fa-fw" />
@@ -65,41 +65,41 @@ function on_exit_clicked() {
                     <span> DevilSpiderX </span>
                 </template>
                 <template #extra>
-                    <a-switch v-model="appConfigs.darkTheme" :disabled="appConfigs.themeFollowSystem"
+                    <ASwitch v-model="appConfigs.darkTheme" :disabled="appConfigs.themeFollowSystem"
                         checked-color="#2f2f2f">
                         <template #unchecked-icon>
                             <span style="color: var(--color-text-3)">
-                                <icon-sun-fill />
+                                <IconSunFill />
                             </span>
                         </template>
                         <template #checked-icon>
                             <span style="color: #2f2f2f">
-                                <icon-moon-fill />
+                                <IconMoonFill />
                             </span>
                         </template>
-                    </a-switch>
+                    </ASwitch>
                 </template>
-            </a-page-header>
-        </a-layout-header>
-        <a-layout-content style="padding:20px 15px;">
-            <a-row justify="center">
-                <a-col :xs="24" :sm="21" :md="16" :lg="14" :xl="12" :xxl="10">
-                    <a-space direction="vertical" fill size="large">
-                        <a-button class="my-button" long @contextmenu.prevent.stop
+            </APageHeader>
+        </ALayoutHeader>
+        <ALayoutContent style="padding:20px 15px;">
+            <ARow justify="center">
+                <ACol :xs="24" :sm="21" :md="16" :lg="14" :xl="12" :xxl="10">
+                    <ASpace direction="vertical" fill size="large">
+                        <AButton class="my-button" long @contextmenu.prevent.stop
                             @click="$router.push({ name: 'controller' })">
                             <template #icon>
                                 <i class="fas fa-sliders-h fa-fw" />
                             </template>
                             控制中心
-                        </a-button>
-                        <a-button class="my-button" long @contextmenu.prevent.stop
+                        </AButton>
+                        <AButton class="my-button" long @contextmenu.prevent.stop
                             @click="$router.push({ name: 'query' })">
                             <template #icon>
                                 <i class="fas fa-search fa-fw" />
                             </template>
                             密码查询
-                        </a-button>
-                        <a-button class="my-button" long @contextmenu.prevent.stop
+                        </AButton>
+                        <AButton class="my-button" long @contextmenu.prevent.stop
                             @click="$router.push({ name: 'v2ray' })">
                             <template #icon>
                                 <!--suppress CheckImageSize -->
@@ -107,60 +107,60 @@ function on_exit_clicked() {
                                     style="transform: translateY(4px);">
                             </template>
                             V2Ray
-                        </a-button>
-                        <a-button v-if="appConfigs.user.admin" class="my-button" long @contextmenu.prevent.stop
+                        </AButton>
+                        <AButton v-if="appConfigs.user.admin" class="my-button" long @contextmenu.prevent.stop
                             @click="$router.push({ name: 'log' })">
                             <template #icon>
                                 <i class="fas fa-file-alt fa-fw" />
                             </template>
                             日&nbsp;&nbsp;志
-                        </a-button>
-                        <a-button class="my-button" long @contextmenu.prevent.stop
+                        </AButton>
+                        <AButton class="my-button" long @contextmenu.prevent.stop
                             @click="$router.push({ name: 'updatePwd' })">
                             <template #icon>
                                 <i class="fas fa-edit fa-fw" />
                             </template>
                             修改密码
-                        </a-button>
-                        <a-button class="my-button" long @contextmenu.prevent.stop @click="on_logoutButton_clicked">
+                        </AButton>
+                        <AButton class="my-button" long @contextmenu.prevent.stop @click="on_logoutButton_clicked">
                             <template #icon>
                                 <i class="fas fa-sign-out-alt fa-fw" />
                             </template>
                             退出登录
-                        </a-button>
-                        <a-button class="my-button exit-button" long @contextmenu.prevent.stop @click="on_exit_clicked">
+                        </AButton>
+                        <AButton class="my-button exit-button" long @contextmenu.prevent.stop @click="on_exit_clicked">
                             <template #icon>
                                 <i class="fas fa-power-off fa-fw" />
                             </template>
                             退&nbsp;&nbsp;出
-                        </a-button>
-                    </a-space>
-                </a-col>
-            </a-row>
-        </a-layout-content>
-    </a-layout>
-    <a-drawer v-model:visible="drawer.visible" placement="left" :footer="false">
+                        </AButton>
+                    </ASpace>
+                </ACol>
+            </ARow>
+        </ALayoutContent>
+    </ALayout>
+    <ADrawer v-model:visible="drawer.visible" placement="left" :footer="false">
         <template #header>
-            <a-row justify="space-between" style="width: 100%;">
+            <ARow justify="space-between" style="width: 100%;">
                 <h2 style="margin: 0;color: var(--color-text-1)">
                     设置
                 </h2>
-                <a-button class="drawer-close-button" shape="circle" size="small" @click="drawer.visible = false">
+                <AButton class="drawer-close-button" shape="circle" size="small" @click="drawer.visible = false">
                     <template #icon>
-                        <icon-close />
+                        <IconClose />
                     </template>
-                </a-button>
-            </a-row>
+                </AButton>
+            </ARow>
         </template>
-        <a-form :model="drawer.empty_form" auto-label-width>
-            <a-form-item label="深色模式">
-                <a-switch v-model="appConfigs.darkTheme" :disabled="appConfigs.themeFollowSystem" />
-            </a-form-item>
-            <a-form-item label="主题跟随系统">
-                <a-switch v-model="appConfigs.themeFollowSystem" />
-            </a-form-item>
-        </a-form>
-    </a-drawer>
+        <AForm :model="drawer.empty_form" auto-label-width>
+            <AFormItem label="深色模式">
+                <ASwitch v-model="appConfigs.darkTheme" :disabled="appConfigs.themeFollowSystem" />
+            </AFormItem>
+            <AFormItem label="主题跟随系统">
+                <ASwitch v-model="appConfigs.themeFollowSystem" />
+            </AFormItem>
+        </AForm>
+    </ADrawer>
 </template>
 
 <style scoped>

@@ -24,7 +24,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <a-layout />
+    <ALayout />
 </template>
 
 <style scoped>

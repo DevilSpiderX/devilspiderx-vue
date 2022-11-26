@@ -60,50 +60,47 @@ function cancel_click() {
 </script>
 
 <template>
-    <a-modal :visible="visible" title="修改密码记录" :width="width" @update:visible="value => $emit('update:visible', value)">
-        <a-form :model="form" @submit="form_submit">
-            <a-form-item field="id" label="ID" v-show="false">
-                <a-input-number placeholder="id" v-model="form.id" :min="0"></a-input-number>
-            </a-form-item>
-            <a-form-item field="name" hide-label>
-                <a-input placeholder="名称" v-model="form.name" clearable :error="inputNameStatus">
+    <AModal :visible="visible" title="修改密码记录" :width="width"
+        @update:visible="visible => $emit('update:visible', visible)">
+        <AForm :model="form" @submit="form_submit">
+            <AFormItem field="id" label="ID" v-show="false">
+                <AInputNumber placeholder="id" v-model="form.id" :min="0"></AInputNumber>
+            </AFormItem>
+            <AFormItem field="name" hide-label>
+                <AInput placeholder="名称" v-model="form.name" clearable :error="inputNameStatus">
                     <template #prefix>
                         <i class="fas fa-tag fa-fw"></i>
                     </template>
-                </a-input>
-            </a-form-item>
-            <a-form-item field="account" hide-label>
-                <a-input placeholder="账号" v-model="form.account" clearable>
+                </AInput>
+            </AFormItem>
+            <AFormItem field="account" hide-label>
+                <AInput placeholder="账号" v-model="form.account" clearable>
                     <template #prefix>
                         <i class="fas fa-user fa-fw"></i>
                     </template>
-                </a-input>
-            </a-form-item>
-            <a-form-item field="password" hide-label>
-                <a-input placeholder="密码" v-model="form.password" clearable>
+                </AInput>
+            </AFormItem>
+            <AFormItem field="password" hide-label>
+                <AInput placeholder="密码" v-model="form.password" clearable>
                     <template #prefix>
                         <i class="fas fa-key fa-fw"></i>
                     </template>
-                </a-input>
-            </a-form-item>
-            <a-form-item field="remark" hide-label>
-                <a-input placeholder="备注" v-model="form.remark" clearable>
+                </AInput>
+            </AFormItem>
+            <AFormItem field="remark" hide-label>
+                <AInput placeholder="备注" v-model="form.remark" clearable>
                     <template #prefix>
                         <i class="fas fa-info fa-fw"></i>
                     </template>
-                </a-input>
-            </a-form-item>
+                </AInput>
+            </AFormItem>
             <button type="submit" v-show="false"></button>
-        </a-form>
+        </AForm>
         <template #footer>
-            <a-button type="primary" @click="form_submit">
+            <AButton type="primary" @click="form_submit">
                 修 改
-            </a-button>
-            <a-button @click="cancel_click">取 消</a-button>
+            </AButton>
+            <AButton @click="cancel_click">取 消</AButton>
         </template>
-    </a-modal>
+    </AModal>
 </template>
-
-<style scoped>
-
-</style>

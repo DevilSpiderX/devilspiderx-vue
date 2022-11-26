@@ -18,50 +18,50 @@ const props = withDefaults(
     }
 )
 
-const precision_upload = computed(() => {
+const precisionUpload = computed(() => {
     return props.value.format.uploadSpeed.unit === "B/s" ? 0 : 2;
 });
 
-const precision_download = computed(() => {
+const precisionDownload = computed(() => {
     return props.value.format.downloadSpeed.unit === "B/s" ? 0 : 2;
 });
 
 </script>
 
 <template>
-    <base-card>
+    <BaseCard>
         <template #header>
             <div class="header">
                 <h3><i class="fa-solid fa-rss fa-fw"></i>网络信息</h3>
             </div>
         </template>
         <div class="my-card-body">
-            <a-descriptions :column="1" :align="{ label: 'right' }" :label-style="{ width: 'calc(50% - 1px)' }">
-                <a-descriptions-item label="上传速度">
-                    <a-statistic :value="value.format.uploadSpeed.value" :precision="precision_upload"
+            <ADescriptions :column="1" :align="{ label: 'right' }" :label-style="{ width: 'calc(50% - 1px)' }">
+                <ADescriptionsItem label="上传速度">
+                    <AStatistic :value="value.format.uploadSpeed.value" :precision="precisionUpload"
                         :value-style="{ color: 'rgb(var(--green-7))', fontSize: '20px' }">
                         <template #prefix>
-                            <icon-arrow-rise />
+                            <IconArrowRise />
                         </template>
                         <template #suffix>
                             {{ value.format.uploadSpeed.unit }}
                         </template>
-                    </a-statistic>
-                </a-descriptions-item>
-                <a-descriptions-item label="下载速度">
-                    <a-statistic :value="value.format.downloadSpeed.value" :precision="precision_download"
+                    </AStatistic>
+                </ADescriptionsItem>
+                <ADescriptionsItem label="下载速度">
+                    <AStatistic :value="value.format.downloadSpeed.value" :precision="precisionDownload"
                         :value-style="{ color: 'rgb(var(--blue-7))', fontSize: '20px' }">>
                         <template #prefix>
-                            <icon-arrow-fall />
+                            <IconArrowFall />
                         </template>
                         <template #suffix>
                             {{ value.format.downloadSpeed.unit }}
                         </template>
-                    </a-statistic>
-                </a-descriptions-item>
-            </a-descriptions>
+                    </AStatistic>
+                </ADescriptionsItem>
+            </ADescriptions>
         </div>
-    </base-card>
+    </BaseCard>
 </template>
 
 <style scoped>

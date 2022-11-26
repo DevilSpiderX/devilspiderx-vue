@@ -67,47 +67,44 @@ function cancel_click() {
 </script>
 
 <template>
-    <a-modal :visible="visible" title="添加密码记录" :width="width" @update:visible="value => $emit('update:visible', value)">
-        <a-form :model="form" @submit="form_submit">
-            <a-form-item field="name" hide-label>
-                <a-input placeholder="名称" v-model="form.name" allow-clear :error="inputNameStatus">
+    <AModal :visible="visible" title="添加密码记录" :width="width"
+        @update:visible="visible => $emit('update:visible', visible)">
+        <AForm :model="form" @submit="form_submit">
+            <AFormItem field="name" hide-label>
+                <AInput placeholder="名称" v-model="form.name" allow-clear :error="inputNameStatus">
                     <template #prefix>
                         <i class="fas fa-tag fa-fw"></i>
                     </template>
-                </a-input>
-            </a-form-item>
-            <a-form-item field="account" hide-label>
-                <a-input placeholder="账号" v-model="form.account" allow-clear>
+                </AInput>
+            </AFormItem>
+            <AFormItem field="account" hide-label>
+                <AInput placeholder="账号" v-model="form.account" allow-clear>
                     <template #prefix>
                         <i class="fas fa-user fa-fw"></i>
                     </template>
-                </a-input>
-            </a-form-item>
-            <a-form-item field="password" hide-label>
-                <a-input placeholder="密码" v-model="form.password" allow-clear>
+                </AInput>
+            </AFormItem>
+            <AFormItem field="password" hide-label>
+                <AInput placeholder="密码" v-model="form.password" allow-clear>
                     <template #prefix>
                         <i class="fas fa-key fa-fw"></i>
                     </template>
-                </a-input>
-            </a-form-item>
-            <a-form-item field="remark" hide-label>
-                <a-input placeholder="备注" v-model="form.remark" allow-clear>
+                </AInput>
+            </AFormItem>
+            <AFormItem field="remark" hide-label>
+                <AInput placeholder="备注" v-model="form.remark" allow-clear>
                     <template #prefix>
                         <i class="fas fa-info fa-fw"></i>
                     </template>
-                </a-input>
-            </a-form-item>
+                </AInput>
+            </AFormItem>
             <button type="submit" v-show="false"></button>
-        </a-form>
+        </AForm>
         <template #footer>
-            <a-button type="primary" @click="form_submit">
+            <AButton type="primary" @click="form_submit">
                 添 加
-            </a-button>
-            <a-button @click="cancel_click">取 消</a-button>
+            </AButton>
+            <AButton @click="cancel_click">取 消</AButton>
         </template>
-    </a-modal>
+    </AModal>
 </template>
-
-<style scoped>
-
-</style>

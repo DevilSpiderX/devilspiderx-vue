@@ -85,44 +85,44 @@ function running_stop() {
 </script>
 
 <template>
-    <a-layout>
-        <a-layout-content style="padding: 0; overflow: visible">
-            <a-row justify="center">
-                <a-col class="register-col">
-                    <a-form :model="form" @submit="form_submit">
+    <ALayout>
+        <ALayoutContent style="padding: 0; overflow: visible">
+            <ARow justify="center">
+                <ACol class="register-col">
+                    <AForm :model="form" @submit="form_submit">
                         <h1 style="text-align: center; font-size: 2.5rem; color: var(--color-text-1)">
                             登&nbsp;&nbsp;录
                         </h1>
-                        <a-form-item field="uid" hide-label>
-                            <a-input v-model="form.uid" class="my-input" placeholder="账号" allow-clear
+                        <AFormItem field="uid" hide-label>
+                            <AInput v-model="form.uid" class="my-input" placeholder="账号" allow-clear
                                 :input-attrs="{ style: { 'font-size': '1.1rem' } }" :error="inputStatus[0]">
                                 <template #prefix>
                                     <span><i class="fas fa-user fa-fw" /></span>
                                 </template>
-                            </a-input>
-                        </a-form-item>
-                        <a-form-item field="pwd" hide-label>
-                            <a-input-password v-model="form.pwd" class="my-input" placeholder="密码" allow-clear
+                            </AInput>
+                        </AFormItem>
+                        <AFormItem field="pwd" hide-label>
+                            <AInputPassword v-model="form.pwd" class="my-input" placeholder="密码" allow-clear
                                 :input-attrs="{ style: { 'font-size': '1.1rem' } }" :error="inputStatus[1]">
                                 <template #prefix>
                                     <span><i class="fas fa-key fa-fw" /></span>
                                 </template>
-                            </a-input-password>
-                        </a-form-item>
-                        <a-row class="button-row" justify="space-around">
-                            <a-button type="primary" size="large" html-type="submit">
+                            </AInputPassword>
+                        </AFormItem>
+                        <ARow class="button-row" justify="space-around">
+                            <AButton type="primary" size="large" html-type="submit">
                                 登 录
-                            </a-button>
-                            <a-button type="primary" size="large" html-type="button"
+                            </AButton>
+                            <AButton type="primary" size="large" html-type="button"
                                 @click="$router.push({ name: 'register' })">
                                 注 册
-                            </a-button>
-                        </a-row>
-                    </a-form>
-                </a-col>
-            </a-row>
-        </a-layout-content>
-    </a-layout>
+                            </AButton>
+                        </ARow>
+                    </AForm>
+                </ACol>
+            </ARow>
+        </ALayoutContent>
+    </ALayout>
 
     <div v-show="running.show" class="running">
         <i class="fas fa-spinner fa-spin" />

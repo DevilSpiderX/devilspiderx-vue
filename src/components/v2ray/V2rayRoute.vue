@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { Notification } from '@arco-design/web-vue';
-import Switch from "./MySwitch.vue";
+import MySwitch from "./MySwitch.vue";
 import http from "@/scripts/server-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 
@@ -74,29 +74,29 @@ async function on_switch_clicked() {
 </script>
 
 <template>
-    <a-layout>
-        <a-layout-header style="border-bottom: 1px solid #84858d55">
-            <a-page-header @back="$router.back">
+    <ALayout>
+        <ALayoutHeader style="border-bottom: 1px solid #84858d55">
+            <APageHeader @back="$router.back">
                 <template #title>
                     <span> V2Ray </span>
                 </template>
-            </a-page-header>
-        </a-layout-header>
-        <a-layout-content>
-            <a-row justify="center">
-                <a-col :style="{ marginTop: '5rem', maxWidth: '480px' }">
-                    <a-card style="box-shadow: var(--box-shadow-light)">
+            </APageHeader>
+        </ALayoutHeader>
+        <ALayoutContent>
+            <ARow justify="center">
+                <ACol :style="{ marginTop: '5rem', maxWidth: '480px' }">
+                    <ACard style="box-shadow: var(--box-shadow-light)">
                         <template #title>
                             <div style="font-weight: 700;font-size: 1.4rem;text-align: center;">V2Ray开关</div>
                         </template>
                         <div class="card-body">
-                            <Switch v-model:modal-status="switchStatus" @click="on_switch_clicked" />
+                            <MySwitch v-model:modal-status="switchStatus" @click="on_switch_clicked" />
                         </div>
-                    </a-card>
-                </a-col>
-            </a-row>
-        </a-layout-content>
-    </a-layout>
+                    </ACard>
+                </ACol>
+            </ARow>
+        </ALayoutContent>
+    </ALayout>
 </template>
 
 <style scoped>

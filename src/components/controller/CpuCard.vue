@@ -33,33 +33,33 @@ const progressColor = computed(() => {
 </script>
 
 <template>
-    <base-card>
+    <BaseCard>
         <template #header>
             <div class="header">
                 <h3><i class="fa-solid fa-microchip fa-fw"></i>CPU</h3>
             </div>
         </template>
         <div class="my-card-body">
-            <a-descriptions :column="2" :value-style="{ fontSize: '16px' }">
-                <a-descriptions-item label="名 称" :span="2">
+            <ADescriptions :column="2" :value-style="{ fontSize: '16px' }">
+                <ADescriptionsItem label="名 称" :span="2">
                     <span style="font-size: 14px">{{ value.name }}</span>
-                </a-descriptions-item>
-                <a-descriptions-item label="物理核心数">{{ value.physicalNum }}</a-descriptions-item>
-                <a-descriptions-item label="逻辑核心数">{{ value.logicalNum }}</a-descriptions-item>
-                <a-descriptions-item label="处理器位宽">{{ value.is64bit ? "64" : "32" }}</a-descriptions-item>
-                <a-descriptions-item label="温 度">{{ value.cpuTemperature }} ℃</a-descriptions-item>
-            </a-descriptions>
-            <a-descriptions>
-                <a-descriptions-item label="使用率" :span="2">
-                    <a-progress :percent="value.usedRate" :stroke-width="22" size="large" :color="progressColor">
+                </ADescriptionsItem>
+                <ADescriptionsItem label="物理核心数">{{ value.physicalNum }}</ADescriptionsItem>
+                <ADescriptionsItem label="逻辑核心数">{{ value.logicalNum }}</ADescriptionsItem>
+                <ADescriptionsItem label="处理器位宽">{{ value.is64bit ? "64" : "32" }}</ADescriptionsItem>
+                <ADescriptionsItem label="温 度">{{ value.cpuTemperature }} ℃</ADescriptionsItem>
+            </ADescriptions>
+            <ADescriptions>
+                <ADescriptionsItem label="使用率" :span="2">
+                    <AProgress :percent="value.usedRate" :stroke-width="22" size="large" :color="progressColor">
                         <template #text="{ percent }">
                             {{ (percent * 100).toFixed(2) }}%
                         </template>
-                    </a-progress>
-                </a-descriptions-item>
-            </a-descriptions>
+                    </AProgress>
+                </ADescriptionsItem>
+            </ADescriptions>
         </div>
-    </base-card>
+    </BaseCard>
 </template>
 
 <style scoped>

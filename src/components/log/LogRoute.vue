@@ -79,63 +79,63 @@ const collapseList = reactive({
 </script>
 
 <template>
-    <a-layout style="height:100%">
-        <a-layout-header style="border-bottom: 1px solid #84858d55;max-height: 65px">
-            <a-page-header @back="$router.back">
+    <ALayout style="height:100%">
+        <ALayoutHeader style="border-bottom: 1px solid #84858d55;max-height: 65px">
+            <APageHeader @back="$router.back">
                 <template #title>
                     <span> 日志 </span>
                 </template>
                 <template #extra>
-                    <a-button v-if="appConfigs.window.width <= 576" type="text"
+                    <AButton v-if="appConfigs.window.width <= 576" type="text"
                         @click="collapseList.show = !collapseList.show">
                         <template #icon>
                             <span style="font-size: 1.2rem;color:var(--color-text-2)">
                                 <i class="fa-solid fa-bars fa-fw" />
                             </span>
                         </template>
-                    </a-button>
-                    <a-space v-else>
+                    </AButton>
+                    <ASpace v-else>
                         <span v-show="appConfigs.window.width > 768">日志:</span>
-                        <a-select v-model="log.name" :options="logSelectOptions" style="width: 11em" />
-                        <a-tooltip v-if="appConfigs.window.width <= 768" :content="String(log.fontSize)" mini>
-                            <a-button shape="round" @click="logFontSizeModal.visible = true">字体大小</a-button>
-                        </a-tooltip>
-                        <a-input-number v-else v-model="log.fontSize" :min="12" :max="50" mode="button" read-only
+                        <ASelect v-model="log.name" :options="logSelectOptions" style="width: 11em" />
+                        <ATooltip v-if="appConfigs.window.width <= 768" :content="String(log.fontSize)" mini>
+                            <AButton shape="round" @click="logFontSizeModal.visible = true">字体大小</AButton>
+                        </ATooltip>
+                        <AInputNumber v-else v-model="log.fontSize" :min="12" :max="50" mode="button" read-only
                             style="max-width: 13em">
                             <template #prefix>
                                 <span>字体大小</span>
                             </template>
-                        </a-input-number>
-                    </a-space>
+                        </AInputNumber>
+                    </ASpace>
                 </template>
-            </a-page-header>
-        </a-layout-header>
+            </APageHeader>
+        </ALayoutHeader>
         <div v-if="appConfigs.window.width <= 576">
-            <transition name="collapse">
+            <Transition name="collapse">
                 <div class="collapseList" v-show="collapseList.show">
-                    <a-form :model="collapseList" auto-label-width>
-                        <a-form-item label="日志：">
-                            <a-select v-model="log.name" :options="logSelectOptions"
+                    <AForm :model="collapseList" auto-label-width>
+                        <AFormItem label="日志：">
+                            <ASelect v-model="log.name" :options="logSelectOptions"
                                 @change="collapseList.show = false" />
-                        </a-form-item>
-                        <a-form-item label="字体大小：">
-                            <a-input-number v-model="log.fontSize" :min="12" :max="50" mode="button" read-only />
-                        </a-form-item>
-                    </a-form>
+                        </AFormItem>
+                        <AFormItem label="字体大小：">
+                            <AInputNumber v-model="log.fontSize" :min="12" :max="50" mode="button" read-only />
+                        </AFormItem>
+                    </AForm>
                 </div>
-            </transition>
+            </Transition>
         </div>
-        <a-layout-content style="height:calc(100% - 65px)">
-            <a-row justify="center" style="height:100%">
-                <a-col style="height:calc(100% - 3px)" :xs="24" :sm="23" :md="22" :lg="21" :xl="20" :xxl="19">
-                    <log-monitor :text="log.text" :font-size="log.fontSize" ref="logMonitor" :loading="log.loading" />
-                </a-col>
-            </a-row>
-        </a-layout-content>
-    </a-layout>
-    <a-modal title="日志字体大小" v-model:visible="logFontSizeModal.visible" width="auto" simple :footer="false">
-        <a-input-number v-model="log.fontSize" :min="12" :max="50" mode="button" read-only style="max-width: 15em" />
-    </a-modal>
+        <ALayoutContent style="height:calc(100% - 65px)">
+            <ARow justify="center" style="height:100%">
+                <ACol style="height:calc(100% - 3px)" :xs="24" :sm="23" :md="22" :lg="21" :xl="20" :xxl="19">
+                    <LogMonitor :text="log.text" :font-size="log.fontSize" ref="logMonitor" :loading="log.loading" />
+                </ACol>
+            </ARow>
+        </ALayoutContent>
+    </ALayout>
+    <AModal title="日志字体大小" v-model:visible="logFontSizeModal.visible" width="auto" simple :footer="false">
+        <AInputNumber v-model="log.fontSize" :min="12" :max="50" mode="button" read-only style="max-width: 15em" />
+    </AModal>
 </template>
 
 <style scoped>

@@ -52,7 +52,7 @@ const progressColor = computed(() => {
 </script>
 
 <template>
-    <base-card>
+    <BaseCard>
         <template #header>
             <div class="header">
                 <h3><i class="fa-solid fa-hdd fa-fw"></i>硬盘分区 {{ diskIndex }}</h3>
@@ -60,11 +60,11 @@ const progressColor = computed(() => {
         </template>
         <div class="my-card-body">
             <div>{{ value.label }}({{ value.mount }})</div>
-            <a-progress :percent="usedPercent" :show-text="false" :stroke-width="22" size="large"
+            <AProgress :percent="usedPercent" :show-text="false" :stroke-width="22" size="large"
                 :color="progressColor" />
             <div>{{ freeStr }}可用，共 {{ totalStr }}</div>
         </div>
-    </base-card>
+    </BaseCard>
 </template>
 
 <style scoped>

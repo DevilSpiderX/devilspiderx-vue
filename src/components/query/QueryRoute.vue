@@ -310,67 +310,67 @@ async function table_page_change(page) {
 </script>
 
 <template>
-    <a-layout style="height:100%">
-        <a-layout-header style="border-bottom: 1px solid #84858d55;max-height: 63px">
-            <a-page-header @back="$router.back">
+    <ALayout style="height:100%">
+        <ALayoutHeader style="border-bottom: 1px solid #84858d55;max-height: 63px">
+            <APageHeader @back="$router.back">
                 <template #title>
                     <span> 密码查询 </span>
                 </template>
-            </a-page-header>
-        </a-layout-header>
-        <a-layout-content style="height:calc(100% - 63px)">
-            <a-layout style="height:100%">
-                <a-layout-header style="padding:8px">
-                    <a-row justify="center">
-                        <a-col :xs="24" :sm="17" :md="15" :lg="13" :xl="11" :xxl="9">
-                            <a-row>
-                                <a-col flex="105px">
-                                    <a-button size="large" @click="addModal.visible = true">
+            </APageHeader>
+        </ALayoutHeader>
+        <ALayoutContent style="height:calc(100% - 63px)">
+            <ALayout style="height:100%">
+                <ALayoutHeader style="padding:8px">
+                    <ARow justify="center">
+                        <ACol :xs="24" :sm="17" :md="15" :lg="13" :xl="11" :xxl="9">
+                            <ARow>
+                                <ACol flex="105px">
+                                    <AButton size="large" @click="addModal.visible = true">
                                         <template #icon>
                                             <i class="fas fa-plus fa-fw"></i>
                                         </template>
                                         添加
-                                    </a-button>
-                                </a-col>
-                                <a-col flex="auto" style="max-width: calc(100% - 105px)">
-                                    <a-input-search v-model="key" size="large" allow-clear
+                                    </AButton>
+                                </ACol>
+                                <ACol flex="auto" style="max-width: calc(100% - 105px)">
+                                    <AInputSearch v-model="key" size="large" allow-clear
                                         :button-props="{ type: 'secondary' }" search-button @keydown.enter="Search"
                                         @search="Search" :loading="searching">
                                         <template #prefix>
                                             <i class="fas fa-terminal fa-fw"></i>
                                         </template>
-                                    </a-input-search>
-                                </a-col>
-                            </a-row>
-                        </a-col>
-                    </a-row>
-                </a-layout-header>
-                <a-layout-content style="height:calc(100% - 52px)">
-                    <a-row justify="center" style="height:100%">
-                        <a-col :xs="24" :sm="22" :md="20" :lg="18" :xl="16" :xxl="14" style="height:100%">
-                            <a-table :columns="table.columns" :data="table.data" :scroll="{ y: 'calc(100% - 12px)' }"
+                                    </AInputSearch>
+                                </ACol>
+                            </ARow>
+                        </ACol>
+                    </ARow>
+                </ALayoutHeader>
+                <ALayoutContent style="height:calc(100% - 52px)">
+                    <ARow justify="center" style="height:100%">
+                        <ACol :xs="24" :sm="22" :md="20" :lg="18" :xl="16" :xxl="14" style="height:100%">
+                            <ATable :columns="table.columns" :data="table.data" :scroll="{ y: 'calc(100% - 12px)' }"
                                 row-key="id" page-position="bottom" :pagination="table.paginationProps"
                                 :loading="searching" @page-change="table_page_change">
                                 <template #empty>
-                                    <a-empty />
+                                    <AEmpty />
                                 </template>
                                 <template #td="scope">
-                                    <contextmenu-td :value="scope" @contextmenu="table_cell_contextmenu" />
+                                    <ContextmenuTd :value="scope" @contextmenu="table_cell_contextmenu" />
                                 </template>
-                            </a-table>
-                        </a-col>
-                    </a-row>
-                </a-layout-content>
-            </a-layout>
-        </a-layout-content>
-    </a-layout>
+                            </ATable>
+                        </ACol>
+                    </ARow>
+                </ALayoutContent>
+            </ALayout>
+        </ALayoutContent>
+    </ALayout>
 
-    <vue3-menus v-model:open="tableMenu.open" :event="tableMenu.event" :menus="tableMenu.menus" minWidth="100"
+    <Vue3Menus v-model:open="tableMenu.open" :event="tableMenu.event" :menus="tableMenu.menus" minWidth="100"
         v-slot="{ activeIndex, menu, index }">
         <div class="v3-menus-item v3-menus-available">
             <span class="v3-menus-label">{{ menu.label }}</span>
         </div>
-    </vue3-menus>
-    <add-modal v-model:visible="addModal.visible" v-model:cleaning="addModal.cleaning" @submit="add_submit" />
-    <update-modal v-model:visible="updateModal.visible" :data="updateModal.data" @submit="update_submit" />
+    </Vue3Menus>
+    <AddModal v-model:visible="addModal.visible" v-model:cleaning="addModal.cleaning" @submit="add_submit" />
+    <UpdateModal v-model:visible="updateModal.visible" :data="updateModal.data" @submit="update_submit" />
 </template>

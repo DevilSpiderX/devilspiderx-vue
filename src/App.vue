@@ -57,7 +57,7 @@ setInterval(checkUserStatus, appConfigs.user.checkIntervalTime);
 </script>
 
 <template>
-    <router-view />
+    <RouterView />
 </template>
 
 <style>

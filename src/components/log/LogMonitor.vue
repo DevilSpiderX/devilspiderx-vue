@@ -52,14 +52,14 @@ defineExpose({
 </script>
 
 <template>
-    <a-spin :loading="$props.loading" :style="scrollbarStyle">
-        <a-scrollbar :style="scrollbarStyle" :outer-style="scrollbarOuterStyle" ref="scrollbarRef">
-            <a-empty v-if="$props.text === ''" />
+    <ASpin :loading="$props.loading" :style="scrollbarStyle">
+        <AScrollbar :style="scrollbarStyle" :outer-style="scrollbarOuterStyle" ref="scrollbarRef">
+            <AEmpty v-if="$props.text === ''" />
             <div v-else class="log-wrapper" :style="logWrapperStyle">
                 {{ $props.text }}
             </div>
-        </a-scrollbar>
-    </a-spin>
+        </AScrollbar>
+    </ASpin>
 </template>
 
 <style scoped>
