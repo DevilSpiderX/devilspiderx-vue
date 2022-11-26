@@ -1,5 +1,6 @@
 <script setup>
-import { computed, onMounted, ref, watchEffect } from 'vue';
+import { computed, onMounted, ref } from 'vue';
+import { Scrollbar as AScrollbar } from '@arco-design/web-vue';
 
 const props = defineProps({
     text: {
