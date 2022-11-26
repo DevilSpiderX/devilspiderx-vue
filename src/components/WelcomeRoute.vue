@@ -20,15 +20,14 @@ const logo = ref((() => {
 
 const router = useRouter();
 
-const unwatch = watchEffect(async () => {
+watchEffect(async () => {
     if (window.appInited.value) {
-        let pushName = "login";
+        let name = "login";
         if (appConfigs.user.login) {
-            pushName = "index";
+            name = "index";
         }
         await sleep(400);
-        router.push({ name: pushName });
-        unwatch();
+        router.push({ name });
     }
 });
 

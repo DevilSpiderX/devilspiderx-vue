@@ -16,8 +16,8 @@ const form = reactive({
     remark: ""
 });
 
-watch(() => props.data, newVal => {
-    Object.assign(form, newVal);
+watch(() => props.data, data => {
+    Object.assign(form, data);
 });
 
 function Close() {

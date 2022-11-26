@@ -66,8 +66,8 @@ const logFontSizeModal = reactive({
     visible: false
 });
 
-watch(() => logFontSizeModal.visible, newVal => {
-    appConfigs.statusBarColor = newVal ? appConfigs.darkTheme ? "#17171a" : "#777a7f"
+watch(() => logFontSizeModal.visible, visible => {
+    appConfigs.statusBarColor = visible ? appConfigs.darkTheme ? "#17171a" : "#777a7f"
         : window.getComputedStyle(document.body).backgroundColor;
 });
 
@@ -95,7 +95,7 @@ const collapseList = reactive({
                         </template>
                     </AButton>
                     <ASpace v-else>
-                        <span v-show="appConfigs.window.width > 768">日志:</span>
+                        <span v-show="appConfigs.window.width > 768" style="color: var(--color-text-1);">日志:</span>
                         <ASelect v-model="log.name" :options="logSelectOptions" style="width: 11em" />
                         <ATooltip v-if="appConfigs.window.width <= 768" :content="String(log.fontSize)" mini>
                             <AButton shape="round" @click="logFontSizeModal.visible = true">字体大小</AButton>

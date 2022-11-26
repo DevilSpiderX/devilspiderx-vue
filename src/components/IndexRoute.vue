@@ -14,11 +14,11 @@ const drawer = reactive({
     empty_form: {}
 });
 
-watch(() => appConfigs.darkTheme, newVal => appConfigs.statusBarColor = newVal && drawer.visible ?
+watch(() => appConfigs.darkTheme, darkTheme => appConfigs.statusBarColor = darkTheme && drawer.visible ?
     "#2a2a2b" : window.getComputedStyle(document.body).backgroundColor
 );
 
-watch(() => drawer.visible, newVal => appConfigs.statusBarColor = newVal && appConfigs.darkTheme ?
+watch(() => drawer.visible, visible => appConfigs.statusBarColor = visible && appConfigs.darkTheme ?
     "#2a2a2b" : window.getComputedStyle(document.body).backgroundColor
 );
 

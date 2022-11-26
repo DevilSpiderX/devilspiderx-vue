@@ -19,11 +19,11 @@ const props = defineProps({
     }
 });
 
-watch(() => props.cd, newVal => {
+watch(() => props.cd, cd => {
     if (ws.websocket !== null) {
-        console.log("更改数据刷新速率", newVal, "ms");
-        ws.websocket.send(JSON.stringify({ "cmd": "start", "cd": newVal }));
-        Message.success(`数据刷新速率：${newVal}ms`);
+        console.log("更改数据刷新速率", cd, "ms");
+        ws.websocket.send(JSON.stringify({ cmd: "start", cd }));
+        Message.success(`数据刷新速率：${cd}ms`);
     }
 });
 
@@ -47,7 +47,7 @@ const ws = {
         Message.success({ content: "WebSocket成功接入服务器", duration: 1000 });
         console.log(Date() + "\nWebSocket成功接入服务器");
         if (ws.websocket !== null) {
-            ws.websocket.send(JSON.stringify({ "cmd": "start", "cd": props.cd }));
+            ws.websocket.send(JSON.stringify({ cmd: "start", cd: props.cd }));
         }
     },
     WsOnClose() {
@@ -114,6 +114,11 @@ function main_card_mouse_leave() {
 
 const speedModal = reactive({
     visible: false
+});
+
+watch(() => speedModal.visible, visible => {
+    appConfigs.statusBarColor = visible ? appConfigs.darkTheme ? "#17171a" : "#777a7f"
+        : window.getComputedStyle(document.body).backgroundColor;
 });
 
 function speed_modal_input_change(val) {

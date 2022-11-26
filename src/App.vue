@@ -1,5 +1,5 @@
 <script setup>
-import { onBeforeMount, ref, watch } from "vue";
+import { onBeforeMount, ref, watch, watchEffect } from "vue";
 import { useAppConfigs } from "./store/AppConfigsStore";
 import http from "./scripts/server-api.js";
 
@@ -9,12 +9,14 @@ const appConfigs = useAppConfigs();
 window.addEventListener("resize", () => {
     appConfigs.window.width = window.innerWidth;
     appConfigs.window.height = window.innerHeight;
-})
+});
 
-watch(() => appConfigs.themeName, newVal => document.body.setAttribute("arco-theme", newVal))
+watchEffect(() => {
+    document.body.setAttribute("arco-theme", appConfigs.themeName);
+});
 
-watch(() => appConfigs.themeFollowSystem, newVal => {
-    if (newVal) {
+watchEffect(() => {
+    if (appConfigs.themeFollowSystem) {
         appConfigs.setThemeFollowSystem();
     }
 });
@@ -23,18 +25,12 @@ const themeColorMetaElement = document.createElement("meta");
 themeColorMetaElement.setAttribute("name", "theme-color");
 document.head.append(themeColorMetaElement);
 
-watch(() => appConfigs.statusBarColor, color => {
-    themeColorMetaElement.setAttribute("content", color);
+watch(() => appConfigs.statusBarColor, statusBarColor => {
+    themeColorMetaElement.setAttribute("content", statusBarColor);
 });
 
 onBeforeMount(() => {
-    if (appConfigs.darkTheme) {
-        document.body.setAttribute("arco-theme", "dark");
-    }
-    if (appConfigs.themeFollowSystem) {
-        appConfigs.setThemeFollowSystem();
-    }
-    window.matchMedia('(prefers-color-scheme:dark)').onchange = event => {
+    window.matchMedia("(prefers-color-scheme:dark)").onchange = event => {
         if (appConfigs.themeFollowSystem) {
             appConfigs.darkTheme = event.matches;
         }

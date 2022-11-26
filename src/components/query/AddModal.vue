@@ -8,8 +8,8 @@ const props = defineProps({
 })
 const emit = defineEmits(["submit", "update:visible", "update:cleaning"]);
 
-watch(() => props.cleaning, newVal => {
-    if (newVal) {
+watch(() => props.cleaning, cleaning => {
+    if (cleaning) {
         cleanData();
     }
 });
