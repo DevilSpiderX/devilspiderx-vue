@@ -5,7 +5,7 @@ import { useAppConfigs } from "@/store/AppConfigsStore";
 import { sleep } from "@/util/util";
 
 const appConfigs = useAppConfigs();
-appConfigs.statusBarColor = window.getComputedStyle(document.body).backgroundColor;
+appConfigs.backgroundColor2StatusBarColor();
 
 const logo = ref((() => {
     let hour = new Date().getHours();

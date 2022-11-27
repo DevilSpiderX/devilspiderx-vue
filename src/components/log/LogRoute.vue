@@ -6,7 +6,7 @@ import http from "@/scripts/server-api";
 import LogMonitor from "./LogMonitor.vue";
 
 const appConfigs = useAppConfigs();
-appConfigs.statusBarColor = window.getComputedStyle(document.body).backgroundColor;
+appConfigs.backgroundColor2StatusBarColor();
 
 onMounted(() => {
     document.body.classList.add("no-scrollbar");
@@ -86,7 +86,7 @@ const collapseList = reactive({
                     <span> 日志 </span>
                 </template>
                 <template #extra>
-                    <AButton v-if="appConfigs.window.width <= 576" type="text"
+                    <AButton v-if="appConfigs.client.width <= 576" type="text"
                         @click="collapseList.show = !collapseList.show">
                         <template #icon>
                             <span style="font-size: 1.2rem;color:var(--color-text-2)">
@@ -95,9 +95,9 @@ const collapseList = reactive({
                         </template>
                     </AButton>
                     <ASpace v-else>
-                        <span v-show="appConfigs.window.width > 768" style="color: var(--color-text-1);">日志:</span>
+                        <span v-show="appConfigs.client.width > 768" style="color: var(--color-text-1);">日志:</span>
                         <ASelect v-model="log.name" :options="logSelectOptions" style="width: 11em" />
-                        <ATooltip v-if="appConfigs.window.width <= 768" :content="String(log.fontSize)" mini>
+                        <ATooltip v-if="appConfigs.client.width <= 768" :content="String(log.fontSize)" mini>
                             <AButton shape="round" @click="logFontSizeModal.visible = true">字体大小</AButton>
                         </ATooltip>
                         <AInputNumber v-else v-model="log.fontSize" :min="12" :max="50" mode="button" read-only
@@ -110,7 +110,7 @@ const collapseList = reactive({
                 </template>
             </APageHeader>
         </ALayoutHeader>
-        <div v-if="appConfigs.window.width <= 576">
+        <div v-if="appConfigs.client.width <= 576">
             <Transition name="collapse">
                 <div class="collapseList" v-show="collapseList.show">
                     <AForm :model="collapseList" auto-label-width>

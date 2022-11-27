@@ -8,9 +8,10 @@ import UpdateModal from "./UpdateModal.vue";
 import http from "@/scripts/server-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import ContextmenuTd from "./ContextmenuTd.vue";
+import { useEventListener } from "@/scripts/event";
 
 const appConfigs = useAppConfigs();
-appConfigs.statusBarColor = window.getComputedStyle(document.body).backgroundColor;
+appConfigs.backgroundColor2StatusBarColor();
 
 const table = reactive({
     columns: [
@@ -186,9 +187,9 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
         updateModal.data = record;
     };
 
-    //滚动表格消除菜单
+    //滚动表格消除右键菜单
     table.bodyScrollWrap.addEventListener("scroll", tableMenu.Close, { once: true });
-    //窗体尺寸变化消除菜单
+    //窗体尺寸变化消除右键菜单
     window.addEventListener("resize", tableMenu.Close, { once: true });
 
     tableMenu.event = event;
@@ -196,8 +197,8 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
 }
 
 function removeTableMenuListener() {
-    table.bodyScrollWrap.removeEventListener("scroll", tableMenu.Close);
-    window.removeEventListener("resize", tableMenu.Close);
+    table.bodyScrollWrap.removeEventListener("scroll", tableMenu.Close, { once: true });
+    window.removeEventListener("resize", tableMenu.Close, { once: true });
 }
 
 const addModal = reactive({

@@ -10,7 +10,7 @@ import http from "@/scripts/server-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 
 const appConfigs = useAppConfigs();
-appConfigs.statusBarColor = window.getComputedStyle(document.body).backgroundColor;
+appConfigs.backgroundColor2StatusBarColor();
 
 const props = defineProps({
     cd: {
@@ -136,7 +136,7 @@ function speed_modal_input_change(val) {
                     <span> 控制中心 </span>
                 </template>
                 <template #extra>
-                    <ATooltip v-if="appConfigs.window.width <= 576" :content="String($props.cd)" mini>
+                    <ATooltip v-if="appConfigs.client.width <= 576" :content="String($props.cd)" mini>
                         <AButton shape="round" @click="speedModal.visible = true">刷新速率</AButton>
                     </ATooltip>
                     <AInputNumber v-else :model-value="$props.cd" @update:model-value="val => setCD(val)" :min="500"

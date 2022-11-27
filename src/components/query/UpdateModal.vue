@@ -38,7 +38,7 @@ function form_submit() {
 const width = ref("50%");
 const appConfigs = useAppConfigs();
 watchEffect(() => {
-    let winWidth = appConfigs.window.width;
+    let winWidth = appConfigs.client.width;
     if (winWidth < 576) {
         width.value = "90%";
     } else if (winWidth < 768) {

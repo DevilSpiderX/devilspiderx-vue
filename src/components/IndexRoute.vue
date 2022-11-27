@@ -7,7 +7,7 @@ import http from "@/scripts/server-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 
 const appConfigs = useAppConfigs();
-appConfigs.statusBarColor = window.getComputedStyle(document.body).backgroundColor;
+appConfigs.backgroundColor2StatusBarColor();
 
 const drawer = reactive({
     visible: false,

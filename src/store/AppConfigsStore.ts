@@ -1,61 +1,76 @@
+import { computed, ref, watch, watchEffect } from 'vue';
 import { defineStore } from 'pinia';
+import { useEventListener } from '@/scripts/event';
 
-interface State {
-    window: {
-        width: number,
-        height: number
-    },
-    darkTheme: boolean,
-    themeFollowSystem: boolean,
-    statusBarColor: string,
-    user: {
-        uid: string | undefined,
-        admin: boolean,
-        login: boolean,
-        checkIntervalTime: number
-    },
-    query: {
-        history: string | undefined
-    },
-    isTouchDevice: boolean,
-    log: {
-        fontSize: number
-    }
-}
+export const useAppConfigs = defineStore("appConfigs", () => {
 
-const stateDefault: State = {
-    window: {
+    const client = ref<{ width: number, height: number }>({
         width: window.innerWidth,
         height: window.innerHeight
-    },
-    darkTheme: false,
-    themeFollowSystem: false,
-    statusBarColor: "",
-    user: {
+    });
+
+    useEventListener(window, "resize", () => {
+        client.value.width = window.innerWidth;
+        client.value.height = window.innerHeight;
+    });
+
+    const darkTheme = ref<boolean>(false);
+
+    const themeName = computed<string>(() => darkTheme.value ? "dark" : "light");
+
+    watchEffect(() => {
+        document.body.setAttribute("arco-theme", themeName.value);
+    });
+
+    const themeFollowSystem = ref<boolean>(false);
+
+    watchEffect(() => {
+        if (themeFollowSystem.value) {
+            darkTheme.value = window.matchMedia('(prefers-color-scheme:dark)').matches;
+        }
+    });
+
+    const statusBarColor = ref<string>("");
+
+    const themeColorMetaElement = document.createElement("meta");
+    themeColorMetaElement.setAttribute("name", "theme-color");
+    document.head.append(themeColorMetaElement);
+    watch(statusBarColor, statusBarColor => {
+        themeColorMetaElement.setAttribute("content", statusBarColor);
+    });
+
+    function backgroundColor2StatusBarColor() {
+        statusBarColor.value = window.getComputedStyle(document.body).backgroundColor;
+    }
+
+    const user = ref<{ uid: string | undefined, admin: boolean, login: boolean, checkIntervalTime: number }>({
         uid: undefined,
         admin: false,
         login: false,
         checkIntervalTime: 600 * 1000 //ms
-    },
-    query: {
-        history: undefined
-    },
-    isTouchDevice: "ontouchstart" in window && navigator.maxTouchPoints !== 0,
-    log: {
-        fontSize: 16
-    }
-};
+    });
 
-export const useAppConfigs = defineStore("appConfigs", {
-    state: (): State => stateDefault,
-    getters: {
-        themeName: (state): string => state.darkTheme ? "dark" : "light"
-    },
-    actions: {
-        setThemeFollowSystem() {
-            this.darkTheme = window.matchMedia('(prefers-color-scheme:dark)').matches;
-        },
-    },
+    const query = ref<{ history: string | undefined }>({
+        history: undefined
+    });
+
+    const log = ref<{ fontSize: number }>({
+        fontSize: 16
+    });
+
+    return {
+        client,
+        darkTheme,
+        themeName,
+        themeFollowSystem,
+        statusBarColor,
+        backgroundColor2StatusBarColor,
+        user,
+        query,
+        isTouchDevice: ref<boolean>("ontouchstart" in window && navigator.maxTouchPoints !== 0),
+        log
+    }
+}, {
     persist: {
         storage: localStorage,
         paths: [
