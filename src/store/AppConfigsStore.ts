@@ -3,15 +3,15 @@ import { defineStore } from 'pinia';
 import { useEventListener } from '@/scripts/event';
 
 export const useAppConfigs = defineStore("appConfigs", () => {
-
+    //setup
     const client = ref<{ width: number, height: number }>({
         width: window.innerWidth,
         height: window.innerHeight
     });
 
     useEventListener(window, "resize", () => {
-        client.value.width = window.innerWidth;
-        client.value.height = window.innerHeight;
+        client.value.width = document.documentElement.clientWidth;
+        client.value.height = document.documentElement.clientHeight;
     });
 
     const darkTheme = ref<boolean>(false);

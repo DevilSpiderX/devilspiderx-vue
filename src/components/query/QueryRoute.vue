@@ -2,13 +2,12 @@
 import { computed, nextTick, onMounted, onUnmounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { Message, Modal } from '@arco-design/web-vue';
-import { Vue3Menus } from 'vue3-menus';
 import AddModal from "./AddModal.vue";
 import UpdateModal from "./UpdateModal.vue";
 import http from "@/scripts/server-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import ContextmenuTd from "./ContextmenuTd.vue";
-import { useEventListener } from "@/scripts/event";
+import DSXMenu from "@/components/contextmenus/DSXMenu.vue";
 
 const appConfigs = useAppConfigs();
 appConfigs.backgroundColor2StatusBarColor();
@@ -116,21 +115,29 @@ function setTableScrollTop(number) {
     table.bodyScrollWrap.scrollTop = number;
 }
 
+const tableMenuStyle = {
+    "--color-bg": "var(--color-bg-3)",
+    "--color-border": "var(--color-border-2)"
+}
+
+const tableMenuItemStyle = {
+    "--color-text": "var(--color-text-1)",
+    "--color-bg-hover": "var(--color-secondary-hover)"
+}
+
 const tableMenu = reactive({
-    open: false,
-    event: {},
+    visible: false,
+    event: undefined,
     menus: [
-        { label: "复制", click: null },
-        { label: "删除", click: null },
-        { label: "修改", click: null }
+        { label: "复制", click: null, style: tableMenuItemStyle },
+        { label: "删除", click: null, style: tableMenuItemStyle },
+        { label: "修改", click: null, style: tableMenuItemStyle }
     ],
-    Open: async () => {
-        tableMenu.open = false;
-        await nextTick();
-        tableMenu.open = true;
+    Open: () => {
+        tableMenu.visible = true;
     },
     Close: () => {
-        tableMenu.open = false;
+        tableMenu.visible = false;
         removeTableMenuListener();
     }
 });
@@ -366,12 +373,8 @@ async function table_page_change(page) {
         </ALayoutContent>
     </ALayout>
 
-    <Vue3Menus v-model:open="tableMenu.open" :event="tableMenu.event" :menus="tableMenu.menus" minWidth="100"
-        v-slot="{ activeIndex, menu, index }">
-        <div class="v3-menus-item v3-menus-available">
-            <span class="v3-menus-label">{{ menu.label }}</span>
-        </div>
-    </Vue3Menus>
+    <DSXMenu v-model:visible="tableMenu.visible" :event="tableMenu.event" :menus="tableMenu.menus" min-width="100"
+        :style="tableMenuStyle" />
     <AddModal v-model:visible="addModal.visible" v-model:cleaning="addModal.cleaning" @submit="add_submit" />
     <UpdateModal v-model:visible="updateModal.visible" :data="updateModal.data" @submit="update_submit" />
 </template>
