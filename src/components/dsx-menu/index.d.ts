@@ -1,13 +1,15 @@
-import { CSSProperties, VNode } from "vue";
+import { CSSProperties, VNodeChild } from "vue";
+import DSXMenu from "./DSXMenu.vue";
+import DSXMenuItem from "./DSXMenuItem.vue";
 
 export interface MenuItemType {
     label?: string,
     class?: ClassType,
     style?: CSSProperties,
-    icon?: string | VNode,
+    icon?: VNodeChild,
     tip?: string,
     divider?: boolean,
-    click?: (event: MouseEvent, menu: MenuItemType) => unknown,
+    click?: (event: MouseEvent) => unknown,
     hidden?: boolean,
     disabled?: boolean
 }
@@ -22,3 +24,5 @@ export interface MenuType {
     minWidth?: number | string;
     maxWidth?: number | string;
 }
+
+export { DSXMenu, DSXMenuItem }

@@ -7,7 +7,7 @@ import UpdateModal from "./UpdateModal.vue";
 import http from "@/scripts/server-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import ContextmenuTd from "./ContextmenuTd.vue";
-import DSXMenu from "@/components/contextmenus/DSXMenu.vue";
+import { DSXMenu } from "@/components/dsx-menu";
 
 const appConfigs = useAppConfigs();
 appConfigs.backgroundColor2StatusBarColor();
@@ -129,13 +129,10 @@ const tableMenu = reactive({
     visible: false,
     event: undefined,
     menus: [
-        { label: "复制", click: null, style: tableMenuItemStyle },
-        { label: "删除", click: null, style: tableMenuItemStyle },
-        { label: "修改", click: null, style: tableMenuItemStyle }
+        { label: "复制", click: null, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-copy"></i>) },
+        { label: "删除", click: null, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-trash"></i>) },
+        { label: "修改", click: null, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-pen-to-square"></i>) }
     ],
-    Open: () => {
-        tableMenu.visible = true;
-    },
     Close: () => {
         tableMenu.visible = false;
         removeTableMenuListener();
@@ -200,7 +197,7 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
     window.addEventListener("resize", tableMenu.Close, { once: true });
 
     tableMenu.event = event;
-    tableMenu.Open();
+    tableMenu.visible = true;
 }
 
 function removeTableMenuListener() {

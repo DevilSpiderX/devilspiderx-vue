@@ -1,79 +1,52 @@
 <script setup lang="ts">
-import { computed, CSSProperties, VNode } from 'vue';
+import { computed, CSSProperties } from 'vue';
 
-interface MenuItemType {
-    label?: string,
+interface Props {
     class?: string,
     style?: CSSProperties,
-    icon?: string | VNode,
-    tip?: string,
     divider?: boolean,
-    click?: (event: MouseEvent, menu: MenuItemType) => unknown,
     hidden?: boolean,
     disabled?: boolean
 }
 
-const props = defineProps<MenuItemType>();
+const props = defineProps<Props>();
 
 const emit = defineEmits(["click"]);
 
-const Class = computed(() => {
-    let result: { [key: string]: boolean | undefined } = {
-        "dsx-menu-item-disabled": props.disabled
-    };
+const classNames = computed(() => {
+    const result: Array<string> = [];
+    if (props.disabled) {
+        result.push("dsx-menu-item-disabled");
+    }
     if (props.class) {
-        result[props.class] = true;
+        result.push(props.class);
     }
     return result;
 });
-
-const iconIsString = computed<boolean>(() => typeof props.icon === "string");
 
 function item_click(event: MouseEvent) {
     if (props.disabled) {
         event.stopPropagation();
     } else {
-        if (props.click) {
-            props.click(event, props);
-        }
-        emit("click", event, props);
+        emit("click", event);
     }
 }
 
 </script>
 
 <template>
-    <div v-if="$props.divider" class="dsx-menu-item-divider" :class="Class" :style="$props.style" @contextmenu.prevent>
+    <div v-if="divider" class="dsx-menu-item-divider" :class="classNames" :style="$props.style" @contextmenu.prevent>
     </div>
-
-    <div v-else v-show="!$props.hidden" class="dsx-menu-item" :class="Class" :style="$props.style" @click="item_click"
+    <div v-else v-show="!hidden" class="dsx-menu-item" :class="classNames" :style="$props.style" @click="item_click"
         @contextmenu.prevent>
-        <div v-if="$slots.icon || $props.icon" class="dsx-menu-item-icon">
-            <template v-if="$slots.icon">
-                <slot name="icon" />
-            </template>
-            <template v-else>
-                <span v-if="iconIsString" v-html="$props.icon"></span>
-                <span v-else>
-                    <component :is="$props.icon" />
-                </span>
-            </template>
+        <div v-if="$slots.icon" class="dsx-menu-item-icon">
+            <slot name="icon" />
         </div>
         <div class="dsx-menu-item-label">
-            <template v-if="$slots.default">
-                <slot />
-            </template>
-            <template v-else>
-                {{ $props.label }}
-            </template>
+            <slot />
         </div>
-        <div v-if="$slots.suffix || $props.tip" class="dsx-menu-item-suffix">
-            <template v-if="$slots.suffix">
-                <slot name="suffix" />
-            </template>
-            <template v-else>
-                {{ $props.tip }}
-            </template>
+        <div v-if="$slots.suffix" class="dsx-menu-item-suffix">
+            <slot name="suffix" />
         </div>
     </div>
 </template>
@@ -101,7 +74,6 @@ function item_click(event: MouseEvent) {
     align-items: center;
     width: 100%;
     padding: .6rem 1rem;
-    /* line-height: 2rem; */
     clear: both;
     font-weight: 400;
     color: var(--color-text);

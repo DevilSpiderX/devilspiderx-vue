@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { computed, CSSProperties, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
-import { MenuItemType } from '.';
-import DSXMenuItem from './DSXMenuItem.vue';
+import { computed, CSSProperties, nextTick, onMounted, onUnmounted, reactive, ref, toRefs, watch } from 'vue';
+import { DSXMenuItem, MenuItemType } from '.';
 
-interface MenuType {
+interface Props {
     class?: string,
     style?: CSSProperties,
     visible: boolean,
@@ -14,7 +13,7 @@ interface MenuType {
     maxWidth?: number | string;
 }
 
-const props = withDefaults(defineProps<MenuType>(), {
+const props = withDefaults(defineProps<Props>(), {
     visible: false,
     event: () => ({ x: 0, y: 0 }),
     zIndex: 50
@@ -22,12 +21,26 @@ const props = withDefaults(defineProps<MenuType>(), {
 
 const emit = defineEmits(["update:visible"]);
 
-const position = reactive({
+function open() {
+    emit("update:visible", true);
+}
+
+function close() {
+    emit("update:visible", false);
+}
+
+const position = ref({
     top: 0,
     left: 0
 });
 
-const style = computed(() => {
+watch(position, async () => {
+    close();
+    await nextTick();
+    open();
+});
+
+const styleObj = computed(() => {
     let minWidth;
     if (props.minWidth) {
         if (typeof props.minWidth === "string") {
@@ -55,8 +68,8 @@ const style = computed(() => {
     return {
         ...props.style,
         zIndex: props.zIndex,
-        top: position.top + 'px',
-        left: position.left + 'px',
+        top: position.value.top + 'px',
+        left: position.value.left + 'px',
         minWidth: minWidth,
         maxWidth: maxWidth
     }
@@ -68,27 +81,19 @@ watch(() => props.event, async event => {
     const clientWidth = document.documentElement.clientWidth;
     const clientHeight = document.documentElement.clientHeight;
     const padding = 7;
-    close();
-    await nextTick();
 
+    await nextTick();
     const width = DSX_Menu.value.clientWidth;
     const height = DSX_Menu.value.clientHeight;
 
     const xRight = event.x + width;
     const yBottom = event.y + height;
 
-    position.left = xRight >= clientWidth ? clientWidth - width - padding : event.x;
-    position.top = yBottom >= clientHeight ? clientHeight - height - padding : event.y;
-    open();
+    position.value = ({
+        left: xRight >= clientWidth ? clientWidth - width - padding : event.x,
+        top: yBottom >= clientHeight ? clientHeight - height - padding : event.y
+    })
 });
-
-function open() {
-    emit("update:visible", true);
-}
-
-function close() {
-    emit("update:visible", false);
-}
 
 onMounted(() => {
     window.addEventListener("click", close);
@@ -98,19 +103,44 @@ onUnmounted(() => {
     window.removeEventListener("click", close);
 });
 
+function getItemBinds(item: MenuItemType) {
+    const itemRefs = toRefs(item);
+    return reactive({
+        class: itemRefs.class,
+        style: itemRefs.style,
+        divider: itemRefs.divider,
+        hidden: itemRefs.hidden,
+        disabled: itemRefs.disabled
+    });
+}
+
 </script>
 
 <template>
     <Teleport to="body">
         <Transition name='dsx-menu-fade'>
-            <div v-if="$props.visible" class="dsx-menu" :class="$props.class" :style="style" ref="DSX_Menu"
+            <div v-if="visible" class="dsx-menu" :class="$props.class" :style="styleObj" ref="DSX_Menu"
                 @contextmenu.prevent="close">
                 <div class="dsx-menu-body">
                     <template v-if="$slots.default">
                         <slot />
                     </template>
                     <template v-else>
-                        <DSXMenuItem v-for="menu_item in $props.menus" v-bind="menu_item" />
+                        <DSXMenuItem v-for="item in $props.menus" v-bind="getItemBinds(item)" @click="item.click">
+                            <!-- 图标 -->
+                            <template #icon v-if="item.icon">
+                                <span v-if="typeof item.icon === 'string'" v-html="item.icon"></span>
+                                <span v-else>
+                                    <component :is="item.icon" />
+                                </span>
+                            </template>
+                            <!-- 标签 -->
+                            {{ item.label }}
+                            <!-- 后缀 -->
+                            <template #suffix v-if="item.tip">
+                                {{ item.tip }}
+                            </template>
+                        </DSXMenuItem>
                     </template>
                 </div>
             </div>
