@@ -1,12 +1,11 @@
 <script setup lang="jsx">
-import { reactive, watch } from "vue";
+import { computed, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import { IconClose, IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
 import { Message } from "@arco-design/web-vue";
 import v2rayNPngUrl from "@/assets/v2rayN.png";
 import http from "@/scripts/server-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
-import { computed } from "@vue/reactivity";
 
 const appConfigs = useAppConfigs();
 appConfigs.backgroundColor2StatusBarColor();
