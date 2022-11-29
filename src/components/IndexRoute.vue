@@ -1,13 +1,63 @@
-<script setup>
+<script setup lang="jsx">
 import { reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import { IconClose, IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
 import { Message } from "@arco-design/web-vue";
+import v2rayNPngUrl from "@/assets/v2rayN.png";
 import http from "@/scripts/server-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
+import { computed } from "@vue/reactivity";
 
 const appConfigs = useAppConfigs();
 appConfigs.backgroundColor2StatusBarColor();
+
+const router = useRouter();
+
+const buttonList = reactive([
+    {
+        label: "控制中心",
+        icon: (<i class="fas fa-sliders-h fa-fw" />),
+        click: () => { router.push({ name: 'controller' }) },
+        hidden: false
+    },
+    {
+        label: "密码查询",
+        icon: (<i class="fas fa-search fa-fw" />),
+        click: () => { router.push({ name: 'query' }) },
+        hidden: false
+    },
+    {
+        label: "V2Ray",
+        icon: (<img src={v2rayNPngUrl} alt="v2ray" width="27" height="27" style="transform: translateY(4px)" />),
+        click: () => { router.push({ name: 'v2ray' }) },
+        hidden: false
+    },
+    {
+        label: "日\u00a0\u00a0志",
+        icon: (<i class="fas fa-file-alt fa-fw" />),
+        click: () => { router.push({ name: 'log' }) },
+        hidden: computed(() => !appConfigs.user.admin)
+    },
+    {
+        label: "修改密码",
+        icon: (<i class="fas fa-edit fa-fw" />),
+        click: () => { router.push({ name: 'updatePwd' }) },
+        hidden: false
+    },
+    {
+        label: "退出登录",
+        icon: (<i class="fas fa-sign-out-alt fa-fw" />),
+        click: on_logoutButton_clicked,
+        hidden: false
+    },
+    {
+        class: ["exit-button"],
+        label: " 退\u00a0\u00a0出",
+        icon: (<i class="fas fa-power-off fa-fw" />),
+        click: on_exit_clicked,
+        hidden: false
+    }
+]);
 
 const drawer = reactive({
     visible: false,
@@ -21,8 +71,6 @@ watch(() => appConfigs.darkTheme, darkTheme => appConfigs.statusBarColor = darkT
 watch(() => drawer.visible, visible => appConfigs.statusBarColor = visible && appConfigs.darkTheme ?
     "#2a2a2b" : window.getComputedStyle(document.body).backgroundColor
 );
-
-const router = useRouter();
 
 async function on_logoutButton_clicked() {
     try {
@@ -85,55 +133,15 @@ function on_exit_clicked() {
             <ARow justify="center">
                 <ACol :xs="24" :sm="21" :md="16" :lg="14" :xl="12" :xxl="10">
                     <ASpace direction="vertical" fill size="large">
-                        <AButton class="my-button" long @contextmenu.prevent.stop
-                            @click="$router.push({ name: 'controller' })">
-                            <template #icon>
-                                <i class="fas fa-sliders-h fa-fw" />
-                            </template>
-                            控制中心
-                        </AButton>
-                        <AButton class="my-button" long @contextmenu.prevent.stop
-                            @click="$router.push({ name: 'query' })">
-                            <template #icon>
-                                <i class="fas fa-search fa-fw" />
-                            </template>
-                            密码查询
-                        </AButton>
-                        <AButton class="my-button" long @contextmenu.prevent.stop
-                            @click="$router.push({ name: 'v2ray' })">
-                            <template #icon>
-                                <!--suppress CheckImageSize -->
-                                <img src="@/assets/v2rayN.png" alt="v2ray" width="27" height="27"
-                                    style="transform: translateY(4px);">
-                            </template>
-                            V2Ray
-                        </AButton>
-                        <AButton v-if="appConfigs.user.admin" class="my-button" long @contextmenu.prevent.stop
-                            @click="$router.push({ name: 'log' })">
-                            <template #icon>
-                                <i class="fas fa-file-alt fa-fw" />
-                            </template>
-                            日&nbsp;&nbsp;志
-                        </AButton>
-                        <AButton class="my-button" long @contextmenu.prevent.stop
-                            @click="$router.push({ name: 'updatePwd' })">
-                            <template #icon>
-                                <i class="fas fa-edit fa-fw" />
-                            </template>
-                            修改密码
-                        </AButton>
-                        <AButton class="my-button" long @contextmenu.prevent.stop @click="on_logoutButton_clicked">
-                            <template #icon>
-                                <i class="fas fa-sign-out-alt fa-fw" />
-                            </template>
-                            退出登录
-                        </AButton>
-                        <AButton class="my-button exit-button" long @contextmenu.prevent.stop @click="on_exit_clicked">
-                            <template #icon>
-                                <i class="fas fa-power-off fa-fw" />
-                            </template>
-                            退&nbsp;&nbsp;出
-                        </AButton>
+                        <template v-for="(btn, index) in buttonList">
+                            <AButton v-if="!btn.hidden" class="my-button" :class="btn.class" long :key="index"
+                                @contextmenu.prevent.stop @click="btn.click">
+                                <template #icon v-if="btn.icon">
+                                    <component :is="btn.icon" />
+                                </template>
+                                {{ btn.label }}
+                            </AButton>
+                        </template>
                     </ASpace>
                 </ACol>
             </ARow>
@@ -199,7 +207,7 @@ function on_exit_clicked() {
     --border-color-hover: #c82333;
 }
 
-.my-button:hover img {
+.my-button:hover :deep(img) {
     filter: invert(100%);
 }
 
@@ -220,7 +228,7 @@ body[arco-theme='dark'] .my-button.exit-button:hover {
     --border-color-hover: #dc3545;
 }
 
-body[arco-theme='dark'] .my-button img {
+body[arco-theme='dark'] .my-button :deep(img) {
     filter: invert(100%);
 }
 

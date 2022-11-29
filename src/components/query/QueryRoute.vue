@@ -129,9 +129,9 @@ const tableMenu = reactive({
     visible: false,
     event: undefined,
     menus: [
-        { label: "复制", click: null, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-copy"></i>) },
-        { label: "删除", click: null, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-trash"></i>) },
-        { label: "修改", click: null, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-pen-to-square"></i>) }
+        { label: "复制", click: null, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-copy" />) },
+        { label: "删除", click: null, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-trash" />) },
+        { label: "修改", click: null, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-pen-to-square" />) }
     ],
     Close: () => {
         tableMenu.visible = false;
