@@ -22,7 +22,7 @@ const addr = {
         get: fullAddr("/api/query/get"),
         add: fullAddr("/api/query/add"),
         update: fullAddr("/api/query/update"),
-        Delete: fullAddr("/api/query/delete")
+        delete: fullAddr("/api/query/delete")
     },
     os: {
         reboot: fullAddr("/api/admin/os/reboot"),

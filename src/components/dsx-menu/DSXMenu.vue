@@ -16,7 +16,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
     visible: false,
     event: () => ({ x: 0, y: 0 }),
-    zIndex: 50
+    zIndex: 100
 });
 
 const emit = defineEmits(["update:visible"]);

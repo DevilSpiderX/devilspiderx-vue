@@ -161,26 +161,35 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
     };
 
     //删除按钮
-    tableMenu.menus[1].click = async () => {
-        let resp = await http.query.Delete(record.id);
-        switch (resp.code) {
-            case 0: {
-                table.data.splice(recordIndex, 1);
-                if (table.paginationProps.current > tableTotalPage.value) {
-                    table.paginationProps.current--;
+    tableMenu.menus[1].click = () => {
+        Modal.confirm({
+            title: "提示",
+            content: "确认删除？",
+            width: 300,
+            okText: "确定",
+            cancelText: "取消",
+            onOk: async () => {
+                let resp = await http.query.Delete(record.id);
+                switch (resp.code) {
+                    case 0: {
+                        table.data.splice(recordIndex, 1);
+                        if (table.paginationProps.current > tableTotalPage.value) {
+                            table.paginationProps.current--;
+                        }
+                        break;
+                    }
+                    case 1: {
+                        Message.error("删除失败");
+                        break;
+                    }
+                    case 100:
+                    default: {
+                        router.push({ name: "login" });
+                        break;
+                    }
                 }
-                break;
             }
-            case 1: {
-                Message.error("删除失败");
-                break;
-            }
-            case 100:
-            default: {
-                router.push({ name: "login" });
-                break;
-            }
-        }
+        });
     };
 
     //修改按钮
@@ -264,6 +273,7 @@ function update_submit(form_data) {
     Modal.confirm({
         title: "提示",
         content: "确认修改？",
+        width: 300,
         okText: "确定",
         cancelText: "取消",
         onOk: async () => {
@@ -320,6 +330,18 @@ async function table_page_change(page) {
             <APageHeader @back="$router.back">
                 <template #title>
                     <span> 密码查询 </span>
+                </template>
+                <template #extra>
+                    <ASpace>
+                        <span style="color: var(--color-text-1)">单页个数:</span>
+                        <ASelect v-model="table.paginationProps.pageSize">
+                            <AOption :value="10">10</AOption>
+                            <AOption :value="20">20</AOption>
+                            <AOption :value="30">30</AOption>
+                            <AOption :value="40">40</AOption>
+                            <AOption :value="50">50</AOption>
+                        </ASelect>
+                    </ASpace>
                 </template>
             </APageHeader>
         </ALayoutHeader>
