@@ -10,24 +10,30 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-const emit = defineEmits(["contextmenu"]);
+const emit = defineEmits(["contextmenu", "dblclick"]);
 
 function handle_td_contextmenu(event: MouseEvent) {
-    const {value} = props;
+    const { value } = props;
     emit("contextmenu", value.column, value.record, value.rowIndex, event);
+}
+
+function handle_td_dblclick(event: MouseEvent) {
+    const { value } = props;
+    emit("dblclick", value.record, event);
 }
 
 </script>
 
 <template>
-    <td class="user-select-none" @contextmenu.prevent="handle_td_contextmenu">
+    <td class="query-td" @contextmenu.prevent="handle_td_contextmenu" @dblclick="handle_td_dblclick">
         <slot />
     </td>
 </template>
 
 <style scoped>
-.user-select-none {
+.query-td {
     user-select: none;
     -webkit-user-select: none;
+    font-size: 15px;
 }
 </style>

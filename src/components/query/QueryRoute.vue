@@ -1,36 +1,48 @@
 <script setup lang="jsx">
-import { computed, nextTick, onMounted, onUnmounted, reactive, ref } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { Message, Modal } from '@arco-design/web-vue';
+import { Message, Modal } from "@arco-design/web-vue";
 import AddModal from "./AddModal.vue";
 import UpdateModal from "./UpdateModal.vue";
+import DisplayModal from "./DisplayModal.vue";
 import http from "@/scripts/server-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
-import ContextmenuTd from "./ContextmenuTd.vue";
+import QueryTd from "./QueryTd.vue";
 import { DSXMenu } from "@/components/dsx-menu";
 
 const appConfigs = useAppConfigs();
 appConfigs.backgroundColor2StatusBarColor();
 
+const sortable = {
+    sortDirections: ["ascend", "descend"],
+    sorter: (a, b, { dataIndex, direction }) => {
+        if (direction === "ascend") {
+            return a[dataIndex] < b[dataIndex] ? -1 : a[dataIndex] > b[dataIndex] ? 1 : 0
+        } else {
+            return a[dataIndex] < b[dataIndex] ? 1 : a[dataIndex] > b[dataIndex] ? -1 : 0
+        }
+    }
+};
+
 const table = reactive({
     columns: [
-        { title: "名称", dataIndex: "name" },
-        { title: "账号", dataIndex: "account", ellipsis: true, tooltip: true },
-        { title: "密码", dataIndex: "password", ellipsis: true, tooltip: true },
-        { title: "备注", dataIndex: "remark", ellipsis: true, tooltip: true }
+        { title: "名称", dataIndex: "name", ellipsis: true, tooltip: { position: "tl" }, sortable },
+        { title: "账号", dataIndex: "account", ellipsis: true, tooltip: true, sortable },
+        { title: "密码", dataIndex: "password", ellipsis: true, tooltip: true, sortable },
+        { title: "备注", dataIndex: "remark", ellipsis: true, tooltip: { position: "tr" }, sortable }
     ],
     data: [],
     paginationProps: {
         pageSize: 20,
         current: 1,
-        hideOnSinglePage: true
+        hideOnSinglePage: true,
+        simple: computed(() => appConfigs.client.width < 450)
     },
+    pagePosition: computed(() => appConfigs.client.width < 450 ? "br" : "bottom"),
     bodyScrollWrap: null
 });
 
-const tableTotalPage = computed(() => {
-    return Math.ceil(table.data.length / table.paginationProps.pageSize);
-});
+const tableTotalPage = computed(() => Math.ceil(table.data.length / table.paginationProps.pageSize));
 
 onMounted(() => {
     document.body.classList.add("no-scrollbar");
@@ -322,6 +334,24 @@ async function table_page_change(page) {
     setTableScrollTop(0);
 }
 
+const displayModal = reactive({
+    visible: false,
+    data: {}
+});
+
+function table_cell_dblclick(record) {
+    displayModal.data = record;
+    displayModal.visible = true;
+}
+
+watch(() => [addModal.visible, updateModal.visible, displayModal.visible],
+    ([v0, v1, v2]) => {
+        let visible = v0 || v1 || v2;
+        appConfigs.statusBarColor = visible ? appConfigs.darkTheme ? "#17171a" : "#777a7f"
+            : window.getComputedStyle(document.body).backgroundColor;
+    }
+);
+
 </script>
 
 <template>
@@ -333,13 +363,11 @@ async function table_page_change(page) {
                 </template>
                 <template #extra>
                     <ASpace>
-                        <span style="color: var(--color-text-1)">单页个数:</span>
+                        <span style="color: var(--color-text-1)">数据条数:</span>
                         <ASelect v-model="table.paginationProps.pageSize">
-                            <AOption :value="10">10</AOption>
-                            <AOption :value="20">20</AOption>
-                            <AOption :value="30">30</AOption>
-                            <AOption :value="40">40</AOption>
-                            <AOption :value="50">50</AOption>
+                            <AOption v-for="item in [10, 20, 30, 40, 50]" :value="item">
+                                {{ item }}
+                            </AOption>
                         </ASelect>
                     </ASpace>
                 </template>
@@ -359,7 +387,7 @@ async function table_page_change(page) {
                                         添加
                                     </AButton>
                                 </ACol>
-                                <ACol flex="auto" style="max-width: calc(100% - 105px)">
+                                <ACol flex="1">
                                     <AInputSearch v-model="key" size="large" allow-clear
                                         :button-props="{ type: 'secondary' }" search-button @keydown.enter="Search"
                                         @search="Search" :loading="searching">
@@ -374,15 +402,17 @@ async function table_page_change(page) {
                 </ALayoutHeader>
                 <ALayoutContent style="height:calc(100% - 52px)">
                     <ARow justify="center" style="height:100%">
-                        <ACol :xs="24" :sm="22" :md="20" :lg="18" :xl="16" :xxl="14" style="height:100%">
+                        <ACol v-bind="{ xs: 24, sm: 22, md: 20, lg: 18, xl: 16, xxl: 14 }"
+                            :style="{ height: '100%', overflow: 'hidden' }">
                             <ATable :columns="table.columns" :data="table.data" :scroll="{ y: 'calc(100% - 12px)' }"
-                                row-key="id" page-position="bottom" :pagination="table.paginationProps"
+                                row-key="id" :pagination="table.paginationProps" :page-position="table.pagePosition"
                                 :loading="searching" @page-change="table_page_change">
                                 <template #empty>
                                     <AEmpty />
                                 </template>
                                 <template #td="scope">
-                                    <ContextmenuTd :value="scope" @contextmenu="table_cell_contextmenu" />
+                                    <QueryTd :value="scope" @contextmenu="table_cell_contextmenu"
+                                        @dblclick="table_cell_dblclick" />
                                 </template>
                             </ATable>
                         </ACol>
@@ -396,4 +426,5 @@ async function table_page_change(page) {
         :style="tableMenuStyle" />
     <AddModal v-model:visible="addModal.visible" v-model:cleaning="addModal.cleaning" @submit="add_submit" />
     <UpdateModal v-model:visible="updateModal.visible" :data="updateModal.data" @submit="update_submit" />
+    <DisplayModal v-model:visible="displayModal.visible" :data="displayModal.data" />
 </template>
