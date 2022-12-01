@@ -1,5 +1,5 @@
-<script setup lang="jsx">
-import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from "vue";
+<script setup>
+import { computed, h, nextTick, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { Message, Modal } from "@arco-design/web-vue";
 import AddModal from "./AddModal.vue";
@@ -9,6 +9,7 @@ import http from "@/scripts/server-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import QueryTd from "./QueryTd.vue";
 import { DSXMenu } from "@/components/dsx-menu";
+import { useTableMenu } from "./hooks/table-menu";
 
 const appConfigs = useAppConfigs();
 appConfigs.backgroundColor2StatusBarColor();
@@ -127,29 +128,13 @@ function setTableScrollTop(number) {
     table.bodyScrollWrap.scrollTop = number;
 }
 
-const tableMenuStyle = {
-    "--color-bg": "var(--color-bg-3)",
-    "--color-border": "var(--color-border-2)"
+const { tableMenu } = useTableMenu();
+
+tableMenu.close = () => {
+    tableMenu.visible = false;
+    removeTableMenuListener();
 }
 
-const tableMenuItemStyle = {
-    "--color-text": "var(--color-text-1)",
-    "--color-bg-hover": "var(--color-secondary-hover)"
-}
-
-const tableMenu = reactive({
-    visible: false,
-    event: undefined,
-    menus: [
-        { label: "复制", click: null, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-copy" />) },
-        { label: "删除", click: null, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-trash" />) },
-        { label: "修改", click: null, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-pen-to-square" />) }
-    ],
-    Close: () => {
-        tableMenu.visible = false;
-        removeTableMenuListener();
-    }
-});
 const updateModal = reactive({
     visible: false,
     data: {}
@@ -160,7 +145,7 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
     const recordIndex = table.paginationProps.pageSize * (table.paginationProps.current - 1) + rowIndex;
 
     //复制按钮
-    tableMenu.menus[0].click = () => {
+    tableMenu.clicks.copy = () => {
         if (typeof navigator.clipboard === "object") {
             navigator.clipboard.writeText(record[column.dataIndex]).then(() => {
                 Message.success("剪切板写入成功");
@@ -173,7 +158,7 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
     };
 
     //删除按钮
-    tableMenu.menus[1].click = () => {
+    tableMenu.clicks.delete = () => {
         Modal.confirm({
             title: "提示",
             content: "确认删除？",
@@ -204,26 +189,31 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
         });
     };
 
-    //修改按钮
-    tableMenu.menus[2].click = async () => {
+    //编辑按钮
+    tableMenu.clicks.edit = async () => {
         updateModal.visible = true;
         updateModal.data = {};
         await nextTick();
         updateModal.data = record;
     };
 
+    //查看按钮
+    tableMenu.clicks.see = () => {
+        table_cell_dblclick(record);
+    }
+
     //滚动表格消除右键菜单
-    table.bodyScrollWrap.addEventListener("scroll", tableMenu.Close, { once: true });
+    table.bodyScrollWrap.addEventListener("scroll", tableMenu.close, { once: true });
     //窗体尺寸变化消除右键菜单
-    window.addEventListener("resize", tableMenu.Close, { once: true });
+    window.addEventListener("resize", tableMenu.close, { once: true });
 
     tableMenu.event = event;
     tableMenu.visible = true;
 }
 
 function removeTableMenuListener() {
-    table.bodyScrollWrap.removeEventListener("scroll", tableMenu.Close, { once: true });
-    window.removeEventListener("resize", tableMenu.Close, { once: true });
+    table.bodyScrollWrap.removeEventListener("scroll", tableMenu.close, { once: true });
+    window.removeEventListener("resize", tableMenu.close, { once: true });
 }
 
 const addModal = reactive({
@@ -260,10 +250,13 @@ async function add_submit(form_data) {
             }
             case 1: {
                 Message.error({
-                    content: () =>
-                        <p style="margin:0">
-                            添加失败<br />可能该名称已存在<br />请尝试换一个名称再添加
-                        </p>
+                    content: () => h("span", null, [
+                        "添加失败",
+                        h("br"),
+                        "可能该名称已存在",
+                        h("br"),
+                        "请尝试换一个名称再添加"
+                    ])
                 });
                 addModal.visible = false;
                 break;
@@ -422,8 +415,8 @@ watch(() => [addModal.visible, updateModal.visible, displayModal.visible],
         </ALayoutContent>
     </ALayout>
 
-    <DSXMenu v-model:visible="tableMenu.visible" :event="tableMenu.event" :menus="tableMenu.menus" min-width="100"
-        :style="tableMenuStyle" />
+    <DSXMenu v-model:visible="tableMenu.visible" :event="tableMenu.event" :menus="tableMenu.menus" min-width="100px"
+        :style="tableMenu.style" :z-index="1002" />
     <AddModal v-model:visible="addModal.visible" v-model:cleaning="addModal.cleaning" @submit="add_submit" />
     <UpdateModal v-model:visible="updateModal.visible" :data="updateModal.data" @submit="update_submit" />
     <DisplayModal v-model:visible="displayModal.visible" :data="displayModal.data" />

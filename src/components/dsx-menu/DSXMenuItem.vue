@@ -2,7 +2,6 @@
 import { computed, CSSProperties } from 'vue';
 
 interface Props {
-    class?: string,
     style?: CSSProperties,
     divider?: boolean,
     hidden?: boolean,
@@ -13,15 +12,10 @@ const props = defineProps<Props>();
 
 const emit = defineEmits(["click"]);
 
-const classNames = computed(() => {
-    const result: Array<string> = [];
-    if (props.disabled) {
-        result.push("dsx-menu-item-disabled");
-    }
-    if (props.class) {
-        result.push(props.class);
-    }
-    return result;
+const classObj = computed(() => {
+    return [
+        { "dsx-menu-item-disabled": props.disabled }
+    ];
 });
 
 function item_click(event: MouseEvent) {
@@ -35,9 +29,9 @@ function item_click(event: MouseEvent) {
 </script>
 
 <template>
-    <div v-if="divider" class="dsx-menu-item-divider" :class="classNames" :style="$props.style" @contextmenu.prevent>
+    <div v-if="divider" class="dsx-menu-item-divider" :class="classObj" :style="style" @contextmenu.prevent>
     </div>
-    <div v-else v-show="!hidden" class="dsx-menu-item" :class="classNames" :style="$props.style" @click="item_click"
+    <div v-else v-show="!hidden" class="dsx-menu-item" :class="classObj" :style="style" @click="item_click"
         @contextmenu.prevent>
         <div v-if="$slots.icon" class="dsx-menu-item-icon">
             <slot name="icon" />

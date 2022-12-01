@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { computed, CSSProperties, nextTick, onMounted, onUnmounted, reactive, ref, toRefs, watch } from 'vue';
-import { DSXMenuItem, MenuItemType } from '.';
+import { sleep } from '@/util/util';
+import { computed, CSSProperties, nextTick, onMounted, onUnmounted, reactive, ref, toRef, toRefs, useAttrs, watch } from 'vue';
+import { DSXMenuItem, MenuItemOptionType } from '.';
 
 interface Props {
-    class?: string,
     style?: CSSProperties,
     visible: boolean,
     event: { x: number, y: number } | MouseEvent,
     zIndex?: number,
-    menus?: Array<MenuItemType>,
+    menus?: Array<MenuItemOptionType>,
     minWidth?: number | string;
     maxWidth?: number | string;
 }
@@ -21,57 +21,50 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits(["update:visible"]);
 
-function open() {
-    emit("update:visible", true);
+function close() {
+    if (props.visible) {
+        emit("update:visible", false);
+    }
 }
 
-function close() {
-    emit("update:visible", false);
-}
+const attrs = useAttrs();
+
+const isMoving = ref(false);
+
+const classObj = computed(() => {
+    return [
+        attrs.class,
+        {
+            "dsx-menu-fade-enter-active": isMoving.value,
+        }
+    ]
+});
 
 const position = ref({
-    top: 0,
-    left: 0
+    x: 0,
+    y: 0
 });
 
 watch(position, async () => {
-    close();
-    await nextTick();
-    open();
+    isMoving.value = true;
+    await sleep(200);
+    isMoving.value = false;
 });
 
-const styleObj = computed(() => {
-    let minWidth;
-    if (props.minWidth) {
-        if (typeof props.minWidth === "string") {
-            minWidth = props.minWidth;
-            if (minWidth.indexOf("px") === -1) {
-                minWidth += "px";
-            }
-        } else {
-            minWidth = props.minWidth + "px";
-        }
-    }
+const transformOrigin = ref("top left");
 
-    let maxWidth;
-    if (props.maxWidth) {
-        if (typeof props.maxWidth === "string") {
-            maxWidth = props.maxWidth;
-            if (maxWidth.indexOf("px") === -1) {
-                maxWidth += "px";
-            }
-        } else {
-            maxWidth = props.maxWidth + "px";
-        }
-    }
+const styleObj = computed(() => {
+    let minWidth = props.minWidth ? typeof props.minWidth === "string" ? props.minWidth : props.minWidth + "px" : undefined;
+    let maxWidth = props.maxWidth ? typeof props.maxWidth === "string" ? props.maxWidth : props.maxWidth + "px" : undefined;
 
     return {
         ...props.style,
         zIndex: props.zIndex,
-        top: position.value.top + 'px',
-        left: position.value.left + 'px',
+        "--p-x": position.value.x + 'px',
+        "--p-y": position.value.y + 'px',
         minWidth: minWidth,
-        maxWidth: maxWidth
+        maxWidth: maxWidth,
+        "--t-origin": transformOrigin.value
     }
 });
 
@@ -80,7 +73,6 @@ const DSX_Menu = ref();
 watch(() => props.event, async event => {
     const clientWidth = document.documentElement.clientWidth;
     const clientHeight = document.documentElement.clientHeight;
-    const padding = 7;
 
     await nextTick();
     const width = DSX_Menu.value.clientWidth;
@@ -89,10 +81,13 @@ watch(() => props.event, async event => {
     const xRight = event.x + width;
     const yBottom = event.y + height;
 
-    position.value = ({
-        left: xRight >= clientWidth ? clientWidth - width - padding : event.x,
-        top: yBottom >= clientHeight ? clientHeight - height - padding : event.y
-    })
+    position.value = {
+        x: xRight >= clientWidth ? event.x - width : event.x,
+        y: yBottom >= clientHeight ? event.y - height : event.y
+    };
+
+    transformOrigin.value = xRight >= clientWidth ? "right " : "left ";
+    transformOrigin.value += yBottom >= clientHeight ? "bottom" : "top";
 });
 
 onMounted(() => {
@@ -103,14 +98,14 @@ onUnmounted(() => {
     window.removeEventListener("click", close);
 });
 
-function getItemBinds(item: MenuItemType) {
-    const itemRefs = toRefs(item);
+function getItemBinds(item: MenuItemOptionType) {
+    const { style, divider, hidden, disabled } = toRefs(item);
     return reactive({
-        class: itemRefs.class,
-        style: itemRefs.style,
-        divider: itemRefs.divider,
-        hidden: itemRefs.hidden,
-        disabled: itemRefs.disabled
+        class: toRef(item, "class"),
+        style,
+        divider,
+        hidden,
+        disabled
     });
 }
 
@@ -119,14 +114,14 @@ function getItemBinds(item: MenuItemType) {
 <template>
     <Teleport to="body">
         <Transition name='dsx-menu-fade'>
-            <div v-if="visible" class="dsx-menu" :class="$props.class" :style="styleObj" ref="DSX_Menu"
+            <div v-if="visible" class="dsx-menu" :class="classObj" :style="styleObj" ref="DSX_Menu"
                 @contextmenu.prevent="close">
                 <div class="dsx-menu-body">
                     <template v-if="$slots.default">
                         <slot />
                     </template>
                     <template v-else>
-                        <DSXMenuItem v-for="item in $props.menus" v-bind="getItemBinds(item)" @click="item.click">
+                        <DSXMenuItem v-for="item in menus" v-bind="getItemBinds(item)" @click="item.click">
                             <!-- 图标 -->
                             <template #icon v-if="item.icon">
                                 <span v-if="typeof item.icon === 'string'" v-html="item.icon"></span>
@@ -152,6 +147,9 @@ function getItemBinds(item: MenuItemType) {
 .dsx-menu {
     --color-bg: #fff;
     --color-border: #00000026;
+    --p-x: 0;
+    --p-y: 0;
+    --t-origin: left top;
 }
 
 .dsx-menu {
@@ -171,19 +169,32 @@ function getItemBinds(item: MenuItemType) {
     user-select: none;
     overflow: hidden;
     box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
+    left: var(--p-x);
+    top: var(--p-y);
+    transform-origin: var(--t-origin);
 }
 
 .dsx-menu-body {
     display: block;
 }
 
-.dsx-menu-fade-enter-active,
-.dsx-menu-fade-leave-active {
-    transition: opacity .2s ease-in-out;
+.dsx-menu-fade-enter-active {
+    animation: moving .2s ease-in-out;
 }
 
-.dsx-menu-fade-enter-from,
-.dsx-menu-fade-leave-to {
-    opacity: 0;
+.dsx-menu-fade-leave-active {
+    animation: moving .2s ease-in-out reverse;
+}
+
+@keyframes moving {
+    from {
+        opacity: 0;
+        transform: scale(0, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1, 1);
+    }
 }
 </style>

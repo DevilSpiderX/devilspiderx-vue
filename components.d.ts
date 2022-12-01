@@ -9,7 +9,6 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     AddModal: typeof import('./src/components/query/AddModal.vue')['default']
     BaseCard: typeof import('./src/components/controller/BaseCard.vue')['default']
-    ContextmenuTd: typeof import('./src/components/query/ContextmenuTd.vue')['default']
     ControllerRoute: typeof import('./src/components/controller/ControllerRoute.vue')['default']
     CpuCard: typeof import('./src/components/controller/CpuCard.vue')['default']
     DiskCard: typeof import('./src/components/controller/DiskCard.vue')['default']
