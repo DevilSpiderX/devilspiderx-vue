@@ -1,6 +1,6 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue';
-import { Scrollbar as AScrollbar } from '@arco-design/web-vue';
+import { computed, reactive, ref } from 'vue';
+import AScrollbar from "@arco-design/web-vue/es/scrollbar";
 
 const props = defineProps({
     text: {
@@ -35,28 +35,43 @@ const scrollbarOuterStyle = {
     overflow: "hidden"
 };
 
+const scrollbarRef = ref();
+
+function backTop(isSmooth) {
+    scrollbarRef.value.scrollTo({ top: 0, behavior: isSmooth ? "smooth" : undefined });
+}
+
+const scrollData = reactive({
+    left: 0,
+    top: 0
+});
+
+function scrollbar_scroll(event) {
+    scrollData.left = event.target?.scrollLeft;
+    scrollData.top = event.target?.scrollTop;
+}
+
+const logWrapperRef = ref();
 const logWrapperStyle = computed(() => ({
     fontSize: props.fontSize + "px"
 }));
 
-const scrollbarRef = ref();
-const scrollbarContainerRef = ref();
-onMounted(() => {
-    scrollbarContainerRef.value = scrollbarRef.value.$refs.containerRef
-})
-function backTop() {
-    scrollbarContainerRef.value.scrollTo({ top: 0, behavior: "smooth" });
+function toBottom(isSmooth) {
+    scrollbarRef.value.scrollTo({ top: logWrapperRef.value.clientHeight, behavior: isSmooth ? "smooth" : undefined });
 }
+
 defineExpose({
-    backTop
+    backTop,
+    toBottom
 });
 </script>
 
 <template>
     <ASpin :loading="$props.loading" :style="scrollbarStyle">
-        <AScrollbar :style="scrollbarStyle" :outer-style="scrollbarOuterStyle" ref="scrollbarRef">
+        <AScrollbar :style="scrollbarStyle" :outer-style="scrollbarOuterStyle" @scroll="scrollbar_scroll"
+            ref="scrollbarRef">
             <AEmpty v-if="$props.text === ''" />
-            <div v-else class="log-wrapper" :style="logWrapperStyle">
+            <div v-else class="log-wrapper" :style="logWrapperStyle" ref="logWrapperRef">
                 {{ $props.text }}
             </div>
         </AScrollbar>

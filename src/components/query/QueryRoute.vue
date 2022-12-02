@@ -78,7 +78,7 @@ function QuerySucceed(resp) {
     table.paginationProps.current = 1;
     switch (resp["code"]) {
         case 0: {
-            table.data = resp["data"]["list"];
+            table.data = resp["data"];
             setTableScrollTop(0);
             break;
         }
