@@ -136,10 +136,10 @@ function speed_modal_input_change(val) {
                     <span> 控制中心 </span>
                 </template>
                 <template #extra>
-                    <ATooltip v-if="appConfigs.client.width <= 576" :content="String($props.cd)" mini>
+                    <ATooltip v-if="appConfigs.client.width <= 576" :content="String(cd)" mini>
                         <AButton shape="round" @click="speedModal.visible = true">刷新速率</AButton>
                     </ATooltip>
-                    <AInputNumber v-else :model-value="$props.cd" @update:model-value="val => setCD(val)" :min="500"
+                    <AInputNumber v-else :model-value="cd" @update:model-value="val => setCD(val)" :min="500"
                         hide-button style="max-width: 12em">
                         <template #prefix>
                             <span>刷新速率</span>
@@ -187,7 +187,7 @@ function speed_modal_input_change(val) {
         </ALayoutContent>
     </ALayout>
     <AModal title="数据刷新速率" v-model:visible="speedModal.visible" width="auto" simple :footer="false">
-        <AInputNumber :model-value="$props.cd" @update:model-value="speed_modal_input_change" :min="500" hide-button
+        <AInputNumber :model-value="cd" @update:model-value="speed_modal_input_change" :min="500" hide-button
             style="max-width: 15em">
             <template #suffix>
                 <span>ms</span>

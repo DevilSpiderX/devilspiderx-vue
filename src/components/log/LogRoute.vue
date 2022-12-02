@@ -140,6 +140,7 @@ const collapseList = reactive({
                 </template>
             </APageHeader>
         </ALayoutHeader>
+        <!-- 这一块是可收缩框 -->
         <div v-if="appConfigs.client.width <= 576">
             <Transition name="collapse">
                 <div class="collapseList" v-show="collapseList.show">
@@ -154,19 +155,15 @@ const collapseList = reactive({
                         <AFormItem hide-label>
                             <ARow justify="end" :style="{ width: '100%' }">
                                 <AButtonGroup shape="round">
-                                    <ATooltip content="回到顶部">
-                                        <AButton @click="$refs.logMonitorRef.backTop(true); collapseList.show = false">
-                                            <IconCaretUp />
-                                        </AButton>
-                                    </ATooltip>
+                                    <AButton @click="$refs.logMonitorRef.backTop(true); collapseList.show = false">
+                                        <IconCaretUp />
+                                    </AButton>
                                     <AButton @click="reflush = true; collapseList.show = false" :loading="reflush">
                                         <IconLoop v-show="!reflush" />
                                     </AButton>
-                                    <ATooltip content="回到底部" position="tr">
-                                        <AButton @click="$refs.logMonitorRef.toBottom(true); collapseList.show = false">
-                                            <IconCaretDown />
-                                        </AButton>
-                                    </ATooltip>
+                                    <AButton @click="$refs.logMonitorRef.toBottom(true); collapseList.show = false">
+                                        <IconCaretDown />
+                                    </AButton>
                                 </AButtonGroup>
                             </ARow>
                         </AFormItem>
