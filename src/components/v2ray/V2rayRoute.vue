@@ -75,7 +75,7 @@ async function on_switch_clicked() {
 
 <template>
     <ALayout>
-        <ALayoutHeader style="border-bottom: 1px solid #84858d55">
+        <ALayoutHeader>
             <APageHeader @back="$router.back">
                 <template #title>
                     <span> V2Ray </span>

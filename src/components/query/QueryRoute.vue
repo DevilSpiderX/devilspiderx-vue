@@ -1,6 +1,6 @@
 <script setup>
 import { computed, h, nextTick, onMounted, onUnmounted, reactive, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import { Message, Modal } from "@arco-design/web-vue";
 import AddModal from "./AddModal.vue";
 import UpdateModal from "./UpdateModal.vue";
@@ -47,20 +47,17 @@ const tableTotalPage = computed(() => Math.ceil(table.data.length / table.pagina
 
 onMounted(() => {
     document.body.classList.add("no-scrollbar");
-    detectKey();
     table.bodyScrollWrap = document.querySelector('.arco-scrollbar-container.arco-table-body');
 });
 
 onUnmounted(() => {
     document.body.classList.remove("no-scrollbar");
-    appConfigs.query.history = undefined;
 });
 
 const key = ref("");
 const searching = ref(false);
 
 async function Search() {
-    appConfigs.query.history = key.value;
     searching.value = true;
     try {
         QuerySucceed(await http.query.get(key.value));
@@ -98,30 +95,6 @@ function QuerySucceed(resp) {
 function QueryError() {
     Message.error("查询出现错误");
     searching.value = false;
-}
-
-const route = useRoute();
-
-async function detectKey() {
-    let routeQuery = route.query;
-    try {
-        if (Object.hasOwn(routeQuery, "key")) {
-            key.value = routeQuery.key;
-            appConfigs.query.history = key.value;
-            searching.value = true;
-            QuerySucceed(await http.query.get(key.value));
-        } else {
-            let history = appConfigs.query.history;
-            if (history !== undefined) {
-                key.value = history;
-                searching.value = true;
-                QuerySucceed(await http.query.get(history));
-            }
-        }
-    } catch (error) {
-        console.error("(detectKey)", `url:${error.config?.url}`, error);
-        QueryError();
-    }
 }
 
 function setTableScrollTop(number) {
@@ -232,16 +205,15 @@ async function add_submit(form_data) {
         console.log("addPasswords:", resp);
         switch (resp["code"]) {
             case 0: {
-                let history = appConfigs.query.history;
-                history = history === undefined || history === "" ? name : `${history} ${name}`;
-                appConfigs.query.history = history;
+                let val = key.value;
+                val = val === undefined || val === "" ? name : `${val} ${name}`;
+                key.value = val;
                 searching.value = true;
-                key.value = history;
                 addModal.visible = false;
                 addModal.clean = true;
                 Message.success("添加成功");
                 try {
-                    QuerySucceed(await http.query.get(history));
+                    QuerySucceed(await http.query.get(val));
                 } catch (error) {
                     console.error("(add_submit)", `url:${error.config?.url}`, error);
                     QueryError();
@@ -291,16 +263,14 @@ function update_submit(form_data) {
             console.log("updatePasswords:", resp);
             switch (resp["code"]) {
                 case 0: {
-                    let history = appConfigs.query.history;
-                    history = history === undefined || history === "" ? name :
-                        history.indexOf(name) === -1 ? `${history} ${name}` : history;
-                    appConfigs.query.history = history;
+                    let val = key.value;
+                    val = val === undefined || val === "" ? name : val.indexOf(name) === -1 ? `${val} ${name}` : val;
+                    key.value = val;
                     searching.value = true;
-                    key.value = history;
                     updateModal.visible = false;
                     Message.success("修改成功");
                     try {
-                        QuerySucceed(await http.query.get(history));
+                        QuerySucceed(await http.query.get(val));
                     } catch (error) {
                         console.error("(okUpdate)", `url:${error.config?.url}`, error);
                         QueryError();
@@ -349,7 +319,7 @@ watch(() => [addModal.visible, updateModal.visible, displayModal.visible],
 
 <template>
     <ALayout style="height:100%">
-        <ALayoutHeader style="border-bottom: 1px solid #84858d55;max-height: 63px">
+        <ALayoutHeader style="max-height: 63px">
             <APageHeader @back="$router.back">
                 <template #title>
                     <span> 密码查询 </span>

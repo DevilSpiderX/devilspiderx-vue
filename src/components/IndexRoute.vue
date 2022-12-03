@@ -96,7 +96,7 @@ function on_exit_clicked() {
 
 <template>
     <ALayout>
-        <ALayoutHeader style="border-bottom: 1px solid #84858d55">
+        <ALayoutHeader>
             <APageHeader @back="drawer.visible = true">
                 <template #back-icon>
                     <span style="font-size: 1.2rem;position: relative">

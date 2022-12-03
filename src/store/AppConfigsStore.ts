@@ -50,10 +50,6 @@ export const useAppConfigs = defineStore("appConfigs", () => {
         checkIntervalTime: 600 * 1000 //ms
     });
 
-    const query = ref<{ history: string | undefined }>({
-        history: undefined
-    });
-
     const log = ref<{ fontSize: number }>({
         fontSize: 16
     });
@@ -66,7 +62,6 @@ export const useAppConfigs = defineStore("appConfigs", () => {
         statusBarColor,
         backgroundColor2StatusBarColor,
         user,
-        query,
         isTouchDevice: ref<boolean>("ontouchstart" in window && navigator.maxTouchPoints !== 0),
         log
     }

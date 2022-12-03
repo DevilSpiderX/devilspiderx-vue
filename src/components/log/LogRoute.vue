@@ -207,12 +207,12 @@ const collapseList = reactive({
 .collapse-enter-from,
 .collapse-leave-to {
     transform: scaleY(0);
-    opacity: 0;
+    /* opacity: 0; */
 }
 
 .collapse-enter-to,
 .collapse-leave-from {
     transform: scaleY(1);
-    opacity: 1;
+    /* opacity: 1; */
 }
 </style>
