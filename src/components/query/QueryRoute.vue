@@ -145,7 +145,7 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
     const recordIndex = table.paginationProps.pageSize * (table.paginationProps.current - 1) + rowIndex;
 
     //复制按钮
-    tableMenu.clicks.copy = () => {
+    tableMenu.onClicks.copy = () => {
         if (typeof navigator.clipboard === "object") {
             navigator.clipboard.writeText(record[column.dataIndex]).then(() => {
                 Message.success("剪切板写入成功");
@@ -158,7 +158,7 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
     };
 
     //删除按钮
-    tableMenu.clicks.delete = () => {
+    tableMenu.onClicks.delete = () => {
         Modal.confirm({
             title: "提示",
             content: "确认删除？",
@@ -190,7 +190,7 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
     };
 
     //编辑按钮
-    tableMenu.clicks.edit = async () => {
+    tableMenu.onClicks.edit = async () => {
         updateModal.visible = true;
         updateModal.data = {};
         await nextTick();
@@ -198,7 +198,7 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
     };
 
     //查看按钮
-    tableMenu.clicks.see = () => {
+    tableMenu.onClicks.see = () => {
         table_cell_dblclick(record);
     }
 

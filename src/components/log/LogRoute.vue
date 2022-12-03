@@ -95,7 +95,7 @@ const collapseList = reactive({
 
 <template>
     <ALayout style="height:100%">
-        <ALayoutHeader style="border-bottom: 1px solid #84858d55;max-height: 65px">
+        <ALayoutHeader style="max-height: 65px">
             <APageHeader @back="$router.back">
                 <template #title>
                     <span> 日志 </span>

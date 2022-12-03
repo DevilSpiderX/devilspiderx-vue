@@ -1,7 +1,19 @@
 <script setup lang="ts">
 import { sleep } from '@/util/util';
-import { computed, CSSProperties, nextTick, onMounted, onUnmounted, reactive, ref, toRef, toRefs, useAttrs, watch } from 'vue';
-import { DSXMenuItem, MenuItemOptionType } from '.';
+import {
+    computed,
+    CSSProperties,
+    nextTick,
+    onMounted,
+    onUnmounted,
+    reactive,
+    ref,
+    toRef,
+    toRefs,
+    useAttrs,
+    watch
+} from 'vue';
+import { DSXMenuItem, DSXMenuIcon as Icon, MenuItemOptionType } from '.';
 
 interface Props {
     style?: CSSProperties,
@@ -121,13 +133,10 @@ function getItemBinds(item: MenuItemOptionType) {
                         <slot />
                     </template>
                     <template v-else>
-                        <DSXMenuItem v-for="item in menus" v-bind="getItemBinds(item)" @click="item.click">
+                        <DSXMenuItem v-for="item in menus" v-bind="getItemBinds(item)" @click="item.onClick">
                             <!-- 图标 -->
                             <template #icon v-if="item.icon">
-                                <span v-if="typeof item.icon === 'string'" v-html="item.icon"></span>
-                                <span v-else>
-                                    <component :is="item.icon" />
-                                </span>
+                                <Icon :icon="item.icon" />
                             </template>
                             <!-- 标签 -->
                             {{ item.label }}

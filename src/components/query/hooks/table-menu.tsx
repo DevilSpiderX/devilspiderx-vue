@@ -13,21 +13,21 @@ const tableMenuItemStyle = {
 
 export function useTableMenu() {
     const menus = reactive<Array<MenuItemOptionType>>([
-        { label: "复制", click: undefined, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-copy" />) },
-        { label: "删除", click: undefined, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-trash" />) },
-        { label: "编辑", click: undefined, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-pen-to-square" />) },
-        { label: "查看", click: undefined, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-eye" />) }
+        { label: "复制", onClick: () => { }, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-copy" />) },
+        { label: "删除", onClick: () => { }, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-trash" />) },
+        { label: "编辑", onClick: () => { }, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-pen-to-square" />) },
+        { label: "查看", onClick: () => { }, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-eye" />) }
     ]);
 
     const tableMenu = reactive({
         visible: false,
         event: undefined,
         menus,
-        clicks: {
-            copy: toRef(menus[0], "click"),
-            delete: toRef(menus[1], "click"),
-            edit: toRef(menus[2], "click"),
-            see: toRef(menus[3], "click")
+        onClicks: {
+            copy: toRef(menus[0], "onClick"),
+            delete: toRef(menus[1], "onClick"),
+            edit: toRef(menus[2], "onClick"),
+            see: toRef(menus[3], "onClick")
         },
         style: tableMenuStyle
     });

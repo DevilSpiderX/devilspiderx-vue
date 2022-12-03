@@ -1,11 +1,12 @@
 <script setup lang="jsx">
-import { computed, reactive, watch } from "vue";
+import { computed, isVNode, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import { IconClose, IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
 import { Message } from "@arco-design/web-vue";
+import { DSXMenuIcon as Icon } from "./dsx-menu";
 import v2rayNPngUrl from "@/assets/v2rayN.png";
-import http from "@/scripts/server-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
+import http from "@/scripts/server-api";
 
 const appConfigs = useAppConfigs();
 appConfigs.backgroundColor2StatusBarColor();
@@ -16,45 +17,39 @@ const buttonList = reactive([
     {
         label: "控制中心",
         icon: (<i class="fas fa-sliders-h fa-fw" />),
-        click: () => { router.push({ name: 'controller' }) },
-        hidden: false
+        onClick: () => { router.push({ name: 'controller' }) }
     },
     {
         label: "密码查询",
         icon: (<i class="fas fa-search fa-fw" />),
-        click: () => { router.push({ name: 'query' }) },
-        hidden: false
+        onClick: () => { router.push({ name: 'query' }) }
     },
     {
         label: "V2Ray",
         icon: (<img src={v2rayNPngUrl} alt="v2ray" width="27" height="27" style="transform: translateY(4px)" />),
-        click: () => { router.push({ name: 'v2ray' }) },
-        hidden: false
+        onClick: () => { router.push({ name: 'v2ray' }) }
     },
     {
         label: "日\u00a0\u00a0志",
         icon: (<i class="fas fa-file-alt fa-fw" />),
-        click: () => { router.push({ name: 'log' }) },
+        onClick: () => { router.push({ name: 'log' }) },
         hidden: computed(() => !appConfigs.user.admin)
     },
     {
         label: "修改密码",
         icon: (<i class="fas fa-edit fa-fw" />),
-        click: () => { router.push({ name: 'updatePwd' }) },
-        hidden: false
+        onClick: () => { router.push({ name: 'updatePwd' }) },
     },
     {
         label: "退出登录",
         icon: (<i class="fas fa-sign-out-alt fa-fw" />),
-        click: on_logoutButton_clicked,
-        hidden: false
+        onClick: on_logoutButton_clicked
     },
     {
         class: ["exit-button"],
         label: " 退\u00a0\u00a0出",
         icon: (<i class="fas fa-power-off fa-fw" />),
-        click: on_exit_clicked,
-        hidden: false
+        onClick: on_exit_clicked
     }
 ]);
 
@@ -134,9 +129,9 @@ function on_exit_clicked() {
                     <ASpace direction="vertical" fill size="large">
                         <template v-for="(btn, index) in buttonList">
                             <AButton v-if="!btn.hidden" class="my-button" :class="btn.class" long :key="index"
-                                @contextmenu.prevent.stop @click="btn.click">
+                                @contextmenu.prevent.stop @click="btn.onClick">
                                 <template #icon v-if="btn.icon">
-                                    <component :is="btn.icon" />
+                                    <Icon :icon="btn.icon" />
                                 </template>
                                 {{ btn.label }}
                             </AButton>
@@ -206,6 +201,7 @@ function on_exit_clicked() {
     --border-color-hover: #c82333;
 }
 
+.my-button:focus :deep(img),
 .my-button:hover :deep(img) {
     filter: invert(100%);
 }

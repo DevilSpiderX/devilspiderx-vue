@@ -1,6 +1,7 @@
 import { CSSProperties, VNodeChild } from "vue";
 import DSXMenu from "./DSXMenu.vue";
 import DSXMenuItem from "./DSXMenuItem.vue";
+import DSXMenuIcon from "./DSXMenuIcon";
 
 export interface MenuItemOptionType {
     label?: string,
@@ -9,7 +10,7 @@ export interface MenuItemOptionType {
     icon?: VNodeChild,
     tip?: string,
     divider?: boolean,
-    click?: (event: MouseEvent) => unknown,
+    onClick?: (event: MouseEvent) => unknown,
     hidden?: boolean,
     disabled?: boolean
 }
@@ -31,4 +32,4 @@ export interface DSXMenuItemProps {
     disabled?: boolean
 }
 
-export { DSXMenu, DSXMenuItem }
+export { DSXMenu, DSXMenuItem, DSXMenuIcon }
