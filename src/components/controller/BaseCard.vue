@@ -31,7 +31,7 @@
 
 .base-card:hover {
     z-index: 101;
-    box-shadow: var(--box-shadow-dark);
+    box-shadow: var(--el-box-shadow-dark);
 }
 
 header {
@@ -39,7 +39,7 @@ header {
     border-bottom: 1px solid var(--card-border-color);
 }
 
-body[arco-theme='dark'] header {
+body[arco-theme=dark] header {
     background-color: #1e1e1e;
 }
 </style>

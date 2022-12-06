@@ -6,7 +6,7 @@ import { MemoryValueType } from "./scripts/Types";
 import { colors } from "./scripts/progressColor";
 
 const props = withDefaults(
-    defineProps<{ value: MemoryValueType, processCount: number }>(),
+    defineProps<{ value: MemoryValueType, processCount: number, loading: boolean }>(),
     {
         value: () => ({
             total: 1,
@@ -18,7 +18,8 @@ const props = withDefaults(
                 free: { value: 0, unit: "B" }
             }
         }),
-        processCount: 0
+        processCount: 0,
+        loading: false
     }
 )
 
@@ -62,21 +63,26 @@ const progressColor = computed(() => {
             </div>
         </template>
         <div class="my-card-body">
-            <ADescriptions :column="2" :value-style="{ fontSize: '16px' }">
-                <ADescriptionsItem label="已 用">{{ usedStr }}</ADescriptionsItem>
-                <ADescriptionsItem label="剩 余">{{ freeStr }}</ADescriptionsItem>
-                <ADescriptionsItem label="总 量">{{ totalStr }}</ADescriptionsItem>
-                <ADescriptionsItem label="进 程">{{ props.processCount }} 个</ADescriptionsItem>
-            </ADescriptions>
-            <ADescriptions>
-                <ADescriptionsItem label="使用率">
-                    <AProgress :percent="usedPercent" :stroke-width="22" size="large" :color="progressColor">
-                        <template #text="{ percent }">
-                            {{ (percent * 100).toFixed(2) }}%
-                        </template>
-                    </AProgress>
-                </ADescriptionsItem>
-            </ADescriptions>
+            <ASkeleton animation :loading="loading">
+                <ASkeletonLine :rows="3" />
+                <template #content>
+                    <ADescriptions :column="2" :value-style="{ fontSize: '16px' }">
+                        <ADescriptionsItem label="已 用">{{ usedStr }}</ADescriptionsItem>
+                        <ADescriptionsItem label="剩 余">{{ freeStr }}</ADescriptionsItem>
+                        <ADescriptionsItem label="总 量">{{ totalStr }}</ADescriptionsItem>
+                        <ADescriptionsItem label="进 程">{{ props.processCount }} 个</ADescriptionsItem>
+                    </ADescriptions>
+                    <ADescriptions>
+                        <ADescriptionsItem label="使用率">
+                            <AProgress :percent="usedPercent" :stroke-width="22" size="large" :color="progressColor">
+                                <template #text="{ percent }">
+                                    {{ (percent * 100).toFixed(2) }}%
+                                </template>
+                            </AProgress>
+                        </ADescriptionsItem>
+                    </ADescriptions>
+                </template>
+            </ASkeleton>
         </div>
     </BaseCard>
 </template>

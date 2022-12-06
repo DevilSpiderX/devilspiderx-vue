@@ -34,6 +34,8 @@ setInterval(checkUserStatus, appConfigs.user.checkIntervalTime);
 </template>
 
 <style>
+@import url(./styles/box-shadow.css);
+
 html,
 body,
 div#app {
@@ -46,25 +48,12 @@ div#app {
 body {
     font-family: "MiSans Normal" !important;
     background-color: var(--color-bg-1);
+    color: var(--color-text-1);
 }
 
 @font-face {
     font-family: "MiSans Normal";
     src: url("fonts/MiSans-Normal.ttf");
-}
-
-:root {
-    --shadow-special: 0 0 1px rgba(0, 0, 0, 0.3);
-    --shadow1-center: 0 -2px 5px rgba(0, 0, 0, 0.1);
-    --shadow2-center: 0 0 10px rgba(0, 0, 0, 0.1);
-    --shadow3-center: 0 0 20px rgba(0, 0, 0, 0.1);
-    --box-shadow: 0px 12px 32px 4px #0000000a, 0px 8px 20px #00000014;
-    --box-shadow-light: 0px 0px 12px #0000001f;
-    --box-shadow-lighter: 0px 0px 6px #0000001f;
-    --box-shadow-dark: 0px 16px 48px 16px #00000014, 0px 12px 32px #0000001f, 0px 8px 16px -8px #00000029;
-    --bs-shadow-sm: 0 .125rem .25rem rgba(0, 0, 0, .075);
-    --bs-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
-    --bs-shadow-lg: 0 1rem 3rem rgba(0, 0, 0, .175);
 }
 
 body.no-scrollbar::-webkit-scrollbar {

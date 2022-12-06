@@ -85,7 +85,7 @@ async function on_switch_clicked() {
         <ALayoutContent>
             <ARow justify="center">
                 <ACol :style="{ marginTop: '5rem', maxWidth: '480px' }">
-                    <ACard style="box-shadow: var(--box-shadow-light)">
+                    <ACard style="box-shadow: var(--el-box-shadow-light)">
                         <template #title>
                             <div style="font-weight: 700;font-size: 1.4rem;text-align: center;">V2Ray开关</div>
                         </template>

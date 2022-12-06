@@ -80,7 +80,6 @@ defineExpose({
 
 <style scoped>
 .log-wrapper {
-    color: var(--color-text-1);
     background-color: var(--color-bg-2);
     box-sizing: border-box;
     width: 100%;

@@ -326,7 +326,7 @@ watch(() => [addModal.visible, updateModal.visible, displayModal.visible],
                 </template>
                 <template #extra>
                     <ASpace>
-                        <span style="color: var(--color-text-1)">数据条数:</span>
+                        <span>数据条数:</span>
                         <ASelect v-model="table.paginationProps.pageSize">
                             <AOption v-for="item in [10, 20, 30, 40, 50]" :value="item">
                                 {{ item }}

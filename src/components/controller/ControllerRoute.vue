@@ -2,6 +2,7 @@
 import { onUnmounted, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { Message } from "@arco-design/web-vue";
+import AScrollbar from "@arco-design/web-vue/es/scrollbar";
 import CpuCard from "./CpuCard.vue";
 import MemoryCard from "./MemoryCard.vue";
 import NetworkCard from "./NetworkCard.vue";
@@ -31,7 +32,6 @@ function setCD(cdValue) {
     router.replace({ query: { cd: cdValue } })
 }
 
-const empty_show = ref(true);
 const values = reactive({
     cpu: undefined,
     memory: undefined,
@@ -61,7 +61,6 @@ const ws = {
         // getHardware();
     },
     WsOnMessage(msgEvent) {
-        empty_show.value = false;
         Object.assign(values, JSON.parse(msgEvent.data));
     }
 };
@@ -96,22 +95,6 @@ onUnmounted(() => {
     }
 });
 
-const mainCard = reactive({
-    class: {
-        'scrollBar-hide': true
-    }
-});
-
-function main_card_mouse_enter() {
-    if (!appConfigs.isTouchDevice) {
-        mainCard.class["scrollBar-hide"] = false;
-    }
-}
-
-function main_card_mouse_leave() {
-    mainCard.class["scrollBar-hide"] = true;
-}
-
 const speedModal = reactive({
     visible: false
 });
@@ -126,11 +109,24 @@ function speed_modal_input_change(val) {
     speedModal.visible = false;
 }
 
+const cardsProps = reactive({
+    class: "my-col",
+    xs: 24,
+    md: 12,
+    xl: 8
+});
+
+const pageHeaderBoxShadow = ref(undefined);
+
+function main_card_scrollbar_scroll(event) {
+    pageHeaderBoxShadow.value = event.target?.scrollTop === 0 ? undefined : "var(--bs-shadow)";
+}
+
 </script>
 
 <template>
     <ALayout style="height:100%">
-        <ALayoutHeader style="max-height: 65px">
+        <ALayoutHeader style="max-height: 65px;z-index: 101" :style="{ boxShadow: pageHeaderBoxShadow }">
             <APageHeader @back="$router.back">
                 <template #title>
                     <span> 控制中心 </span>
@@ -152,38 +148,37 @@ function speed_modal_input_change(val) {
             </APageHeader>
         </ALayoutHeader>
         <ALayoutContent style="height: calc(100% - 65px)">
-            <ACard class="main-card" :class="mainCard.class" :header-style="{ height: 'auto' }"
-                :style="{ height: '100%', backgroundColor: 'var(--color-bg-1)' }" @mouseenter="main_card_mouse_enter"
-                @mouseleave="main_card_mouse_leave">
-                <template #title>
-                    <div>
-                        <h1 style="text-align: center;user-select: none;margin: 0;font-size: 1.5rem">
-                            <i class="fas fa-server fa-fw"></i>
-                            服务器状态监控
-                        </h1>
-                    </div>
-                </template>
-                <ARow :gutter="10" align="stretch">
-                    <TransitionGroup name="body">
-                        <ACol :xs="24" :md="12" :xl="8" class="my-col" v-if="values.cpu">
-                            <CpuCard :value="values.cpu" />
+            <AScrollbar style="overflow: auto;width: 100%;height: 100%" @scroll="main_card_scrollbar_scroll"
+                outer-style="overflow: hidden;width: 100%;height: 100%">
+                <ACard class="main-card" :header-style="{ height: 'auto' }"
+                    :style="{ height: 'auto', backgroundColor: 'var(--color-bg-1)' }">
+                    <template #title>
+                        <div>
+                            <h1 style="text-align: center;user-select: none;margin: 0;font-size: 1.5rem">
+                                <i class="fas fa-server fa-fw"></i>
+                                服务器状态监控
+                            </h1>
+                        </div>
+                    </template>
+                    <ARow :gutter="10" align="stretch">
+                        <ACol v-bind="cardsProps">
+                            <CpuCard :value="values.cpu" :loading="!values.cpu" />
                         </ACol>
-                        <ACol :xs="24" :md="12" :xl="8" class="my-col" v-if="values.memory">
-                            <MemoryCard :value="values.memory" :process-count="values.os?.processCount" />
+                        <ACol v-bind="cardsProps">
+                            <MemoryCard :value="values.memory" :process-count="values.os?.processCount"
+                                :loading="!values.memory" />
                         </ACol>
-                        <ACol :xs="24" :md="12" :xl="8" class="my-col" v-if="values.network">
-                            <NetworkCard :value="values.network" />
+                        <ACol v-bind="cardsProps">
+                            <NetworkCard :value="values.network" :loading="!values.network" />
                         </ACol>
-                        <ACol :xs="24" :md="12" :xl="8" class="my-col" v-for="(disk, index) in values.disk"
-                            :key="index + 3">
-                            <DiskCard :value="disk" :disk-index="index" />
-                        </ACol>
-                    </TransitionGroup>
-                </ARow>
-                <template #cover>
-                    <AEmpty v-if="empty_show" />
-                </template>
-            </ACard>
+                        <TransitionGroup name="body">
+                            <ACol v-for="(disk, index) in values.disk" v-bind="cardsProps" :key="index">
+                                <DiskCard :value="disk" :disk-index="index" />
+                            </ACol>
+                        </TransitionGroup>
+                    </ARow>
+                </ACard>
+            </AScrollbar>
         </ALayoutContent>
     </ALayout>
     <AModal title="数据刷新速率" v-model:visible="speedModal.visible" width="auto" simple :footer="false">
@@ -220,27 +215,6 @@ function speed_modal_input_change(val) {
 }
 
 .main-card::-webkit-scrollbar {
-    z-index: 1;
-    width: 8px;
-}
-
-/*noinspection CssUnusedSymbol*/
-.main-card.scrollBar-hide::-webkit-scrollbar {
     display: none;
-}
-
-.main-card::-webkit-scrollbar-thumb {
-    border-radius: 5px;
-    background: #00000040;
-}
-
-body[arco-theme='dark'] .main-card::-webkit-scrollbar-thumb {
-    background: #ffffff40;
-}
-
-.main-card::-webkit-scrollbar-corner,
-.main-card::-webkit-scrollbar-track,
-.main-card::-webkit-scrollbar-track-piece {
-    background: #0000;
 }
 </style>

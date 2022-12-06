@@ -144,7 +144,7 @@ function on_exit_clicked() {
     <ADrawer v-model:visible="drawer.visible" placement="left" :footer="false">
         <template #header>
             <ARow justify="space-between" style="width: 100%;">
-                <h2 style="margin: 0;color: var(--color-text-1)">
+                <h2 style="margin: 0">
                     设置
                 </h2>
                 <AButton class="drawer-close-button" shape="circle" size="small" @click="drawer.visible = false">
@@ -207,23 +207,23 @@ function on_exit_clicked() {
 }
 
 /*深色模式*/
-body[arco-theme='dark'] .my-button {
+body[arco-theme=dark] .my-button {
     --color-secondary: rgba(var(--gray-9), .08);
     --border-color: rgba(var(--gray-9), .1);
 }
 
-body[arco-theme='dark'] .my-button.exit-button {
+body[arco-theme=dark] .my-button.exit-button {
     --color-secondary: #c82333;
     --border-color: #c82333;
 }
 
-body[arco-theme='dark'] .my-button.exit-button:focus,
-body[arco-theme='dark'] .my-button.exit-button:hover {
+body[arco-theme=dark] .my-button.exit-button:focus,
+body[arco-theme=dark] .my-button.exit-button:hover {
     --color-secondary-hover: #dc3545;
     --border-color-hover: #dc3545;
 }
 
-body[arco-theme='dark'] .my-button :deep(img) {
+body[arco-theme=dark] .my-button :deep(img) {
     filter: invert(100%);
 }
 

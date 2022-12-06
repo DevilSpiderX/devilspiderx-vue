@@ -120,13 +120,13 @@ onMounted(() => {
     color: rgba(0, 0, 0, 0.87);
 }
 
-body[arco-theme='dark'] .switch {
+body[arco-theme=dark] .switch {
     --on-bg-color: #1d9138;
     --center-bg-color: #eee;
     --off-bg-color: var(--color-bg-3);
 }
 
-body[arco-theme='dark'] .switch-lever-2 {
+body[arco-theme=dark] .switch-lever-2 {
     color: white;
 }
 </style>

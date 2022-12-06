@@ -110,7 +110,7 @@ const collapseList = reactive({
                         </template>
                     </AButton>
                     <ASpace v-else>
-                        <span v-show="appConfigs.client.width > 768" style="color: var(--color-text-1)">日志:</span>
+                        <span v-show="appConfigs.client.width > 768">日志:</span>
                         <ASelect v-model="log.name" :options="logSelectOptions" style="width: 11em" />
                         <ATooltip v-if="appConfigs.client.width <= 768" :content="String(log.fontSize)" mini>
                             <AButton shape="round" @click="logFontSizeModal.visible = true">字体大小</AButton>
@@ -191,7 +191,6 @@ const collapseList = reactive({
     padding: 10px;
     padding-bottom: 0;
     z-index: 101;
-    color: var(--color-text-1);
     background-color: var(--color-bg-1);
     border-bottom: 1px solid #84858d55;
     position: absolute;

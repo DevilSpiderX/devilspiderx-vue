@@ -5,7 +5,7 @@ import BaseCard from "./BaseCard.vue";
 import { NetworkValueType } from "./scripts/Types";
 
 const props = withDefaults(
-    defineProps<{ value: NetworkValueType }>(),
+    defineProps<{ value: NetworkValueType, loading: boolean }>(),
     {
         value: () => ({
             uploadSpeed: 0,
@@ -14,7 +14,8 @@ const props = withDefaults(
                 uploadSpeed: { value: 0, unit: "B/s" },
                 downloadSpeed: { value: 0, unit: "B/s" }
             }
-        })
+        }),
+        loading: false
     }
 )
 
@@ -36,30 +37,35 @@ const precisionDownload = computed(() => {
             </div>
         </template>
         <div class="my-card-body">
-            <ADescriptions :column="1" :align="{ label: 'right' }" :label-style="{ width: 'calc(50% - 1px)' }">
-                <ADescriptionsItem label="上传速度">
-                    <AStatistic :value="value.format.uploadSpeed.value" :precision="precisionUpload"
-                        :value-style="{ color: 'rgb(var(--green-7))', fontSize: '20px' }">
-                        <template #prefix>
-                            <IconArrowRise />
-                        </template>
-                        <template #suffix>
-                            {{ value.format.uploadSpeed.unit }}
-                        </template>
-                    </AStatistic>
-                </ADescriptionsItem>
-                <ADescriptionsItem label="下载速度">
-                    <AStatistic :value="value.format.downloadSpeed.value" :precision="precisionDownload"
-                        :value-style="{ color: 'rgb(var(--blue-7))', fontSize: '20px' }">>
-                        <template #prefix>
-                            <IconArrowFall />
-                        </template>
-                        <template #suffix>
-                            {{ value.format.downloadSpeed.unit }}
-                        </template>
-                    </AStatistic>
-                </ADescriptionsItem>
-            </ADescriptions>
+            <ASkeleton animation :loading="loading">
+                <ASkeletonLine :rows="2" :line-height="30" />
+                <template #content>
+                    <ADescriptions :column="1" :align="{ label: 'right' }" :label-style="{ width: 'calc(50% - 1px)' }">
+                        <ADescriptionsItem label="上传速度">
+                            <AStatistic :value="value.format.uploadSpeed.value" :precision="precisionUpload"
+                                :value-style="{ color: 'rgb(var(--green-7))', fontSize: '20px' }">
+                                <template #prefix>
+                                    <IconArrowRise />
+                                </template>
+                                <template #suffix>
+                                    {{ value.format.uploadSpeed.unit }}
+                                </template>
+                            </AStatistic>
+                        </ADescriptionsItem>
+                        <ADescriptionsItem label="下载速度">
+                            <AStatistic :value="value.format.downloadSpeed.value" :precision="precisionDownload"
+                                :value-style="{ color: 'rgb(var(--blue-7))', fontSize: '20px' }">>
+                                <template #prefix>
+                                    <IconArrowFall />
+                                </template>
+                                <template #suffix>
+                                    {{ value.format.downloadSpeed.unit }}
+                                </template>
+                            </AStatistic>
+                        </ADescriptionsItem>
+                    </ADescriptions>
+                </template>
+            </ASkeleton>
         </div>
     </BaseCard>
 </template>

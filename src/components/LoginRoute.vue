@@ -90,7 +90,7 @@ function running_stop() {
             <ARow justify="center">
                 <ACol class="register-col">
                     <AForm :model="form" @submit="form_submit">
-                        <h1 style="text-align: center; font-size: 2.5rem; color: var(--color-text-1)">
+                        <h1 style="text-align: center; font-size: 2.5rem">
                             登&nbsp;&nbsp;录
                         </h1>
                         <AFormItem field="uid" hide-label>
@@ -135,7 +135,7 @@ function running_stop() {
     max-width: 500px;
     margin-top: 100px;
     background-color: var(--color-bg-2);
-    box-shadow: var(--box-shadow-dark);
+    box-shadow: var(--el-box-shadow-dark);
     padding: 15px;
 }
 

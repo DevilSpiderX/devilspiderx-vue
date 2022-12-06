@@ -6,7 +6,7 @@ import { CpuValueType } from "./scripts/Types";
 import { colors } from "./scripts/progressColor";
 
 const props = withDefaults(
-    defineProps<{ value: CpuValueType }>(),
+    defineProps<{ value: CpuValueType, loading: boolean }>(),
     {
         value: () => ({
             name: "",
@@ -15,7 +15,8 @@ const props = withDefaults(
             usedRate: 0,
             is64bit: true,
             cpuTemperature: 0
-        })
+        }),
+        loading: false
     }
 );
 
@@ -40,24 +41,29 @@ const progressColor = computed(() => {
             </div>
         </template>
         <div class="my-card-body">
-            <ADescriptions :column="2" :value-style="{ fontSize: '16px' }">
-                <ADescriptionsItem label="名 称" :span="2">
-                    <span style="font-size: 14px">{{ value.name }}</span>
-                </ADescriptionsItem>
-                <ADescriptionsItem label="物理核心数">{{ value.physicalNum }}</ADescriptionsItem>
-                <ADescriptionsItem label="逻辑核心数">{{ value.logicalNum }}</ADescriptionsItem>
-                <ADescriptionsItem label="处理器位宽">{{ value.is64bit ? "64" : "32" }}</ADescriptionsItem>
-                <ADescriptionsItem label="温 度">{{ value.cpuTemperature }} ℃</ADescriptionsItem>
-            </ADescriptions>
-            <ADescriptions>
-                <ADescriptionsItem label="使用率" :span="2">
-                    <AProgress :percent="value.usedRate" :stroke-width="22" size="large" :color="progressColor">
-                        <template #text="{ percent }">
-                            {{ (percent * 100).toFixed(2) }}%
-                        </template>
-                    </AProgress>
-                </ADescriptionsItem>
-            </ADescriptions>
+            <ASkeleton animation :loading="loading">
+                <ASkeletonLine :rows="4" />
+                <template #content>
+                    <ADescriptions :column="2" :value-style="{ fontSize: '16px' }">
+                        <ADescriptionsItem label="名 称" :span="2">
+                            <span style="font-size: 14px">{{ value.name }}</span>
+                        </ADescriptionsItem>
+                        <ADescriptionsItem label="物理核心数">{{ value.physicalNum }}</ADescriptionsItem>
+                        <ADescriptionsItem label="逻辑核心数">{{ value.logicalNum }}</ADescriptionsItem>
+                        <ADescriptionsItem label="处理器位宽">{{ value.is64bit ? "64" : "32" }}</ADescriptionsItem>
+                        <ADescriptionsItem label="温 度">{{ value.cpuTemperature }} ℃</ADescriptionsItem>
+                    </ADescriptions>
+                    <ADescriptions>
+                        <ADescriptionsItem label="使用率" :span="2">
+                            <AProgress :percent="value.usedRate" :stroke-width="22" size="large" :color="progressColor">
+                                <template #text="{ percent }">
+                                    {{ (percent * 100).toFixed(2) }}%
+                                </template>
+                            </AProgress>
+                        </ADescriptionsItem>
+                    </ADescriptions>
+                </template>
+            </ASkeleton>
         </div>
     </BaseCard>
 </template>

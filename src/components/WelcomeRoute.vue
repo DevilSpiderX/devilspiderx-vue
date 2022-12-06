@@ -66,7 +66,7 @@ watchEffect(async () => {
     margin: 2rem 0;
 }
 
-body[arco-theme='dark'] .main {
+body[arco-theme=dark] .main {
     color: #fcfcfc;
 }
 </style>
