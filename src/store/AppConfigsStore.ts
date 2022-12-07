@@ -1,18 +1,22 @@
-import { computed, ref, watch, watchEffect } from 'vue';
 import { defineStore } from 'pinia';
-import { useEventListener } from '@/scripts/event';
+import { computed, ref, watch, watchEffect } from 'vue';
+
+const themeColorMetaElement = document.createElement("meta");
+themeColorMetaElement.setAttribute("name", "theme-color");
+document.head.append(themeColorMetaElement);
 
 export const useAppConfigs = defineStore("appConfigs", () => {
     //setup
     const client = ref<{ width: number, height: number }>({
-        width: window.innerWidth,
-        height: window.innerHeight
+        width: document.documentElement.clientWidth,
+        height: document.documentElement.clientHeight
     });
 
-    useEventListener(window, "resize", () => {
-        client.value.width = document.documentElement.clientWidth;
-        client.value.height = document.documentElement.clientHeight;
-    });
+    new ResizeObserver(() => {
+        const rect = document.documentElement.getBoundingClientRect();
+        client.value.width = rect.width;
+        client.value.height = rect.height;
+    }).observe(document.documentElement);
 
     const darkTheme = ref<boolean>(false);
 
@@ -32,9 +36,6 @@ export const useAppConfigs = defineStore("appConfigs", () => {
 
     const statusBarColor = ref<string>("");
 
-    const themeColorMetaElement = document.createElement("meta");
-    themeColorMetaElement.setAttribute("name", "theme-color");
-    document.head.append(themeColorMetaElement);
     watch(statusBarColor, statusBarColor => {
         themeColorMetaElement.setAttribute("content", statusBarColor);
     });

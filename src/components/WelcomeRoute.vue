@@ -1,11 +1,11 @@
 <script setup>
-import { ref, watchEffect } from "vue";
-import { useRouter } from "vue-router";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { sleep } from "@/util/util";
+import { ref, watchEffect } from "vue";
+import { useRouter } from "vue-router";
 
 const appConfigs = useAppConfigs();
-appConfigs.backgroundColor2StatusBarColor();
+appConfigs.statusBarColor = appConfigs.darkTheme ? "#17171A" : "#FFFFFF";
 
 const logo = ref((() => {
     let hour = new Date().getHours();
@@ -47,8 +47,8 @@ watchEffect(async () => {
 
 <style scoped>
 .main {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;

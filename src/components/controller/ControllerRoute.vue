@@ -1,14 +1,13 @@
 <script setup>
-import { onUnmounted, reactive, ref, watch } from "vue";
-import { useRouter } from "vue-router";
-import { Message, Scrollbar as AScrollbar } from "@arco-design/web-vue";
-import CpuCard from "./CpuCard.vue";
-import MemoryCard from "./MemoryCard.vue";
-import NetworkCard from "./NetworkCard.vue";
-import DiskCard from "./DiskCard.vue";
 import http from "@/scripts/server-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
-import { useEventListener } from "@/scripts/event";
+import { Message, Scrollbar as AScrollbar } from "@arco-design/web-vue";
+import { computed, onUnmounted, reactive, ref, watch } from "vue";
+import { useRouter } from "vue-router";
+import CpuCard from "./CpuCard.vue";
+import DiskCard from "./DiskCard.vue";
+import MemoryCard from "./MemoryCard.vue";
+import NetworkCard from "./NetworkCard.vue";
 
 const appConfigs = useAppConfigs();
 appConfigs.backgroundColor2StatusBarColor();
@@ -40,7 +39,7 @@ const values = reactive({
     os: undefined
 });
 const ws = {
-    websocket: null,
+    websocket: WebSocket.prototype,
     token: "",
     time_str: "",
     WsOnOPen() {
@@ -122,19 +121,13 @@ function main_card_scrollbar_scroll(event) {
     pageHeaderBoxShadow.value = event.target?.scrollTop === 0 ? undefined : "var(--bs-shadow)";
 }
 
-function getMainCardScrollbarHeight() {
-    const height = document.documentElement.clientHeight - 65;
-    return height <= 0 ? "0" : `${height}px`;
-}
-
 const mainCardScrollbarStyle = reactive({
     overflow: "auto",
     width: "100%",
-    height: getMainCardScrollbarHeight()
-});
-
-useEventListener(window, "resize", () => {
-    mainCardScrollbarStyle.height = getMainCardScrollbarHeight();
+    height: computed(() => {
+        const height = appConfigs.client.height - 65;
+        return height <= 0 ? "0" : `${height}px`;
+    })
 });
 
 </script>

@@ -1,20 +1,21 @@
 <script setup>
-import { onBeforeMount, ref } from "vue";
-import { useAppConfigs } from "./store/AppConfigsStore";
+import { ref } from "vue";
 import http from "./scripts/server-api.js";
+import { useAppConfigs } from "./store/AppConfigsStore";
 
 window.appInited = ref(false);
 const appConfigs = useAppConfigs();
 
-onBeforeMount(() => {
-    window.matchMedia("(prefers-color-scheme:dark)").onchange = event => {
-        if (appConfigs.themeFollowSystem) {
-            appConfigs.darkTheme = event.matches;
-        }
-    };
-    checkUserStatus();
+window.matchMedia("(prefers-color-scheme:dark)").onchange = event => {
+    if (appConfigs.themeFollowSystem) {
+        appConfigs.darkTheme = event.matches;
+    }
+};
+
+(async () => {
+    await checkUserStatus();
     window.appInited.value = true;
-});
+})();
 
 async function checkUserStatus() {
     try {
