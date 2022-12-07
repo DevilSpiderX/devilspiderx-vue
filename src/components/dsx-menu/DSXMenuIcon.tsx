@@ -1,4 +1,4 @@
-import { isVNode, VNodeChild, VNodeProps } from "vue";
+import { isVNode, VNodeChild } from "vue";
 
 interface Props {
     icon: VNodeChild

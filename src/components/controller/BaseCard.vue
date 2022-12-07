@@ -22,7 +22,6 @@
     overflow: hidden;
     color: var(--color-text-1);
     transition: 0.3s;
-    z-index: 100;
     display: -webkit-flex;
     display: flex;
     -webkit-flex-direction: column;
@@ -30,7 +29,6 @@
 }
 
 .base-card:hover {
-    z-index: 101;
     box-shadow: var(--el-box-shadow-dark);
 }
 

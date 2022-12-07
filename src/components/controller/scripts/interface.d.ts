@@ -1,4 +1,4 @@
-interface CpuValueType {
+export interface CpuValueType {
     name: string,
     physicalNum: number,
     logicalNum: number,
@@ -7,7 +7,7 @@ interface CpuValueType {
     cpuTemperature: number
 }
 
-interface MemoryValueType {
+export interface MemoryValueType {
     total: number,
     used: number,
     free: number,
@@ -18,7 +18,7 @@ interface MemoryValueType {
     }
 }
 
-interface NetworkValueType {
+export interface NetworkValueType {
     uploadSpeed: number,
     downloadSpeed: number,
     format: {
@@ -27,7 +27,7 @@ interface NetworkValueType {
     }
 }
 
-interface DiskValueType {
+export interface DiskValueType {
     label: string,
     mount: string,
     fSType: string,
@@ -41,5 +41,3 @@ interface DiskValueType {
         used: { value: number, unit: string }
     }
 }
-
-export type { CpuValueType, MemoryValueType, NetworkValueType, DiskValueType }

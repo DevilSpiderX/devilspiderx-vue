@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import { IconArrowFall, IconArrowRise } from "@arco-design/web-vue/es/icon";
 import BaseCard from "./BaseCard.vue";
-import { NetworkValueType } from "./scripts/Types";
+import { NetworkValueType } from "./scripts/interface";
 
 const props = withDefaults(
     defineProps<{ value: NetworkValueType, loading: boolean }>(),

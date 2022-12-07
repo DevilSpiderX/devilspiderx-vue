@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { computed, CSSProperties } from 'vue';
+import { computed } from 'vue';
 
 interface Props {
-    style?: CSSProperties,
     divider?: boolean,
     hidden?: boolean,
     disabled?: boolean
@@ -29,10 +28,8 @@ function item_click(event: MouseEvent) {
 </script>
 
 <template>
-    <div v-if="divider" class="dsx-menu-item-divider" :class="classObj" :style="style" @contextmenu.prevent>
-    </div>
-    <div v-else v-show="!hidden" class="dsx-menu-item" :class="classObj" :style="style" @click="item_click"
-        @contextmenu.prevent>
+    <div v-if="divider" class="dsx-menu-item-divider" :class="classObj" @contextmenu.prevent />
+    <div v-else v-show="!hidden" class="dsx-menu-item" :class="classObj" @click="item_click" @contextmenu.prevent>
         <div v-if="$slots.icon" class="dsx-menu-item-icon">
             <slot name="icon" />
         </div>

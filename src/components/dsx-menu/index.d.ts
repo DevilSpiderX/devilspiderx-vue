@@ -1,7 +1,10 @@
-import { CSSProperties, VNodeChild } from "vue";
 import DSXMenu from "./DSXMenu.vue";
 import DSXMenuItem from "./DSXMenuItem.vue";
 import DSXMenuIcon from "./DSXMenuIcon";
+
+export { DSXMenu, DSXMenuItem, DSXMenuIcon }
+
+import { CSSProperties, VNodeChild } from "vue";
 
 export interface MenuItemOptionType {
     label?: string,
@@ -16,9 +19,8 @@ export interface MenuItemOptionType {
 }
 
 export interface DSXMenuProps {
-    style?: CSSProperties,
     visible: boolean,
-    event: MouseEvent | { x: number, y: number },
+    event: { x: number, y: number } | MouseEvent,
     zIndex?: number,
     menus?: Array<MenuItemOptionType>,
     minWidth?: number | string;
@@ -26,10 +28,7 @@ export interface DSXMenuProps {
 }
 
 export interface DSXMenuItemProps {
-    style?: CSSProperties,
     divider?: boolean,
     hidden?: boolean,
     disabled?: boolean
 }
-
-export { DSXMenu, DSXMenuItem, DSXMenuIcon }

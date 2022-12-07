@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import { Progress as AProgress } from "@arco-design/web-vue";
 import BaseCard from "./BaseCard.vue";
-import { MemoryValueType } from "./scripts/Types";
+import { MemoryValueType } from "./scripts/interface";
 import { colors } from "./scripts/progressColor";
 
 const props = withDefaults(

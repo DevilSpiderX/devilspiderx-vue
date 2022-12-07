@@ -1,14 +1,14 @@
 <script setup>
 import { onUnmounted, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import { Message } from "@arco-design/web-vue";
-import AScrollbar from "@arco-design/web-vue/es/scrollbar";
+import { Message, Scrollbar as AScrollbar } from "@arco-design/web-vue";
 import CpuCard from "./CpuCard.vue";
 import MemoryCard from "./MemoryCard.vue";
 import NetworkCard from "./NetworkCard.vue";
 import DiskCard from "./DiskCard.vue";
 import http from "@/scripts/server-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
+import { useEventListener } from "@/scripts/event";
 
 const appConfigs = useAppConfigs();
 appConfigs.backgroundColor2StatusBarColor();
@@ -122,10 +122,25 @@ function main_card_scrollbar_scroll(event) {
     pageHeaderBoxShadow.value = event.target?.scrollTop === 0 ? undefined : "var(--bs-shadow)";
 }
 
+function getMainCardScrollbarHeight() {
+    const height = document.documentElement.clientHeight - 65;
+    return height <= 0 ? "0" : `${height}px`;
+}
+
+const mainCardScrollbarStyle = reactive({
+    overflow: "auto",
+    width: "100%",
+    height: getMainCardScrollbarHeight()
+});
+
+useEventListener(window, "resize", () => {
+    mainCardScrollbarStyle.height = getMainCardScrollbarHeight();
+});
+
 </script>
 
 <template>
-    <ALayout style="height:100%">
+    <ALayout>
         <ALayoutHeader style="max-height: 65px;z-index: 101" :style="{ boxShadow: pageHeaderBoxShadow }">
             <APageHeader @back="$router.back">
                 <template #title>
@@ -147,11 +162,9 @@ function main_card_scrollbar_scroll(event) {
                 </template>
             </APageHeader>
         </ALayoutHeader>
-        <ALayoutContent style="height: calc(100% - 65px)">
-            <AScrollbar style="overflow: auto;width: 100%;height: 100%" @scroll="main_card_scrollbar_scroll"
-                outer-style="overflow: hidden;width: 100%;height: 100%">
-                <ACard class="main-card" :header-style="{ height: 'auto' }"
-                    :style="{ height: 'auto', backgroundColor: 'var(--color-bg-1)' }">
+        <ALayoutContent>
+            <AScrollbar :style="mainCardScrollbarStyle" @scroll="main_card_scrollbar_scroll">
+                <ACard class="main-card" :header-style="{ height: 'auto' }" style="background-color: var(--color-bg-1)">
                     <template #title>
                         <div>
                             <h1 style="text-align: center;user-select: none;margin: 0;font-size: 1.5rem">
@@ -196,9 +209,6 @@ function main_card_scrollbar_scroll(event) {
 
 .main-card {
     box-sizing: border-box;
-    width: 100vw;
-    height: 100vh;
-    overflow-y: auto;
     border: 0;
 }
 
@@ -211,10 +221,6 @@ function main_card_scrollbar_scroll(event) {
 }
 
 .my-col:hover {
-    z-index: 100;
-}
-
-.main-card::-webkit-scrollbar {
-    display: none;
+    z-index: 1;
 }
 </style>

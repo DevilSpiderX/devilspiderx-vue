@@ -1,8 +1,17 @@
+<script lang="ts">
+import { defineComponent } from "vue";
+
+export default defineComponent({
+    name: "DSXMenu",
+    inheritAttrs: false
+});
+
+</script>
+
 <script setup lang="ts">
 import { sleep } from '@/util/util';
 import {
     computed,
-    CSSProperties,
     nextTick,
     onMounted,
     onUnmounted,
@@ -10,13 +19,11 @@ import {
     ref,
     toRef,
     toRefs,
-    useAttrs,
     watch
 } from 'vue';
 import { DSXMenuItem, DSXMenuIcon as Icon, MenuItemOptionType } from '.';
 
 interface Props {
-    style?: CSSProperties,
     visible: boolean,
     event: { x: number, y: number } | MouseEvent,
     zIndex?: number,
@@ -39,18 +46,11 @@ function close() {
     }
 }
 
-const attrs = useAttrs();
-
 const isMoving = ref(false);
 
-const classObj = computed(() => {
-    return [
-        attrs.class,
-        {
-            "dsx-menu-fade-enter-active": isMoving.value,
-        }
-    ]
-});
+const classObj = computed(() => ({
+    "dsx-menu-fade-enter-active": isMoving.value,
+}));
 
 const position = ref({
     x: 0,
@@ -65,20 +65,14 @@ watch(position, async () => {
 
 const transformOrigin = ref("top left");
 
-const styleObj = computed(() => {
-    let minWidth = props.minWidth ? typeof props.minWidth === "string" ? props.minWidth : props.minWidth + "px" : undefined;
-    let maxWidth = props.maxWidth ? typeof props.maxWidth === "string" ? props.maxWidth : props.maxWidth + "px" : undefined;
-
-    return {
-        ...props.style,
-        zIndex: props.zIndex,
-        "--p-x": position.value.x + 'px',
-        "--p-y": position.value.y + 'px',
-        minWidth: minWidth,
-        maxWidth: maxWidth,
-        "--t-origin": transformOrigin.value
-    }
-});
+const styleObj = computed(() => ({
+    zIndex: props.zIndex,
+    "--p-x": position.value.x + 'px',
+    "--p-y": position.value.y + 'px',
+    minWidth: props.minWidth ? typeof props.minWidth === "string" ? props.minWidth : props.minWidth + "px" : undefined,
+    maxWidth: props.maxWidth ? typeof props.maxWidth === "string" ? props.maxWidth : props.maxWidth + "px" : undefined,
+    "--t-origin": transformOrigin.value
+}));
 
 const DSX_Menu = ref();
 
@@ -126,7 +120,7 @@ function getItemBinds(item: MenuItemOptionType) {
 <template>
     <Teleport to="body">
         <Transition name='dsx-menu-fade'>
-            <div v-if="visible" class="dsx-menu" :class="classObj" :style="styleObj" ref="DSX_Menu"
+            <div v-if="visible" v-bind="$attrs" class="dsx-menu" :class="classObj" :style="styleObj" ref="DSX_Menu"
                 @contextmenu.prevent="close">
                 <div class="dsx-menu-body">
                     <template v-if="$slots.default">

@@ -8,7 +8,7 @@ export function useEventListener(target: EventTarget | string, event: string,
     } else {
         element = target;
     }
-    if (element !== null) {
+    if (element) {
         onMounted(() => element?.addEventListener(event, callback, options));
         onUnmounted(() => element?.removeEventListener(event, callback, options));
     } else {

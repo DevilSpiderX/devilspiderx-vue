@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import BaseCard from "./BaseCard.vue";
-import { DiskValueType } from "./scripts/Types";
+import { DiskValueType } from "./scripts/interface";
 import { colors } from "./scripts/progressColor";
 
 const props = withDefaults(
