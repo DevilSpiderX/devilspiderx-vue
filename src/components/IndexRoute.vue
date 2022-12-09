@@ -1,12 +1,12 @@
 <script setup lang="jsx">
-import { computed, isVNode, reactive, watch } from "vue";
-import { useRouter } from "vue-router";
-import { IconClose, IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
-import { Message } from "@arco-design/web-vue";
-import { DSXMenuIcon as Icon } from "./dsx-menu";
 import v2rayNPngUrl from "@/assets/v2rayN.png";
+import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
-import http from "@/scripts/server-api";
+import { Message } from "@arco-design/web-vue";
+import { IconClose, IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
+import { computed, reactive, watch } from "vue";
+import { useRouter } from "vue-router";
+import { DSXMenuIcon as Icon } from "./dsx-menu";
 
 const appConfigs = useAppConfigs();
 appConfigs.backgroundColor2StatusBarColor();
@@ -70,16 +70,9 @@ async function on_logoutButton_clicked() {
     try {
         let resp = await http.user.logout();
         console.log("Logout:", resp);
-        switch (resp["code"]) {
-            case 0: {
-                appConfigs.user.login = false;
-                Message.success("登出成功");
-                break;
-            }
-            case 1: {
-                Message.error("您还未登录过");
-                break;
-            }
+        if (resp.code === 0) {
+            appConfigs.user.login = false;
+            Message.success("登出成功");
         }
         router.push({ name: "login" });
     } catch (error) {

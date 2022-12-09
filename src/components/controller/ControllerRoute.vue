@@ -1,5 +1,5 @@
 <script setup>
-import http from "@/scripts/server-api";
+import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Message, Scrollbar as AScrollbar } from "@arco-design/web-vue";
 import { computed, onUnmounted, reactive, ref, watch } from "vue";
@@ -69,9 +69,9 @@ const router = useRouter();
     try {
         let resp = await http.serverInfo.token();
         console.log("token:", resp);
-        if (resp["code"] === 0) {
-            ws.token = resp["data"]["token"];
-            ws.time_str = resp["data"]["timeStr"];
+        if (resp.code === 0) {
+            ws.token = resp.data.token;
+            ws.time_str = resp.data.timeStr;
             let wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
             ws.websocket = new WebSocket(`${wsProtocol}//${location.host}/websocket/getServerInfo/${ws.token}/${ws.time_str}`);
             ws.websocket.onopen = ws.WsOnOPen;

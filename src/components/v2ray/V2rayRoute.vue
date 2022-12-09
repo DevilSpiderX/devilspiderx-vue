@@ -1,9 +1,9 @@
 <script setup>
-import { onMounted, ref } from "vue";
-import { Notification } from '@arco-design/web-vue';
-import MySwitch from "./MySwitch.vue";
-import http from "@/scripts/server-api";
+import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
+import { Notification } from '@arco-design/web-vue';
+import { onMounted, ref } from "vue";
+import MySwitch from "./MySwitch.vue";
 
 const appConfigs = useAppConfigs();
 appConfigs.backgroundColor2StatusBarColor();
@@ -14,7 +14,7 @@ onMounted(async () => {
     try {
         let resp = await http.v2ray.state();
         console.log("v2rayState:", resp);
-        switchStatus.value = resp["code"] === 1;
+        switchStatus.value = resp.data;
     } catch (ignored) {
     }
 });
@@ -24,21 +24,21 @@ async function on_switch_clicked() {
         if (switchStatus.value) {
             let resp = await http.v2ray.stop();
             console.log("v2rayStop:", resp);
-            switch (resp["code"]) {
+            switch (resp.code) {
                 case 0: {
                     switchStatus.value = false;
                     break;
                 }
                 case 1: {
-                    Notification.error(resp["msg"]);
+                    Notification.error(resp.msg);
                     break;
                 }
                 case 2: {
                     switchStatus.value = false;
-                    Notification.error(resp["msg"]);
+                    Notification.error(resp.msg);
                     break;
                 }
-                case 101: {
+                case 1003: {
                     Notification.error("没有管理员权限");
                     break;
                 }
@@ -46,21 +46,21 @@ async function on_switch_clicked() {
         } else {
             let resp = await http.v2ray.start();
             console.log("v2rayStart:", resp);
-            switch (resp["code"]) {
+            switch (resp.code) {
                 case 0: {
                     switchStatus.value = true;
                     break;
                 }
                 case 1: {
-                    Notification.error(resp["msg"]);
+                    Notification.error(resp.msg);
                     break;
                 }
                 case 2: {
                     switchStatus.value = true;
-                    Notification.error(resp["msg"]);
+                    Notification.error(resp.msg);
                     break;
                 }
-                case 101: {
+                case 1003: {
                     Notification.error("没有管理员权限");
                     break;
                 }

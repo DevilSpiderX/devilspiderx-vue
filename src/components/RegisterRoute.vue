@@ -2,7 +2,7 @@
 import { reactive } from "vue";
 import { useRouter } from "vue-router";
 import { Message } from "@arco-design/web-vue";
-import http from "@/scripts/server-api";
+import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 
 const appConfigs = useAppConfigs();
@@ -53,9 +53,14 @@ async function form_submit() {
                 for (const i in inputStatus) inputStatus[i] = true;
                 break;
             }
-            case 4: {
+            case 2: {
                 Message.error("用户名已存在\n请换一个用户名");
                 inputStatus[0] = true;
+                break;
+            }
+            case 1000: {
+                Message.error("账号或者密码未填写");
+                for (const i in inputStatus) inputStatus[i] = true;
                 break;
             }
         }

@@ -1,15 +1,15 @@
 <script setup>
+import { DSXMenu } from "@/components/dsx-menu";
+import { http } from "@/scripts/http";
+import { useAppConfigs } from "@/store/AppConfigsStore";
+import { Message, Modal } from "@arco-design/web-vue";
 import { computed, h, nextTick, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import { Message, Modal } from "@arco-design/web-vue";
 import AddModal from "./AddModal.vue";
-import UpdateModal from "./UpdateModal.vue";
 import DisplayModal from "./DisplayModal.vue";
-import http from "@/scripts/server-api";
-import { useAppConfigs } from "@/store/AppConfigsStore";
-import QueryTd from "./QueryTd.vue";
-import { DSXMenu } from "@/components/dsx-menu";
 import { useTableMenu } from "./hooks/table-menu";
+import QueryTd from "./QueryTd.vue";
+import UpdateModal from "./UpdateModal.vue";
 
 const appConfigs = useAppConfigs();
 appConfigs.backgroundColor2StatusBarColor();
@@ -73,19 +73,14 @@ function QuerySucceed(resp) {
     console.log("QuerySucceed:", resp);
     searching.value = false;
     table.paginationProps.current = 1;
-    switch (resp["code"]) {
+    switch (resp.code) {
         case 0: {
-            table.data = resp["data"];
+            table.data = resp.data;
             setTableScrollTop(0);
             break;
         }
-        case 1: {
-            console.log("没有查询到任何结果");
-            table.data = [];
-            break;
-        }
-        case 100:
-        default: {
+        case 1002: {
+            Message.error("请先登录再试");
             router.push({ name: "login" });
             break;
         }
@@ -139,7 +134,7 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
             okText: "确定",
             cancelText: "取消",
             onOk: async () => {
-                let resp = await http.query.Delete(record.id);
+                let resp = await http.query.delete(record.id);
                 switch (resp.code) {
                     case 0: {
                         table.data.splice(recordIndex, 1);
@@ -152,8 +147,8 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
                         Message.error("删除失败");
                         break;
                     }
-                    case 100:
-                    default: {
+                    case 1002: {
+                        Message.error("请先登录再试");
                         router.push({ name: "login" });
                         break;
                     }
@@ -203,7 +198,7 @@ async function add_submit(form_data) {
     try {
         let resp = await http.query.add(name, account, password, remark);
         console.log("addPasswords:", resp);
-        switch (resp["code"]) {
+        switch (resp.code) {
             case 0: {
                 let val = key.value;
                 val = val === undefined || val === "" ? name : `${val} ${name}`;
@@ -233,8 +228,8 @@ async function add_submit(form_data) {
                 addModal.visible = false;
                 break;
             }
-            case 100:
-            default: {
+            case 1002: {
+                Message.error("请先登录再试");
                 router.push({ name: "login" });
                 break;
             }
@@ -281,8 +276,8 @@ function update_submit(form_data) {
                     Message.error(resp["msg"]);
                     break;
                 }
-                case 100:
-                default: {
+                case 1002: {
+                    Message.error("请先登录再试");
                     router.push({ name: "login" });
                     break;
                 }

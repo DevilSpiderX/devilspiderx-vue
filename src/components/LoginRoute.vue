@@ -1,11 +1,11 @@
 <script setup>
+import { http } from "@/scripts/http";
+import { useAppConfigs } from "@/store/AppConfigsStore";
+import { Message } from "@arco-design/web-vue";
+import Hex from "crypto-js/enc-hex";
+import SHA256 from "crypto-js/sha256";
 import { onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
-import { Message } from "@arco-design/web-vue";
-import SHA256 from "crypto-js/sha256";
-import Hex from "crypto-js/enc-hex";
-import http from "@/scripts/server-api";
-import { useAppConfigs } from "@/store/AppConfigsStore";
 
 const appConfigs = useAppConfigs();
 appConfigs.backgroundColor2StatusBarColor();
@@ -44,7 +44,7 @@ async function form_submit() {
     try {
         let resp = await http.user.login(uid, pwd);
         console.log("Login:", resp);
-        switch (resp["code"]) {
+        switch (resp.code) {
             case 0: {
                 appConfigs.user.login = true;
                 Object.assign(appConfigs.user, resp.data);

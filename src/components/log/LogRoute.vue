@@ -3,7 +3,7 @@ import { computed, onMounted, onUnmounted, reactive, ref, toRef, watch, watchEff
 import { useRouter } from "vue-router";
 import { IconCaretUp, IconCaretDown, IconLoop } from "@arco-design/web-vue/es/icon"
 import { useAppConfigs } from "@/store/AppConfigsStore";
-import http from "@/scripts/server-api";
+import { http } from "@/scripts/http";
 import LogMonitor from "./LogMonitor.vue";
 
 const appConfigs = useAppConfigs();

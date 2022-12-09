@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from "vue";
-import http from "./scripts/server-api.js";
+import { http } from "./scripts/http";
 import { useAppConfigs } from "./store/AppConfigsStore";
 
 window.appInited = ref(false);
