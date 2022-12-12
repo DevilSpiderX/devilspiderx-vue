@@ -14,7 +14,7 @@ httpInstance.interceptors.response.use(resp => {
     }
     return resp;
 }, error => {
-    error.status = error.response.status;
+    error.response && (error.status = error.response.status);
     throw error;
 });
 
