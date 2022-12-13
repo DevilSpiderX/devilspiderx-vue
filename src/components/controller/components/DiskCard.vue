@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import BaseCard from "./BaseCard.vue";
-import { DiskValueType } from "./scripts/interface";
-import { colors } from "./scripts/progressColor";
+import { DiskValueType } from "../scripts/interface";
+import { colors } from "../scripts/progressColor";
 
 const props = withDefaults(
     defineProps<{ value: DiskValueType, diskIndex: number }>(),
@@ -68,7 +68,7 @@ const progressColor = computed(() => {
 </template>
 
 <style scoped>
-@import url(./styles/card-normal.css);
+@import url(../styles/card-normal.css);
 
 .my-card-body {
     font-size: 16px;

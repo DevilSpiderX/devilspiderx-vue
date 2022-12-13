@@ -4,10 +4,7 @@ import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Message, Scrollbar as AScrollbar } from "@arco-design/web-vue";
 import { computed, onUnmounted, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import CpuCard from "./CpuCard.vue";
-import DiskCard from "./DiskCard.vue";
-import MemoryCard from "./MemoryCard.vue";
-import NetworkCard from "./NetworkCard.vue";
+import { CpuCard, DiskCard, MemoryCard, NetworkCard } from "./components";
 
 const appConfigs = useAppConfigs();
 appConfigs.backgroundColor2StatusBarColor();

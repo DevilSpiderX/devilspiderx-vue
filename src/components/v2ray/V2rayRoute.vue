@@ -3,7 +3,7 @@ import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Notification } from '@arco-design/web-vue';
 import { onMounted, ref } from "vue";
-import MySwitch from "./MySwitch.vue";
+import { MySwitch } from "./components";
 
 const appConfigs = useAppConfigs();
 appConfigs.backgroundColor2StatusBarColor();
@@ -38,10 +38,6 @@ async function on_switch_clicked() {
                     Notification.error(resp.msg);
                     break;
                 }
-                case 1003: {
-                    Notification.error("没有管理员权限");
-                    break;
-                }
             }
         } else {
             let resp = await http.v2ray.start();
@@ -58,10 +54,6 @@ async function on_switch_clicked() {
                 case 2: {
                     switchStatus.value = true;
                     Notification.error(resp.msg);
-                    break;
-                }
-                case 1003: {
-                    Notification.error("没有管理员权限");
                     break;
                 }
             }

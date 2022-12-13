@@ -1,6 +1,6 @@
 <script setup>
-import { computed, reactive, ref } from 'vue';
 import { Scrollbar as AScrollbar } from "@arco-design/web-vue";
+import { computed, reactive, ref } from 'vue';
 
 const props = defineProps({
     text: {

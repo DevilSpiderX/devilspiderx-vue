@@ -2,8 +2,8 @@
 import { computed } from "vue";
 import { Progress as AProgress } from "@arco-design/web-vue";
 import BaseCard from "./BaseCard.vue";
-import { MemoryValueType } from "./scripts/interface";
-import { colors } from "./scripts/progressColor";
+import { MemoryValueType } from "../scripts/interface";
+import { colors } from "../scripts/progressColor";
 
 const props = withDefaults(
     defineProps<{ value: MemoryValueType, processCount: number, loading: boolean }>(),
@@ -88,5 +88,5 @@ const progressColor = computed(() => {
 </template>
 
 <style scoped>
-@import url(./styles/card-normal.css);
+@import url(../styles/card-normal.css);
 </style>

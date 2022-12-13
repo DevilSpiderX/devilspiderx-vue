@@ -6,7 +6,7 @@ import { Message } from "@arco-design/web-vue";
 import { IconClose, IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
 import { computed, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
-import { DSXMenuIcon as Icon } from "./dsx-menu";
+import { DSXMenuIcon as Icon } from "@/components/dsx-menu";
 
 const appConfigs = useAppConfigs();
 appConfigs.backgroundColor2StatusBarColor();

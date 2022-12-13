@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import { IconArrowFall, IconArrowRise } from "@arco-design/web-vue/es/icon";
 import BaseCard from "./BaseCard.vue";
-import { NetworkValueType } from "./scripts/interface";
+import { NetworkValueType } from "../scripts/interface";
 
 const props = withDefaults(
     defineProps<{ value: NetworkValueType, loading: boolean }>(),
@@ -71,5 +71,5 @@ const precisionDownload = computed(() => {
 </template>
 
 <style scoped>
-@import url(./styles/card-normal.css);
+@import url(../styles/card-normal.css);
 </style>

@@ -5,11 +5,8 @@ import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Message, Modal } from "@arco-design/web-vue";
 import { computed, h, nextTick, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import AddModal from "./AddModal.vue";
-import DisplayModal from "./DisplayModal.vue";
+import { AddModal, DisplayModal, QueryTd, UpdateModal } from "./components";
 import { useTableMenu } from "./hooks/table-menu";
-import QueryTd from "./QueryTd.vue";
-import UpdateModal from "./UpdateModal.vue";
 
 const appConfigs = useAppConfigs();
 appConfigs.backgroundColor2StatusBarColor();
@@ -79,11 +76,6 @@ function QuerySucceed(resp) {
             setTableScrollTop(0);
             break;
         }
-        case 1002: {
-            Message.error("请先登录再试");
-            router.push({ name: "login" });
-            break;
-        }
     }
 }
 
@@ -145,11 +137,6 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
                     }
                     case 1: {
                         Message.error("删除失败");
-                        break;
-                    }
-                    case 1002: {
-                        Message.error("请先登录再试");
-                        router.push({ name: "login" });
                         break;
                     }
                 }
@@ -228,11 +215,6 @@ async function add_submit(form_data) {
                 addModal.visible = false;
                 break;
             }
-            case 1002: {
-                Message.error("请先登录再试");
-                router.push({ name: "login" });
-                break;
-            }
         }
     } catch (error) {
         console.error("(add_submit)", `url:${error.config?.url}`, error);
@@ -274,11 +256,6 @@ function update_submit(form_data) {
                 }
                 case 1: {
                     Message.error(resp["msg"]);
-                    break;
-                }
-                case 1002: {
-                    Message.error("请先登录再试");
-                    router.push({ name: "login" });
                     break;
                 }
             }

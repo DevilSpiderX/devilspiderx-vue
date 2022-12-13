@@ -21,7 +21,7 @@ import {
     toRefs,
     watch
 } from 'vue';
-import { DSXMenuItem, DSXMenuIcon as Icon, MenuItemOptionType } from '.';
+import { DSXMenuIcon as Icon, DSXMenuItem, MenuItemOptionType } from '.';
 
 interface Props {
     visible: boolean,

@@ -4,24 +4,24 @@ const routes: RouteRecordRaw[] = [
     {
         name: "welcome",
         path: "/",
-        component: () => import("@/components/WelcomeRoute.vue")
+        component: () => import("@/components/welcome/WelcomeRoute.vue")
     },
     {
         name: "login",
         path: "/login",
-        component: () => import("@/components/LoginRoute.vue"),
+        component: () => import("@/components/login/LoginRoute.vue"),
         meta: { title: "登录 - DevilSpiderX" }
     },
     {
         name: "register",
         path: "/register",
-        component: () => import("@/components/RegisterRoute.vue"),
+        component: () => import("@/components/register/RegisterRoute.vue"),
         meta: { title: "注册 - DevilSpiderX" }
     },
     {
         name: "index",
         path: "/index",
-        component: () => import("@/components/IndexRoute.vue"),
+        component: () => import("@/components/index/IndexRoute.vue"),
         meta: { title: "主页 - DevilSpiderX" }
     },
     {
@@ -54,7 +54,7 @@ const routes: RouteRecordRaw[] = [
     {
         name: "updatePwd",
         path: "/updatePwd",
-        component: () => import("@/components/UpdatePwdRoute.vue"),
+        component: () => import("@/components/update-pwd/UpdatePwdRoute.vue"),
         meta: { title: "修改密码 - DevilSpiderX" }
     }
 ]
