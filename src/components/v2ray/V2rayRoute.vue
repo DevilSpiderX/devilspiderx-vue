@@ -1,7 +1,7 @@
 <script setup>
 import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
-import { Notification } from '@arco-design/web-vue';
+import { Message } from '@arco-design/web-vue';
 import { onMounted, ref } from "vue";
 import { MySwitch } from "./components";
 
@@ -30,12 +30,12 @@ async function on_switch_clicked() {
                     break;
                 }
                 case 1: {
-                    Notification.error(resp.msg);
+                    Message.error(resp.msg);
                     break;
                 }
                 case 2: {
                     switchStatus.value = false;
-                    Notification.error(resp.msg);
+                    Message.error(resp.msg);
                     break;
                 }
             }
@@ -48,19 +48,19 @@ async function on_switch_clicked() {
                     break;
                 }
                 case 1: {
-                    Notification.error(resp.msg);
+                    Message.error(resp.msg);
                     break;
                 }
                 case 2: {
                     switchStatus.value = true;
-                    Notification.error(resp.msg);
+                    Message.error(resp.msg);
                     break;
                 }
             }
         }
     } catch (error) {
         console.error("(on_switch_clicked)", `url:${error.config?.url}`, error);
-        Notification.error("服务器错误");
+        Message.error("服务器错误");
     }
 }
 </script>
