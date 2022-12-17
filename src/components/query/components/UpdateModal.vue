@@ -8,6 +8,11 @@ const props = defineProps({
 })
 const emit = defineEmits(["submit", "update:visible"]);
 
+const _visible = computed({
+    get: () => props.visible,
+    set: value => emit("update:visible", value)
+});
+
 const form = reactive({
     id: -1,
     name: "",
@@ -19,10 +24,6 @@ const form = reactive({
 watch(() => props.data, data => {
     Object.assign(form, data);
 });
-
-function Close() {
-    emit('update:visible', false);
-}
 
 const inputNameStatus = ref(false);
 
@@ -55,13 +56,12 @@ const width = computed(() => {
 });
 
 function cancel_click() {
-    Close();
+    _visible.value = false;
 }
 </script>
 
 <template>
-    <AModal :visible="visible" title="修改密码记录" :width="width"
-        @update:visible="visible => $emit('update:visible', visible)">
+    <AModal v-model:visible="_visible" title="修改密码记录" :width="width">
         <AForm :model="form" @submit="form_submit">
             <AFormItem field="id" label="ID" v-show="false">
                 <AInputNumber placeholder="id" v-model="form.id" :min="0"></AInputNumber>
