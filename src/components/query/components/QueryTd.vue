@@ -10,7 +10,10 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-const emit = defineEmits(["contextmenu", "dblclick"]);
+const emit = defineEmits<{
+    (e: "contextmenu", column: TableColumnData, record: TableData, rowIndex: number, event: MouseEvent): void,
+    (e: "dblclick", record: TableData, event: MouseEvent): void
+}>();
 
 function handle_td_contextmenu(event: MouseEvent) {
     const { value } = props;

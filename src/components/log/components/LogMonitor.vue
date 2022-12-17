@@ -1,6 +1,7 @@
 <script setup>
 import { Scrollbar as AScrollbar } from "@arco-design/web-vue";
-import { computed, reactive, ref } from 'vue';
+import { computed, reactive } from 'vue';
+import { useLogWrapperRef, useScrollbarRef } from "../hooks/refs";
 
 const props = defineProps({
     text: {
@@ -35,10 +36,10 @@ const scrollbarOuterStyle = {
     overflow: "hidden"
 };
 
-const scrollbarRef = ref();
+const scrollbarRef = useScrollbarRef();
 
 function backTop(isSmooth) {
-    scrollbarRef.value.scrollTo({ top: 0, behavior: isSmooth ? "smooth" : undefined });
+    scrollbarRef.value?.scrollTo({ top: 0, behavior: isSmooth ? "smooth" : undefined });
 }
 
 const scrollData = reactive({
@@ -51,13 +52,13 @@ function scrollbar_scroll(event) {
     scrollData.top = event.target?.scrollTop;
 }
 
-const logWrapperRef = ref();
+const logWrapperRef = useLogWrapperRef();
 const logWrapperStyle = computed(() => ({
     fontSize: props.fontSize + "px"
 }));
 
 function toBottom(isSmooth) {
-    scrollbarRef.value.scrollTo({ top: logWrapperRef.value.clientHeight, behavior: isSmooth ? "smooth" : undefined });
+    scrollbarRef.value?.scrollTo({ top: logWrapperRef.value?.clientHeight, behavior: isSmooth ? "smooth" : undefined });
 }
 
 defineExpose({

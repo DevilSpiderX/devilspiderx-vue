@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import BaseCard from "./BaseCard.vue";
 import { DiskValueType } from "../scripts/interface";
 import { colors } from "../scripts/progressColor";
+import BaseCard from "./BaseCard.vue";
 
 const props = withDefaults(
-    defineProps<{ value: DiskValueType, diskIndex: number }>(),
+    defineProps<{
+        value: DiskValueType,
+        diskIndex: number
+    }>(),
     {
         value: () => ({
             label: "",
@@ -22,7 +25,7 @@ const props = withDefaults(
             }
         })
     }
-)
+);
 
 const freeStr = computed(() => {
     let data = props.value.format.free;

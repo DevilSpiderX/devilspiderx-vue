@@ -38,7 +38,9 @@ const props = withDefaults(defineProps<Props>(), {
     zIndex: 100
 });
 
-const emit = defineEmits(["update:visible"]);
+const emit = defineEmits<{
+    (e: "update:visible", visible: boolean): void
+}>();
 
 function close() {
     if (props.visible) {
@@ -63,7 +65,7 @@ watch(position, async () => {
     isMoving.value = false;
 });
 
-const transformOrigin = ref("top left");
+const transformOrigin = ref("left top");
 
 const styleObj = computed(() => ({
     zIndex: props.zIndex,
@@ -74,26 +76,28 @@ const styleObj = computed(() => ({
     "--t-origin": transformOrigin.value
 }));
 
-const DSX_Menu = ref();
+const DSX_Menu = ref<HTMLDivElement | null>(null);
 
 watch(() => props.event, async event => {
     const clientWidth = document.documentElement.clientWidth;
     const clientHeight = document.documentElement.clientHeight;
 
     await nextTick();
-    const width = DSX_Menu.value.clientWidth;
-    const height = DSX_Menu.value.clientHeight;
+    if (DSX_Menu.value) {
+        const width = DSX_Menu.value.clientWidth;
+        const height = DSX_Menu.value.clientHeight;
 
-    const xRight = event.x + width;
-    const yBottom = event.y + height;
+        const xRight = event.x + width;
+        const yBottom = event.y + height;
 
-    position.value = {
-        x: xRight >= clientWidth ? event.x - width : event.x,
-        y: yBottom >= clientHeight ? event.y - height : event.y
-    };
+        position.value = {
+            x: xRight >= clientWidth ? event.x - width : event.x,
+            y: yBottom >= clientHeight ? event.y - height : event.y
+        };
 
-    transformOrigin.value = xRight >= clientWidth ? "right " : "left ";
-    transformOrigin.value += yBottom >= clientHeight ? "bottom" : "top";
+        transformOrigin.value = xRight >= clientWidth ? "right " : "left ";
+        transformOrigin.value += yBottom >= clientHeight ? "bottom" : "top";
+    }
 });
 
 onMounted(() => {
@@ -147,6 +151,8 @@ function getItemBinds(item: MenuItemOptionType) {
 </template>
 
 <style scoped>
+@import url(./styles/menu-transition.css);
+
 .dsx-menu {
     --color-bg: #fff;
     --color-border: #00000026;
@@ -179,25 +185,5 @@ function getItemBinds(item: MenuItemOptionType) {
 
 .dsx-menu-body {
     display: block;
-}
-
-.dsx-menu-fade-enter-active {
-    animation: moving .2s ease-in-out;
-}
-
-.dsx-menu-fade-leave-active {
-    animation: moving .2s ease-in-out reverse;
-}
-
-@keyframes moving {
-    from {
-        opacity: 0;
-        transform: scale(0, 0);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1, 1);
-    }
 }
 </style>

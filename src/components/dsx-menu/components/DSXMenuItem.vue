@@ -9,7 +9,9 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const emit = defineEmits(["click"]);
+const emit = defineEmits<{
+    (e: "click", event: MouseEvent): void
+}>();
 
 const classObj = computed(() => {
     return [

@@ -16,6 +16,11 @@ const props = defineProps({
     }
 });
 
+const _cd = computed({
+    get: () => props.cd,
+    set: cd => router.replace({ query: { cd } })
+});
+
 watch(() => props.cd, cd => {
     if (ws.websocket !== null) {
         console.log("更改数据刷新速率", cd, "ms");
@@ -23,10 +28,6 @@ watch(() => props.cd, cd => {
         Message.success(`数据刷新速率：${cd}ms`);
     }
 });
-
-function setCD(cdValue) {
-    router.replace({ query: { cd: cdValue } })
-}
 
 const values = reactive({
     cpu: undefined,
@@ -43,7 +44,7 @@ const ws = {
         Message.success({ content: "WebSocket成功接入服务器", duration: 1000 });
         console.log(Date() + "\nWebSocket成功接入服务器");
         if (ws.websocket !== null) {
-            ws.websocket.send(JSON.stringify({ cmd: "start", cd: props.cd }));
+            ws.websocket.send(JSON.stringify({ cmd: "start", cd: _cd.value }));
         }
     },
     WsOnClose() {
@@ -100,11 +101,6 @@ watch(() => speedModal.visible, visible => {
         : window.getComputedStyle(document.body).backgroundColor;
 });
 
-function speed_modal_input_change(val) {
-    setCD(val);
-    speedModal.visible = false;
-}
-
 const cardsProps = reactive({
     class: "my-col",
     xs: 24,
@@ -140,8 +136,7 @@ const mainCardScrollbarStyle = reactive({
                     <ATooltip v-if="appConfigs.client.width <= 576" :content="String(cd)" mini>
                         <AButton shape="round" @click="speedModal.visible = true">刷新速率</AButton>
                     </ATooltip>
-                    <AInputNumber v-else :model-value="cd" @update:model-value="val => setCD(val)" :min="500"
-                        hide-button style="max-width: 12em">
+                    <AInputNumber v-else v-model="_cd" :min="500" hide-button style="max-width: 12em">
                         <template #prefix>
                             <span>刷新速率</span>
                         </template>
@@ -185,8 +180,7 @@ const mainCardScrollbarStyle = reactive({
         </ALayoutContent>
     </ALayout>
     <AModal title="数据刷新速率" v-model:visible="speedModal.visible" width="auto" simple :footer="false">
-        <AInputNumber :model-value="cd" @update:model-value="speed_modal_input_change" :min="500" hide-button
-            style="max-width: 15em">
+        <AInputNumber v-model="_cd" @change="speedModal.visible = false" :min="500" hide-button style="max-width: 15em">
             <template #suffix>
                 <span>ms</span>
             </template>

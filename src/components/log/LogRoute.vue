@@ -5,6 +5,7 @@ import { IconCaretDown, IconCaretUp, IconLoop } from "@arco-design/web-vue/es/ic
 import { computed, onMounted, onUnmounted, reactive, ref, toRef, watch, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import { LogMonitor } from "./components";
+import { useLogMonitorRef } from "./hooks/refs";
 
 const appConfigs = useAppConfigs();
 appConfigs.backgroundColor2StatusBarColor();
@@ -60,17 +61,17 @@ async function getLog() {
     log.loading = false;
 }
 
-const logMonitorRef = ref();
+const logMonitorRef = useLogMonitorRef();
 
 watchEffect(async () => {
     await getLog();
-    logMonitorRef.value.backTop();
+    logMonitorRef.value?.backTop();
 });
 
 const reflush = ref(false);
 
 watch(reflush, async reflushVal => {
-    if (reflushVal) {
+    if (reflushVal && logMonitorRef.value) {
         await getLog();
         logMonitorRef.value.toBottom(true);
         reflush.value = false;

@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { computed } from "vue";
 import { Progress as AProgress } from "@arco-design/web-vue";
-import BaseCard from "./BaseCard.vue";
+import { computed } from "vue";
 import { CpuValueType } from "../scripts/interface";
 import { colors } from "../scripts/progressColor";
+import BaseCard from "./BaseCard.vue";
 
 const props = withDefaults(
-    defineProps<{ value: CpuValueType, loading: boolean }>(),
+    defineProps<{
+        value: CpuValueType,
+        loading: boolean
+    }>(),
     {
         value: () => ({
             name: "",

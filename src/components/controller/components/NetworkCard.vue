@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { computed } from "vue";
 import { IconArrowFall, IconArrowRise } from "@arco-design/web-vue/es/icon";
-import BaseCard from "./BaseCard.vue";
+import { computed } from "vue";
 import { NetworkValueType } from "../scripts/interface";
+import BaseCard from "./BaseCard.vue";
 
 const props = withDefaults(
-    defineProps<{ value: NetworkValueType, loading: boolean }>(),
+    defineProps<{
+        value: NetworkValueType,
+        loading: boolean
+    }>(),
     {
         value: () => ({
             uploadSpeed: 0,

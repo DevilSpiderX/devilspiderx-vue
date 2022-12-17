@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { computed } from "vue";
 import { Progress as AProgress } from "@arco-design/web-vue";
-import BaseCard from "./BaseCard.vue";
+import { computed } from "vue";
 import { MemoryValueType } from "../scripts/interface";
 import { colors } from "../scripts/progressColor";
+import BaseCard from "./BaseCard.vue";
 
 const props = withDefaults(
-    defineProps<{ value: MemoryValueType, processCount: number, loading: boolean }>(),
+    defineProps<{
+        value: MemoryValueType,
+        processCount: number,
+        loading: boolean
+    }>(),
     {
         value: () => ({
             total: 1,
@@ -70,7 +74,7 @@ const progressColor = computed(() => {
                         <ADescriptionsItem label="已 用">{{ usedStr }}</ADescriptionsItem>
                         <ADescriptionsItem label="剩 余">{{ freeStr }}</ADescriptionsItem>
                         <ADescriptionsItem label="总 量">{{ totalStr }}</ADescriptionsItem>
-                        <ADescriptionsItem label="进 程">{{ props.processCount }} 个</ADescriptionsItem>
+                        <ADescriptionsItem label="进 程">{{ processCount }} 个</ADescriptionsItem>
                     </ADescriptions>
                     <ADescriptions>
                         <ADescriptionsItem label="使用率">
