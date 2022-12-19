@@ -1,15 +1,17 @@
 <script setup>
 import { DSXMenu } from "@/components/dsx-menu";
+import { useBodyNoScrollbar } from "@/hooks/body";
 import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Message, Modal } from "@arco-design/web-vue";
-import { computed, h, nextTick, onMounted, onUnmounted, reactive, ref, watch } from "vue";
-import { useRouter } from "vue-router";
+import { computed, h, nextTick, onMounted, reactive, ref, watch } from "vue";
 import { AddModal, DisplayModal, QueryTd, UpdateModal } from "./components";
 import { useTableMenu } from "./hooks/table-menu";
 
 const appConfigs = useAppConfigs();
 appConfigs.backgroundColor2StatusBarColor();
+
+useBodyNoScrollbar();
 
 const sortable = {
     sortDirections: ["ascend", "descend"],
@@ -43,12 +45,7 @@ const table = reactive({
 const tableTotalPage = computed(() => Math.ceil(table.data.length / table.paginationProps.pageSize));
 
 onMounted(() => {
-    document.body.classList.add("no-scrollbar");
-    table.bodyScrollWrap = document.querySelector('.arco-scrollbar-container.arco-table-body');
-});
-
-onUnmounted(() => {
-    document.body.classList.remove("no-scrollbar");
+    table.bodyScrollWrap = document.querySelector('.pwd-table .arco-scrollbar-container.arco-table-body');
 });
 
 const key = ref("");
@@ -63,8 +60,6 @@ async function Search() {
         QueryError();
     }
 }
-
-const router = useRouter();
 
 function QuerySucceed(resp) {
     console.log("QuerySucceed:", resp);
@@ -339,9 +334,10 @@ watch(() => [addModal.visible, updateModal.visible, displayModal.visible],
                     <ARow justify="center" style="height:100%">
                         <ACol v-bind="{ xs: 24, sm: 22, md: 20, lg: 18, xl: 16, xxl: 14 }"
                             :style="{ height: '100%', overflow: 'hidden' }">
-                            <ATable :columns="table.columns" :data="table.data" :scroll="{ y: 'calc(100% - 12px)' }"
-                                row-key="id" :pagination="table.paginationProps" :page-position="table.pagePosition"
-                                :loading="searching" @page-change="table_page_change">
+                            <ATable class="pwd-table" :columns="table.columns" :data="table.data" row-key="id"
+                                :scroll="{ y: 'calc(100% - 12px)' }" :pagination="table.paginationProps"
+                                :page-position="table.pagePosition" :loading="searching"
+                                @page-change="table_page_change">
                                 <template #empty>
                                     <AEmpty />
                                 </template>

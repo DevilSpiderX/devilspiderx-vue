@@ -1,8 +1,9 @@
 <script setup>
+import { useBodyNoScrollbar } from "@/hooks/body";
 import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { IconCaretDown, IconCaretUp, IconLoop } from "@arco-design/web-vue/es/icon";
-import { computed, onMounted, onUnmounted, reactive, ref, toRef, watch, watchEffect } from "vue";
+import { computed, reactive, ref, toRef, watch, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import { LogMonitor } from "./components";
 import { useLogMonitorRef } from "./hooks/refs";
@@ -10,16 +11,10 @@ import { useLogMonitorRef } from "./hooks/refs";
 const appConfigs = useAppConfigs();
 appConfigs.backgroundColor2StatusBarColor();
 
-onMounted(() => {
-    document.body.classList.add("no-scrollbar");
-});
-
-onUnmounted(() => {
-    document.body.classList.remove("no-scrollbar");
-});
+useBodyNoScrollbar();
 
 const log = reactive({
-    list: [],
+    list: ["now.log"],
     name: "now.log",
     text: "",
     fontSize: toRef(appConfigs.log, "fontSize"),
@@ -90,7 +85,7 @@ watch(() => logFontSizeModal.visible, visible => {
 const collapseList = reactive({
     show: false,
     form: {}
-})
+});
 
 </script>
 
@@ -189,8 +184,7 @@ const collapseList = reactive({
 .collapseList {
     box-sizing: border-box;
     width: 100%;
-    padding: 10px;
-    padding-bottom: 0;
+    padding: 10px 10px 0;
     z-index: 101;
     background-color: var(--color-bg-1);
     border-bottom: 1px solid #84858d55;

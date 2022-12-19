@@ -1,4 +1,5 @@
 <script setup>
+import { useBodyNoScrollbar } from "@/hooks/body";
 import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Message, Scrollbar as AScrollbar } from "@arco-design/web-vue";
@@ -8,6 +9,8 @@ import { CpuCard, DiskCard, MemoryCard, NetworkCard } from "./components";
 
 const appConfigs = useAppConfigs();
 appConfigs.backgroundColor2StatusBarColor();
+
+useBodyNoScrollbar();
 
 const props = defineProps({
     cd: {
