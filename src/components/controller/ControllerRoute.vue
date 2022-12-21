@@ -24,10 +24,10 @@ const _cd = computed({
     set: cd => router.replace({ query: { cd } })
 });
 
-watch(() => props.cd, cd => {
-    if (ws.websocket !== null) {
+watch(_cd, cd => {
+    if (ws) {
         console.log("更改数据刷新速率", cd, "ms");
-        ws.websocket.send(JSON.stringify({ cmd: "start", cd }));
+        ws.send(JSON.stringify({ cmd: "start", cd }));
         Message.success(`数据刷新速率：${cd}ms`);
     }
 });
@@ -39,31 +39,58 @@ const values = reactive({
     disk: [],
     os: undefined
 });
-const ws = {
-    websocket: WebSocket.prototype,
-    token: "",
-    time_str: "",
-    WsOnOPen() {
+
+class ServerInfoWebSocket {
+    constructor(token) {
+        this.token = token;
+        const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
+        this.websocket = new WebSocket(`${wsProtocol}//${location.host}/websocket/getServerInfo?token=${token}`);
+        this.websocket.onopen = this.onOpen.bind(this, _cd.value);
+        this.websocket.onclose = this.onClose;
+        this.websocket.onerror = this.onError;
+        this.websocket.onmessage = this.onMessage;
+    }
+
+    onOpen(cd) {
         Message.success({ content: "WebSocket成功接入服务器", duration: 1000 });
         console.log(Date() + "\nWebSocket成功接入服务器");
-        if (ws.websocket !== null) {
-            ws.websocket.send(JSON.stringify({ cmd: "start", cd: _cd.value }));
-        }
-    },
-    WsOnClose() {
+        this.send(JSON.stringify({ cmd: "start", cd }));
+    }
+
+    onClose() {
         Message.success({ content: "WebSocket连接已关闭", duration: 1000 });
         console.log(Date() + "\n连接已关闭");
-    },
-    WsOnError(event) {
+    }
+
+    onError(event) {
         Message.error({ content: "WebSocket发生错误", duration: 1000 });
         console.log(event);
         console.log(Date() + "\nWebSocket发生错误，使用POST请求获取信息");
         // getHardware();
-    },
-    WsOnMessage(msgEvent) {
+    }
+
+    onMessage(msgEvent) {
         Object.assign(values, JSON.parse(msgEvent.data));
     }
-};
+
+    isOpen() {
+        return this.websocket?.readyState === WebSocket.OPEN;
+    }
+
+    send(msg) {
+        if (this.isOpen()) {
+            this.websocket.send(msg);
+        }
+    }
+
+    close() {
+        if (this.isOpen()) {
+            this.websocket.close();
+        }
+    }
+}
+
+let ws = null;
 
 const router = useRouter();
 (async () => {
@@ -71,14 +98,7 @@ const router = useRouter();
         let resp = await http.serverInfo.token();
         console.log("token:", resp);
         if (resp.code === 0) {
-            ws.token = resp.data.token;
-            ws.time_str = resp.data.timeStr;
-            let wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
-            ws.websocket = new WebSocket(`${wsProtocol}//${location.host}/websocket/getServerInfo/${ws.token}/${ws.time_str}`);
-            ws.websocket.onopen = ws.WsOnOPen;
-            ws.websocket.onclose = ws.WsOnClose;
-            ws.websocket.onerror = ws.WsOnError;
-            ws.websocket.onmessage = ws.WsOnMessage;
+            ws = new ServerInfoWebSocket(resp.data.token);
         } else {
             router.push({ name: "login" });
         }
@@ -90,9 +110,7 @@ const router = useRouter();
 })();
 
 onUnmounted(() => {
-    if (ws.websocket instanceof WebSocket && ws.websocket.readyState === WebSocket.OPEN) {
-        ws.websocket.close();
-    }
+    ws?.close();
 });
 
 const speedModal = reactive({
