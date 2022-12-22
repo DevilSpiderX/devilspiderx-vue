@@ -1,15 +1,15 @@
 <script setup>
 import { useBodyNoScrollbar } from "@/hooks/body";
-import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Message, Scrollbar as AScrollbar } from "@arco-design/web-vue";
-import { computed, onUnmounted, reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { CpuCard, DiskCard, MemoryCard, NetworkCard } from "./components";
+import { useServerInfoWebSocket } from "./hooks/server-info-websocket";
 
 const appConfigs = useAppConfigs();
 appConfigs.backgroundColor2StatusBarColor();
-
+const router = useRouter();
 useBodyNoScrollbar();
 
 const props = defineProps({
@@ -21,96 +21,18 @@ const props = defineProps({
 
 const _cd = computed({
     get: () => props.cd,
-    set: cd => router.replace({ query: { cd } })
+    set: _cd => {
+        const cd = Math.floor(_cd);
+        router.replace({ query: { cd } });
+    }
 });
+
+const { values, setCD } = useServerInfoWebSocket(_cd.value);
 
 watch(_cd, cd => {
-    if (ws) {
-        console.log("更改数据刷新速率", cd, "ms");
-        ws.send(JSON.stringify({ cmd: "start", cd }));
-        Message.success(`数据刷新速率：${cd}ms`);
-    }
-});
-
-const values = reactive({
-    cpu: undefined,
-    memory: undefined,
-    network: undefined,
-    disk: [],
-    os: undefined
-});
-
-class ServerInfoWebSocket {
-    constructor(token) {
-        this.token = token;
-        const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
-        this.websocket = new WebSocket(`${wsProtocol}//${location.host}/websocket/getServerInfo?token=${token}`);
-        this.websocket.onopen = this.onOpen.bind(this, _cd.value);
-        this.websocket.onclose = this.onClose;
-        this.websocket.onerror = this.onError;
-        this.websocket.onmessage = this.onMessage;
-    }
-
-    onOpen(cd) {
-        Message.success({ content: "WebSocket成功接入服务器", duration: 1000 });
-        console.log(Date() + "\nWebSocket成功接入服务器");
-        this.send(JSON.stringify({ cmd: "start", cd }));
-    }
-
-    onClose() {
-        Message.success({ content: "WebSocket连接已关闭", duration: 1000 });
-        console.log(Date() + "\n连接已关闭");
-    }
-
-    onError(event) {
-        Message.error({ content: "WebSocket发生错误", duration: 1000 });
-        console.log(event);
-        console.log(Date() + "\nWebSocket发生错误，使用POST请求获取信息");
-        // getHardware();
-    }
-
-    onMessage(msgEvent) {
-        Object.assign(values, JSON.parse(msgEvent.data));
-    }
-
-    isOpen() {
-        return this.websocket?.readyState === WebSocket.OPEN;
-    }
-
-    send(msg) {
-        if (this.isOpen()) {
-            this.websocket.send(msg);
-        }
-    }
-
-    close() {
-        if (this.isOpen()) {
-            this.websocket.close();
-        }
-    }
-}
-
-let ws = null;
-
-const router = useRouter();
-(async () => {
-    try {
-        let resp = await http.serverInfo.token();
-        console.log("token:", resp);
-        if (resp.code === 0) {
-            ws = new ServerInfoWebSocket(resp.data.token);
-        } else {
-            router.push({ name: "login" });
-        }
-    } catch (error) {
-        console.error("(beforeCreate)", `url:${error.config?.url}`, error);
-        Message.error("服务器错误");
-        router.back();
-    }
-})();
-
-onUnmounted(() => {
-    ws?.close();
+    console.log("更改数据刷新速率", cd, "ms");
+    setCD(cd);
+    Message.success(`数据刷新速率：${cd}ms`);
 });
 
 const speedModal = reactive({

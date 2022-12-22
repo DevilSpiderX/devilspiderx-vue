@@ -1,3 +1,11 @@
+export interface ValuesType {
+    cpu?: CpuValueType,
+    memory?: MemoryValueType,
+    network?: NetworkValueType,
+    disk?: Array<DiskValueType>,
+    os?: OSValueType
+}
+
 export interface CpuValueType {
     name: string,
     physicalNum: number,
@@ -40,4 +48,10 @@ export interface DiskValueType {
         free: { value: number, unit: string },
         used: { value: number, unit: string }
     }
+}
+
+export interface OSValueType {
+    bitness: number,
+    name: string,
+    processCount: number
 }
