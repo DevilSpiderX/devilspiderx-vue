@@ -39,8 +39,35 @@ const table = reactive({
         simple: computed(() => appConfigs.client.width < 450)
     },
     pagePosition: computed(() => appConfigs.client.width < 450 ? "br" : "bottom"),
-    bodyScrollWrap: null
+    bodyScrollWrap: null,
+    scroll: {
+        x: computed(() => {
+            if (table.data.length === 0) {
+                return "100%";
+            }
+            let winWidth = appConfigs.client.width;
+            if (winWidth < 576) {
+                //xs [0, 576)
+                return "150%";
+            } else if (winWidth < 768) {
+                //sm [576, 768)
+                return "140%";
+            } else if (winWidth < 992) {
+                //md [768, 992)
+                return "125%";
+            } else if (winWidth < 1200) {
+                //lg [992, 1200)
+                return "120%";
+            } else {
+                //xl & xxl [1200, ∞)
+                return "100%";
+            }
+        }),
+        y: "calc(100% - 12px)"
+    }
 });
+
+
 
 const tableTotalPage = computed(() => Math.ceil(table.data.length / table.paginationProps.pageSize));
 
@@ -335,7 +362,7 @@ watch(() => [addModal.visible, updateModal.visible, displayModal.visible],
                         <ACol v-bind="{ xs: 24, sm: 22, md: 20, lg: 18, xl: 16, xxl: 14 }"
                             :style="{ height: '100%', overflow: 'hidden' }">
                             <ATable class="pwd-table" :columns="table.columns" :data="table.data" row-key="id"
-                                :scroll="{ y: 'calc(100% - 12px)' }" :pagination="table.paginationProps"
+                                :scroll="table.scroll" :pagination="table.paginationProps"
                                 :page-position="table.pagePosition" :loading="searching"
                                 @page-change="table_page_change">
                                 <template #empty>
