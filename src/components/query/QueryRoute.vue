@@ -4,8 +4,9 @@ import { useBodyNoScrollbar } from "@/hooks/body";
 import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Message, Modal } from "@arco-design/web-vue";
-import { computed, h, nextTick, onMounted, reactive, ref, watch } from "vue";
+import { computed, h, nextTick, reactive, ref, watch } from "vue";
 import { AddModal, DisplayModal, QueryTd, UpdateModal } from "./components";
+import { useTableBodyScrollWrap } from "./hooks/table-body-scroll-wrap";
 import { useTableMenu } from "./hooks/table-menu";
 
 const appConfigs = useAppConfigs();
@@ -24,55 +25,68 @@ const sortable = {
     }
 };
 
-const table = reactive({
-    columns: [
-        { title: "名称", dataIndex: "name", ellipsis: true, tooltip: { position: "tl" }, sortable },
-        { title: "账号", dataIndex: "account", ellipsis: true, tooltip: true, sortable },
-        { title: "密码", dataIndex: "password", ellipsis: true, tooltip: true, sortable },
-        { title: "备注", dataIndex: "remark", ellipsis: true, tooltip: { position: "tr" }, sortable }
-    ],
-    data: [],
-    paginationProps: {
-        pageSize: 20,
-        current: 1,
-        hideOnSinglePage: true,
-        simple: computed(() => appConfigs.client.width < 450)
+const tableColumns = reactive([
+    { title: "名称", dataIndex: "name", ellipsis: true, tooltip: { position: "tl" }, sortable },
+    { title: "账号", dataIndex: "account", ellipsis: true, tooltip: true, sortable },
+    { title: "密码", dataIndex: "password", ellipsis: true, tooltip: true, sortable },
+    { title: "备注", dataIndex: "remark", ellipsis: true, tooltip: { position: "tr" }, sortable }
+]);
+
+const _tableData = ref([]);
+
+const tableData = computed({
+    get: () => {
+        const data = _tableData.value.map(v => v);
+        const len = data.length
+        if (len === 0) {
+            return [];
+        }
+        for (let i = len; i < 10; i++) {
+            data.push({ id: -i, name: "\xA0", account: "\xA0", password: "\xA0", remark: "\xA0", disabled: true });
+        }
+        data.splice = (start, deleteCount) => _tableData.value.splice(start, deleteCount);
+        return data;
     },
-    pagePosition: computed(() => appConfigs.client.width < 450 ? "br" : "bottom"),
-    bodyScrollWrap: null,
-    scroll: {
-        x: computed(() => {
-            if (table.data.length === 0) {
-                return "100%";
-            }
-            let winWidth = appConfigs.client.width;
-            if (winWidth < 576) {
-                //xs [0, 576)
-                return "150%";
-            } else if (winWidth < 768) {
-                //sm [576, 768)
-                return "140%";
-            } else if (winWidth < 992) {
-                //md [768, 992)
-                return "125%";
-            } else if (winWidth < 1200) {
-                //lg [992, 1200)
-                return "120%";
-            } else {
-                //xl & xxl [1200, ∞)
-                return "100%";
-            }
-        }),
-        y: "calc(100% - 12px)"
-    }
+    set: data => _tableData.value = data
 });
 
+const tablePaginationProps = reactive({
+    pageSize: 20,
+    current: 1,
+    hideOnSinglePage: true,
+    simple: computed(() => appConfigs.client.width < 450)
+});
 
+const tableTotalPage = computed(() => Math.ceil(tableData.value.length / tablePaginationProps.pageSize));
 
-const tableTotalPage = computed(() => Math.ceil(table.data.length / table.paginationProps.pageSize));
+const tablePagePosition = computed(() => appConfigs.client.width < 450 ? "br" : "bottom");
 
-onMounted(() => {
-    table.bodyScrollWrap = document.querySelector('.pwd-table .arco-scrollbar-container.arco-table-body');
+const { tableBodyScrollWrap, setTableScrollTop } = useTableBodyScrollWrap(".pwd-table");
+
+const tableScroll = reactive({
+    x: computed(() => {
+        if (tableData.value.length === 0) {
+            return "100%";
+        }
+        let winWidth = appConfigs.client.width;
+        if (winWidth < 576) {
+            //xs [0, 576)
+            return "155%";
+        } else if (winWidth < 768) {
+            //sm [576, 768)
+            return "140%";
+        } else if (winWidth < 992) {
+            //md [768, 992)
+            return "125%";
+        } else if (winWidth < 1200) {
+            //lg [992, 1200)
+            return "120%";
+        } else {
+            //xl & xxl [1200, ∞)
+            return "100%";
+        }
+    }),
+    y: "calc(100% - 12px)"
 });
 
 const key = ref("");
@@ -91,10 +105,10 @@ async function Search() {
 function QuerySucceed(resp) {
     console.log("QuerySucceed:", resp);
     searching.value = false;
-    table.paginationProps.current = 1;
+    tablePaginationProps.current = 1
     switch (resp.code) {
         case 0: {
-            table.data = resp.data;
+            tableData.value = resp.data;
             setTableScrollTop(0);
             break;
         }
@@ -104,10 +118,6 @@ function QuerySucceed(resp) {
 function QueryError() {
     Message.error("查询出现错误");
     searching.value = false;
-}
-
-function setTableScrollTop(number) {
-    table.bodyScrollWrap.scrollTop = number;
 }
 
 const { tableMenu } = useTableMenu();
@@ -123,8 +133,7 @@ const updateModal = reactive({
 });
 
 function table_cell_contextmenu(column, record, rowIndex, event) {
-    if (record.id === -1) return;
-    const recordIndex = table.paginationProps.pageSize * (table.paginationProps.current - 1) + rowIndex;
+    const recordIndex = tablePaginationProps.pageSize * (tablePaginationProps.current - 1) + rowIndex;
 
     //复制按钮
     tableMenu.onClicks.copy = () => {
@@ -151,9 +160,9 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
                 let resp = await http.query.delete(record.id);
                 switch (resp.code) {
                     case 0: {
-                        table.data.splice(recordIndex, 1);
-                        if (table.paginationProps.current > tableTotalPage.value) {
-                            table.paginationProps.current--;
+                        tableData.value.splice(recordIndex, 1);
+                        if (tablePaginationProps.current > tableTotalPage.value) {
+                            tablePaginationProps.current--;
                         }
                         break;
                     }
@@ -180,7 +189,8 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
     }
 
     //滚动表格消除右键菜单
-    table.bodyScrollWrap.addEventListener("scroll", tableMenu.close, { once: true });
+    if (tableBodyScrollWrap.value)
+        tableBodyScrollWrap.value.addEventListener("scroll", tableMenu.close, { once: true });
     //窗体尺寸变化消除右键菜单
     window.addEventListener("resize", tableMenu.close, { once: true });
 
@@ -189,7 +199,8 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
 }
 
 function removeTableMenuListener() {
-    table.bodyScrollWrap.removeEventListener("scroll", tableMenu.close, { once: true });
+    if (tableBodyScrollWrap.value)
+        tableBodyScrollWrap.value.removeEventListener("scroll", tableMenu.close, { once: true });
     window.removeEventListener("resize", tableMenu.close, { once: true });
 }
 
@@ -286,7 +297,7 @@ function update_submit(form_data) {
 }
 
 async function table_page_change(page) {
-    table.paginationProps.current = page;
+    tablePaginationProps.current = page;
     await nextTick();
     setTableScrollTop(0);
 }
@@ -321,7 +332,7 @@ watch(() => [addModal.visible, updateModal.visible, displayModal.visible],
                 <template #extra>
                     <ASpace>
                         <span>数据条数:</span>
-                        <ASelect v-model="table.paginationProps.pageSize">
+                        <ASelect v-model="tablePaginationProps.pageSize">
                             <AOption v-for="item in [10, 20, 30, 40, 50]" :value="item">
                                 {{ item }}
                             </AOption>
@@ -361,9 +372,9 @@ watch(() => [addModal.visible, updateModal.visible, displayModal.visible],
                     <ARow justify="center" style="height:100%">
                         <ACol v-bind="{ xs: 24, sm: 22, md: 20, lg: 18, xl: 16, xxl: 14 }"
                             :style="{ height: '100%', overflow: 'hidden' }">
-                            <ATable class="pwd-table" :columns="table.columns" :data="table.data" row-key="id"
-                                :scroll="table.scroll" :pagination="table.paginationProps"
-                                :page-position="table.pagePosition" :loading="searching"
+                            <ATable class="pwd-table" :columns="tableColumns" :data="tableData" row-key="id"
+                                :scroll="tableScroll" :pagination="tablePaginationProps"
+                                :page-position="tablePagePosition" :loading="searching"
                                 @page-change="table_page_change">
                                 <template #empty>
                                     <AEmpty />

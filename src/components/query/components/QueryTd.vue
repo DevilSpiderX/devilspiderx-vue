@@ -17,18 +17,21 @@ const emit = defineEmits<{
 
 function handle_td_contextmenu(event: MouseEvent) {
     const { value } = props;
+    if (value.record.disabled) return;
+    event.preventDefault();
     emit("contextmenu", value.column, value.record, value.rowIndex, event);
 }
 
 function handle_td_dblclick(event: MouseEvent) {
     const { value } = props;
+    if (value.record.disabled) return;
     emit("dblclick", value.record, event);
 }
 
 </script>
 
 <template>
-    <td class="query-td" @contextmenu.prevent="handle_td_contextmenu" @dblclick="handle_td_dblclick">
+    <td class="query-td" @contextmenu="handle_td_contextmenu" @dblclick="handle_td_dblclick">
         <slot />
     </td>
 </template>
