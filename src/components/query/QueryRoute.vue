@@ -53,7 +53,7 @@ const tableData = computed({
 const tablePaginationProps = reactive({
     pageSize: 20,
     current: 1,
-    hideOnSinglePage: true,
+    hideOnSinglePage: false,
     simple: computed(() => appConfigs.client.width < 450)
 });
 

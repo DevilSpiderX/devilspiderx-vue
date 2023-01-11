@@ -32,6 +32,7 @@ export interface Http {
         memory: () => Promise<Resp>,
         network: () => Promise<Resp>,
         disk: () => Promise<Resp>,
+        os: () => Promise<Resp>,
         token: () => Promise<Resp>
     },
     log: {

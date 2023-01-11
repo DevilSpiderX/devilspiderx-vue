@@ -1,18 +1,23 @@
 import router from "@/router/router";
 import { http } from "@/scripts/http";
+import { sleep } from "@/util/util";
 import { Message } from "@arco-design/web-vue";
 import { onUnmounted, reactive, Ref, ref } from "vue";
 import { ValuesType } from "../scripts/interface";
 
 
-class ServerInfoWebSocket {
+class ServerInfoReceiver {
     token: string
     websocket: WebSocket
     values: ValuesType
+    cd: number
+    closed: boolean
 
     constructor(values: ValuesType, token: string, cd: number) {
         this.values = values;
         this.token = token;
+        this.cd = cd;
+        this.closed = false;
         const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
         this.websocket = new WebSocket(`${wsProtocol}//${location.host}/websocket/getServerInfo?token=${token}`);
         this.websocket.onopen = this.onOpen.bind(this, cd);
@@ -33,43 +38,77 @@ class ServerInfoWebSocket {
     }
 
     onError(event: Event) {
-        Message.error({ content: "WebSocket发生错误", duration: 1000 });
+        Message.error({ content: "WebSocket发生错误，使用Http请求获取信息", duration: 1000 });
         console.log(event);
-        console.log(Date() + "\nWebSocket发生错误，使用POST请求获取信息");
-        // getHardware();
+        console.log(Date() + "\nWebSocket发生错误，使用Http请求获取信息");
+        this.getHardware();
     }
 
     onMessage(msgEvent: MessageEvent<any>) {
         Object.assign(this.values, JSON.parse(msgEvent.data));
     }
 
-    isOpen() {
+    isWSOpen() {
         return this.websocket.readyState === WebSocket.OPEN;
     }
 
     send(msg: string | ArrayBufferLike | Blob | ArrayBufferView) {
-        if (this.isOpen()) {
+        if (this.isWSOpen()) {
             this.websocket.send(msg);
         }
     }
 
     setCD(cd: number) {
+        this.cd = cd;
         this.send(JSON.stringify({ cmd: "start", cd }));
     }
 
     close() {
-        if (this.isOpen()) {
+        if (this.isWSOpen()) {
+            this.send(JSON.stringify({ cmd: "stop" }));
             this.websocket.close();
+        }
+        this.closed = true;
+    }
+
+    async getHardware() {
+        while (!this.closed) {
+            http.serverInfo.cpu().then(resp => {
+                if (resp.code === 0) {
+                    this.values.cpu = { ...resp.data }
+                }
+            });
+            http.serverInfo.memory().then(resp => {
+                if (resp.code === 0) {
+                    this.values.memory = { ...resp.data }
+                }
+            });
+            http.serverInfo.network().then(resp => {
+                if (resp.code === 0) {
+                    this.values.network = { ...resp.data }
+                }
+            });
+            http.serverInfo.disk().then(resp => {
+                if (resp.code === 0) {
+                    this.values.disk = [...resp.data]
+                }
+            });
+            http.serverInfo.os().then(resp => {
+                if (resp.code === 0) {
+                    this.values.os = { ...resp.data }
+                }
+            });
+            await sleep(this.cd);
         }
     }
 }
 
-async function generate(ws: Ref<ServerInfoWebSocket | null>, values: ValuesType, cd: number) {
+async function generate(receiver: Ref<ServerInfoReceiver | null>, values: ValuesType, cd: number) {
     try {
-        let resp = await http.serverInfo.token();
+        const resp = await http.serverInfo.token();
         console.log("token:", resp);
         if (resp.code === 0) {
-            ws.value = new ServerInfoWebSocket(values, resp.data.token, cd);
+            receiver.value = new ServerInfoReceiver(values, resp.data.token, cd);
         } else {
             router.push({ name: "login" });
         }
@@ -80,7 +119,7 @@ async function generate(ws: Ref<ServerInfoWebSocket | null>, values: ValuesType,
     }
 }
 
-export function useServerInfoWebSocket(cd: number) {
+export function useServerInfoReceiver(cd: number) {
     const values = reactive<ValuesType>({
         cpu: undefined,
         memory: undefined,
@@ -89,12 +128,12 @@ export function useServerInfoWebSocket(cd: number) {
         os: undefined
     });
 
-    const ws: Ref<ServerInfoWebSocket | null> = ref(null);
-    generate(ws, values, cd);
+    const receiver: Ref<ServerInfoReceiver | null> = ref(null);
+    generate(receiver, values, cd);
 
     function close() {
-        if (ws.value) {
-            ws.value.close();
+        if (receiver.value) {
+            receiver.value.close();
         }
     }
 
@@ -103,8 +142,8 @@ export function useServerInfoWebSocket(cd: number) {
     return {
         values,
         setCD(cd: number) {
-            if (ws.value) {
-                ws.value.setCD(cd);
+            if (receiver.value) {
+                receiver.value.setCD(cd);
             }
         },
         close

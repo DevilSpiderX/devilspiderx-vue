@@ -5,7 +5,7 @@ import { Message, Scrollbar as AScrollbar } from "@arco-design/web-vue";
 import { computed, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { CpuCard, DiskCard, MemoryCard, NetworkCard } from "./components";
-import { useServerInfoWebSocket } from "./hooks/server-info-websocket";
+import { useServerInfoReceiver } from "./hooks/server-info-receiver";
 
 const appConfigs = useAppConfigs();
 appConfigs.backgroundColor2StatusBarColor();
@@ -20,14 +20,16 @@ const props = defineProps({
 });
 
 const _cd = computed({
-    get: () => props.cd,
+    get: () => Math.floor(props.cd),
     set: _cd => {
         const cd = Math.floor(_cd);
-        router.replace({ query: { cd } });
+        if (cd !== props.cd) {
+            router.replace({ query: { cd } });
+        }
     }
 });
 
-const { values, setCD } = useServerInfoWebSocket(_cd.value);
+const { values, setCD } = useServerInfoReceiver(_cd.value);
 
 watch(_cd, cd => {
     console.log("更改数据刷新速率", cd, "ms");
@@ -76,7 +78,7 @@ const mainCardScrollbarStyle = reactive({
                     <span> 控制中心 </span>
                 </template>
                 <template #extra>
-                    <ATooltip v-if="appConfigs.client.width <= 576" :content="String(cd)" mini>
+                    <ATooltip v-if="appConfigs.client.width <= 576" :content="String(_cd)" mini>
                         <AButton shape="round" @click="speedModal.visible = true">刷新速率</AButton>
                     </ATooltip>
                     <AInputNumber v-else v-model="_cd" :min="500" hide-button style="max-width: 12em">
