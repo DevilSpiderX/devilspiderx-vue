@@ -75,5 +75,6 @@ const progressColor = computed(() => {
 
 .my-card-body {
     font-size: 16px;
+    padding: 20px 30px;
 }
 </style>

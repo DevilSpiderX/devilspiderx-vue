@@ -75,4 +75,8 @@ const precisionDownload = computed(() => {
 
 <style scoped>
 @import url(../styles/card-normal.css);
+
+.my-card-body {
+    padding: 20px 30px;
+}
 </style>
