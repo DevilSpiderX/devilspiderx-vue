@@ -97,7 +97,7 @@ function on_exit_clicked() {
                     </span>
                 </template>
                 <template #title>
-                    <span> DevilSpiderX </span>
+                    <span> DevilSpiderX <ATag color="arcoblue" size="small">v{{ appConfigs.appVersion }}</ATag> </span>
                 </template>
                 <template #extra>
                     <ASwitch v-model="appConfigs.darkTheme" :disabled="appConfigs.themeFollowSystem"

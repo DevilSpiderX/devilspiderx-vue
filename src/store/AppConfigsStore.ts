@@ -55,6 +55,8 @@ export const useAppConfigs = defineStore("appConfigs", () => {
         fontSize: 16
     });
 
+    const appVersion = ref("");
+
     return {
         client,
         darkTheme,
@@ -64,7 +66,8 @@ export const useAppConfigs = defineStore("appConfigs", () => {
         backgroundColor2StatusBarColor,
         user,
         isTouchDevice: ref<boolean>("ontouchstart" in window && navigator.maxTouchPoints !== 0),
-        log
+        log,
+        appVersion
     }
 }, {
     persist: {
@@ -74,7 +77,8 @@ export const useAppConfigs = defineStore("appConfigs", () => {
             "themeFollowSystem",
             "user.uid",
             "isTouchDevice",
-            "log"
+            "log",
+            "appVersion"
         ]
     }
 });

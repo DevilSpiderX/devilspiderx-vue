@@ -20,8 +20,9 @@ window.matchMedia("(prefers-color-scheme:dark)").onchange = event => {
 async function checkUserStatus() {
     try {
         let resp = await http.user.status();
-        console.log("user_status:", resp);
-        Object.assign(appConfigs.user, resp.data);
+        console.log("user_status:", resp.data);
+        Object.assign(appConfigs.user, resp.data.data);
+        appConfigs.appVersion = resp.headers["application-version"];
     } catch (ignored) {
     }
 }

@@ -16,7 +16,7 @@ const http = {
         },
         async status() {
             const resp = await httpInstance.post("/api/user/status");
-            return resp.data;
+            return resp;
         }
     },
     query: {

@@ -1,3 +1,4 @@
+import { AxiosResponse } from "axios";
 export interface Resp {
     code: number,
     msg: string,
@@ -10,7 +11,7 @@ export interface Http {
         login: (uid: string, pwd: string) => Promise<Resp>,
         logout: () => Promise<Resp>,
         register: (uid: string, pwd: string) => Promise<Resp>,
-        status: () => Promise<Resp>
+        status: () => Promise<AxiosResponse<Resp>>
     },
     query: {
         get: (key: string) => Promise<Resp>,
