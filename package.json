@@ -25,7 +25,6 @@
   "devDependencies": {
     "@arco-design/web-vue": "^2.42.0",
     "@arco-plugins/vite-vue": "^1.4.2",
-    "@vitejs/plugin-legacy": "^3.0.1",
     "@vitejs/plugin-vue": "^4.0.0",
     "@vitejs/plugin-vue-jsx": "^3.0.0",
     "terser": "^5.16.1",
