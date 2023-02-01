@@ -18,21 +18,12 @@ export interface CpuValueType {
 export interface MemoryValueType {
     total: number,
     used: number,
-    free: number,
-    format: {
-        total: { value: number, unit: string },
-        used: { value: number, unit: string },
-        free: { value: number, unit: string }
-    }
+    free: number
 }
 
 export interface NetworkValueType {
     uploadSpeed: number,
-    downloadSpeed: number,
-    format: {
-        uploadSpeed: { value: number, unit: string },
-        downloadSpeed: { value: number, unit: string }
-    }
+    downloadSpeed: number
 }
 
 export interface DiskValueType {
@@ -42,12 +33,7 @@ export interface DiskValueType {
     name: string,
     total: number,
     free: number,
-    used: number,
-    format: {
-        total: { value: number, unit: string },
-        free: { value: number, unit: string },
-        used: { value: number, unit: string }
-    }
+    used: number
 }
 
 export interface OSValueType {

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { unitBytes } from "@/util/format-util";
 import { Progress as AProgress } from "@arco-design/web-vue";
 import { computed } from "vue";
 import { MemoryValueType } from "../scripts/interface";
@@ -15,12 +16,7 @@ const props = withDefaults(
         value: () => ({
             total: 1,
             used: 0,
-            free: 0,
-            format: {
-                total: { value: 0, unit: "B" },
-                used: { value: 0, unit: "B" },
-                free: { value: 0, unit: "B" }
-            }
+            free: 0
         }),
         processCount: 0,
         loading: false
@@ -28,17 +24,17 @@ const props = withDefaults(
 )
 
 const usedStr = computed(() => {
-    let data = props.value.format.used;
+    let data = unitBytes(props.value.used);
     return `${data.value} ${data.unit}`;
 });
 
 const freeStr = computed(() => {
-    let data = props.value.format.free;
+    let data = unitBytes(props.value.free);
     return `${data.value} ${data.unit}`;
 });
 
 const totalStr = computed(() => {
-    let data = props.value.format.total;
+    let data = unitBytes(props.value.total);
     return `${data.value} ${data.unit}`;
 });
 

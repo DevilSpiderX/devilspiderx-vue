@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { unitBytes } from "@/util/format-util";
 import { computed } from "vue";
 import { DiskValueType } from "../scripts/interface";
 import { colors } from "../scripts/progressColor";
@@ -17,23 +18,18 @@ const props = withDefaults(
             name: "",
             total: 1,
             free: 0,
-            used: 0,
-            format: {
-                total: { value: 0, unit: "B" },
-                free: { value: 0, unit: "B" },
-                used: { value: 0, unit: "B" }
-            }
+            used: 0
         })
     }
 );
 
 const freeStr = computed(() => {
-    let data = props.value.format.free;
+    let data = unitBytes(props.value.free);
     return `${data.value} ${data.unit}`;
 });
 
 const totalStr = computed(() => {
-    let data = props.value.format.total;
+    let data = unitBytes(props.value.total);
     return `${data.value} ${data.unit}`;
 });
 

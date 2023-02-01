@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { unitBytes } from "@/util/format-util";
 import { IconArrowFall, IconArrowRise } from "@arco-design/web-vue/es/icon";
 import { computed } from "vue";
 import { NetworkValueType } from "../scripts/interface";
@@ -12,22 +13,28 @@ const props = withDefaults(
     {
         value: () => ({
             uploadSpeed: 0,
-            downloadSpeed: 0,
-            format: {
-                uploadSpeed: { value: 0, unit: "B/s" },
-                downloadSpeed: { value: 0, unit: "B/s" }
-            }
+            downloadSpeed: 0
         }),
         loading: false
     }
 )
 
+const formatted = computed(() => {
+    let uploadSpeed = unitBytes(props.value.uploadSpeed);
+    uploadSpeed.unit += "/s";
+    let downloadSpeed = unitBytes(props.value.downloadSpeed);
+    downloadSpeed.unit += "/s";
+    return { uploadSpeed, downloadSpeed };
+});
+
 const precisionUpload = computed(() => {
-    return props.value.format.uploadSpeed.unit === "B/s" ? 0 : 2;
+    let value = formatted.value.uploadSpeed.value;
+    return Math.floor(value) === value ? 0 : 2;
 });
 
 const precisionDownload = computed(() => {
-    return props.value.format.downloadSpeed.unit === "B/s" ? 0 : 2;
+    let value = formatted.value.downloadSpeed.value;
+    return Math.floor(value) === value ? 0 : 2;
 });
 
 </script>
@@ -45,24 +52,24 @@ const precisionDownload = computed(() => {
                 <template #content>
                     <ADescriptions :column="1" :align="{ label: 'right' }" :label-style="{ width: 'calc(50% - 1px)' }">
                         <ADescriptionsItem label="上传速度">
-                            <AStatistic :value="value.format.uploadSpeed.value" :precision="precisionUpload"
+                            <AStatistic :value="formatted.uploadSpeed.value" :precision="precisionUpload"
                                 :value-style="{ color: 'rgb(var(--green-7))', fontSize: '20px' }">
                                 <template #prefix>
                                     <IconArrowRise />
                                 </template>
                                 <template #suffix>
-                                    {{ value.format.uploadSpeed.unit }}
+                                    {{ formatted.uploadSpeed.unit }}
                                 </template>
                             </AStatistic>
                         </ADescriptionsItem>
                         <ADescriptionsItem label="下载速度">
-                            <AStatistic :value="value.format.downloadSpeed.value" :precision="precisionDownload"
+                            <AStatistic :value="formatted.downloadSpeed.value" :precision="precisionDownload"
                                 :value-style="{ color: 'rgb(var(--blue-7))', fontSize: '20px' }">>
                                 <template #prefix>
                                     <IconArrowFall />
                                 </template>
                                 <template #suffix>
-                                    {{ value.format.downloadSpeed.unit }}
+                                    {{ formatted.downloadSpeed.unit }}
                                 </template>
                             </AStatistic>
                         </ADescriptionsItem>
