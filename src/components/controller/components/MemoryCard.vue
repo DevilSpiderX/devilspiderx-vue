@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { unitBytes } from "@/util/format-util";
+import { formatBytes } from "@/util/format-util";
 import { Progress as AProgress } from "@arco-design/web-vue";
 import { computed } from "vue";
 import { MemoryValueType } from "../scripts/interface";
@@ -23,20 +23,11 @@ const props = withDefaults(
     }
 )
 
-const usedStr = computed(() => {
-    let data = unitBytes(props.value.used);
-    return `${data.value} ${data.unit}`;
-});
+const usedStr = computed(() => formatBytes(props.value.used, 2, ' '));
 
-const freeStr = computed(() => {
-    let data = unitBytes(props.value.free);
-    return `${data.value} ${data.unit}`;
-});
+const freeStr = computed(() => formatBytes(props.value.free, 2, ' '));
 
-const totalStr = computed(() => {
-    let data = unitBytes(props.value.total);
-    return `${data.value} ${data.unit}`;
-});
+const totalStr = computed(() => formatBytes(props.value.total, 2, ' '));
 
 const usedPercent = computed(() => {
     return props.value.used / props.value.total;

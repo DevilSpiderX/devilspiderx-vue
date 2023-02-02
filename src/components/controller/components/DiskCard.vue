@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { unitBytes } from "@/util/format-util";
+import { formatBytes } from "@/util/format-util";
 import { computed } from "vue";
 import { DiskValueType } from "../scripts/interface";
 import { colors } from "../scripts/progressColor";
@@ -23,15 +23,9 @@ const props = withDefaults(
     }
 );
 
-const freeStr = computed(() => {
-    let data = unitBytes(props.value.free);
-    return `${data.value} ${data.unit}`;
-});
+const freeStr = computed(() => formatBytes(props.value.free, 2, ' '));
 
-const totalStr = computed(() => {
-    let data = unitBytes(props.value.total);
-    return `${data.value} ${data.unit}`;
-});
+const totalStr = computed(() => formatBytes(props.value.total, 2, ' '));
 
 const usedPercent = computed(() => {
     return props.value.used / props.value.total;
