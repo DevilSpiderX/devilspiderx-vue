@@ -97,7 +97,7 @@ function running_stop() {
                             <AInput v-model="form.uid" class="my-input" placeholder="账号" allow-clear
                                 :input-attrs="{ style: { 'font-size': '1.1rem' } }" :error="inputStatus[0]">
                                 <template #prefix>
-                                    <span><i class="fas fa-user fa-fw" /></span>
+                                    <span><i class="fa-solid fa-user fa-fw"></i></span>
                                 </template>
                             </AInput>
                         </AFormItem>
@@ -105,7 +105,7 @@ function running_stop() {
                             <AInputPassword v-model="form.pwd" class="my-input" placeholder="密码" allow-clear
                                 :input-attrs="{ style: { 'font-size': '1.1rem' } }" :error="inputStatus[1]">
                                 <template #prefix>
-                                    <span><i class="fas fa-key fa-fw" /></span>
+                                    <span><i class="fa-duotone fa-key fa-fw"></i></span>
                                 </template>
                             </AInputPassword>
                         </AFormItem>

@@ -350,7 +350,7 @@ watch(() => [addModal.visible, updateModal.visible, displayModal.visible],
                                 <ACol flex="105px">
                                     <AButton size="large" @click="addModal.visible = true">
                                         <template #icon>
-                                            <i class="fas fa-plus fa-fw"></i>
+                                            <i class="fa-solid fa-plus fa-fw"></i>
                                         </template>
                                         添加
                                     </AButton>
@@ -360,7 +360,10 @@ watch(() => [addModal.visible, updateModal.visible, displayModal.visible],
                                         :button-props="{ type: 'secondary' }" search-button @keydown.enter="Search"
                                         @search="Search" :loading="searching">
                                         <template #prefix>
-                                            <i class="fas fa-terminal fa-fw"></i>
+                                            <i class="fa-duotone fa-terminal fa-fw"></i>
+                                        </template>
+                                        <template #button-icon>
+                                            <i class="fa-solid fa-magnifying-glass fa-fw"></i>
                                         </template>
                                     </AInputSearch>
                                 </ACol>

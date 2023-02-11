@@ -13,10 +13,10 @@ const tableMenuItemStyle = {
 
 export function useTableMenu() {
     const menus = reactive<Array<MenuItemOptionType>>([
-        { label: "复制", onClick: () => { }, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-copy" />) },
-        { label: "删除", onClick: () => { }, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-trash" />) },
-        { label: "编辑", onClick: () => { }, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-pen-to-square" />) },
-        { label: "查看", onClick: () => { }, style: tableMenuItemStyle, icon: (<i class="fa-solid fa-eye" />) }
+        { label: "复制", onClick: () => { }, style: tableMenuItemStyle, icon: (<i class="fa-regular fa-copy" />) },
+        { label: "删除", onClick: () => { }, style: tableMenuItemStyle, icon: (<i class="fa-regular fa-trash" />) },
+        { label: "编辑", onClick: () => { }, style: tableMenuItemStyle, icon: (<i class="fa-regular fa-pen-to-square" />) },
+        { label: "查看", onClick: () => { }, style: tableMenuItemStyle, icon: (<i class="fa-regular fa-eye" />) }
     ]);
 
     const tableMenu = reactive({

@@ -52,28 +52,28 @@ function cancel_click() {
             <AFormItem field="name" hide-label>
                 <AInput placeholder="名称" v-model="form.name" clearable :error="inputNameStatus">
                     <template #prefix>
-                        <i class="fas fa-tag fa-fw"></i>
+                        <i class="fa-solid fa-hashtag fa-fw"></i>
                     </template>
                 </AInput>
             </AFormItem>
             <AFormItem field="account" hide-label>
                 <AInput placeholder="账号" v-model="form.account" clearable>
                     <template #prefix>
-                        <i class="fas fa-user fa-fw"></i>
+                        <i class="fa-solid fa-user fa-fw"></i>
                     </template>
                 </AInput>
             </AFormItem>
             <AFormItem field="password" hide-label>
                 <AInput placeholder="密码" v-model="form.password" clearable>
                     <template #prefix>
-                        <i class="fas fa-key fa-fw"></i>
+                        <i class="fa-duotone fa-key fa-fw"></i>
                     </template>
                 </AInput>
             </AFormItem>
             <AFormItem field="remark" hide-label>
                 <AInput placeholder="备注" v-model="form.remark" clearable>
                     <template #prefix>
-                        <i class="fas fa-info fa-fw"></i>
+                        <i class="fa-duotone fa-circle-info fa-fw"></i>
                     </template>
                 </AInput>
             </AFormItem>

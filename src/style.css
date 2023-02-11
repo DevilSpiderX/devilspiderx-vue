@@ -15,7 +15,7 @@ body {
 
 @font-face {
     font-family: "MiSans Normal";
-    src: url("fonts/MiSans-Normal.ttf");
+    src: url("./assets/fonts/MiSans/MiSans-Normal.ttf");
 }
 
 body.no-scrollbar::-webkit-scrollbar {

@@ -36,7 +36,7 @@ watchEffect(async () => {
 <template>
     <div class="main">
         <div>
-            <i class="fas fa-spider" />
+            <i class="fa-duotone fa-spider"></i>
             <p class="logo">
                 Good<br>
                 {{ logo }}

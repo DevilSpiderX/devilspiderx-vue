@@ -16,39 +16,42 @@ const router = useRouter();
 const buttonList = reactive([
     {
         label: "控制中心",
-        icon: (<i class="fas fa-sliders-h fa-fw" />),
+        icon: (<i class="fa-solid fa-sliders fa-fw"></i>),
         onClick: () => { router.push({ name: 'controller' }) }
     },
     {
         label: "密码查询",
-        icon: (<i class="fas fa-search fa-fw" />),
+        icon: (<i class="fa-solid fa-magnifying-glass fa-fw"></i>),
         onClick: () => { router.push({ name: 'query' }) }
     },
     {
         label: "V2Ray",
-        icon: (<img src={v2rayNPngUrl} alt="v2ray" width="27" height="27" style="transform: translateY(4px)" />),
+        icon: (
+            <i class="fa-solid fa-fw">
+                <img src={v2rayNPngUrl} alt="v2ray" width="27" height="27" style="transform: translateY(4px)" />
+            </i>),
         onClick: () => { router.push({ name: 'v2ray' }) }
     },
     {
         label: "日\u00a0\u00a0志",
-        icon: (<i class="fas fa-file-alt fa-fw" />),
+        icon: (<i class="fa-solid fa-file-lines fa-fw"></i>),
         onClick: () => { router.push({ name: 'log' }) },
         hidden: computed(() => !appConfigs.user.admin)
     },
     {
         label: "修改密码",
-        icon: (<i class="fas fa-edit fa-fw" />),
+        icon: (<i class="fa-solid fa-pen-to-square fa-fw"></i>),
         onClick: () => { router.push({ name: 'updatePwd' }) },
     },
     {
         label: "退出登录",
-        icon: (<i class="fas fa-sign-out-alt fa-fw" />),
+        icon: (<i class="fa-solid fa-right-from-bracket fa-fw"></i>),
         onClick: on_logoutButton_clicked
     },
     {
         class: ["exit-button"],
         label: " 退\u00a0\u00a0出",
-        icon: (<i class="fas fa-power-off fa-fw" />),
+        icon: (<i class="fa-solid fa-power-off fa-fw"></i>),
         onClick: on_exit_clicked
     }
 ]);

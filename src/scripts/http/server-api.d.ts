@@ -21,7 +21,8 @@ export interface Http {
     },
     os: {
         reboot: () => Promise<Resp>,
-        shutdown: () => Promise<Resp>
+        shutdown: () => Promise<Resp>,
+        stop: () => Promise<Resp>
     },
     v2ray: {
         start: () => Promise<Resp>,

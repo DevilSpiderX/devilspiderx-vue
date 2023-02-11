@@ -58,6 +58,10 @@ const http = {
         async shutdown() {
             const resp = await httpInstance.post("/api/admin/os/shutdown");
             return resp.data;
+        },
+        async stop() {
+            const resp = await httpInstance.post("/api/admin/service/shutdown");
+            return resp.data;
         }
     },
     v2ray: {
