@@ -9,7 +9,6 @@ import { LogMonitor } from "./components";
 import { useLogMonitorRef } from "./hooks/refs";
 
 const appConfigs = useAppConfigs();
-appConfigs.backgroundColor2StatusBarColor();
 
 useBodyNoScrollbar();
 
@@ -77,11 +76,6 @@ const logFontSizeModal = reactive({
     visible: false
 });
 
-watch(() => logFontSizeModal.visible, visible => {
-    appConfigs.statusBarColor = visible ? appConfigs.darkTheme ? "#17171a" : "#777a7f"
-        : window.getComputedStyle(document.body).backgroundColor;
-});
-
 const collapseList = reactive({
     show: false,
     form: {}
@@ -142,8 +136,7 @@ const collapseList = reactive({
                 <div class="collapseList" v-show="collapseList.show">
                     <AForm :model="collapseList" auto-label-width>
                         <AFormItem label="日志：">
-                            <ASelect v-model="log.name" :options="logSelectOptions"
-                                @change="collapseList.show = false" />
+                            <ASelect v-model="log.name" :options="logSelectOptions" @change="collapseList.show = false" />
                         </AFormItem>
                         <AFormItem label="字体大小：">
                             <AInputNumber v-model="log.fontSize" :min="12" :max="50" mode="button" read-only />

@@ -5,7 +5,6 @@ import { ref, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 
 const appConfigs = useAppConfigs();
-appConfigs.statusBarColor = appConfigs.darkTheme ? "#17171A" : "#FFFFFF";
 
 const logo = ref((() => {
     let hour = new Date().getHours();

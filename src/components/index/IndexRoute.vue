@@ -1,15 +1,14 @@
 <script setup lang="jsx">
 import v2rayNPngUrl from "@/assets/v2rayN.png";
+import { DSXMenuIcon as Icon } from "@/components/dsx-menu";
 import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Message } from "@arco-design/web-vue";
 import { IconClose, IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
-import { computed, reactive, watch } from "vue";
+import { computed, reactive } from "vue";
 import { useRouter } from "vue-router";
-import { DSXMenuIcon as Icon } from "@/components/dsx-menu";
 
 const appConfigs = useAppConfigs();
-appConfigs.backgroundColor2StatusBarColor();
 
 const router = useRouter();
 
@@ -60,14 +59,6 @@ const drawer = reactive({
     visible: false,
     empty_form: {}
 });
-
-watch(() => appConfigs.darkTheme, darkTheme => appConfigs.statusBarColor = darkTheme && drawer.visible ?
-    "#2a2a2b" : window.getComputedStyle(document.body).backgroundColor
-);
-
-watch(() => drawer.visible, visible => appConfigs.statusBarColor = visible && appConfigs.darkTheme ?
-    "#2a2a2b" : window.getComputedStyle(document.body).backgroundColor
-);
 
 async function on_logoutButton_clicked() {
     try {

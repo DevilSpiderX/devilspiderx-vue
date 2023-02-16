@@ -4,13 +4,12 @@ import { useBodyNoScrollbar } from "@/hooks/body";
 import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Message, Modal } from "@arco-design/web-vue";
-import { computed, h, nextTick, reactive, ref, watch } from "vue";
+import { computed, h, nextTick, reactive, ref } from "vue";
 import { AddModal, DisplayModal, QueryTd, UpdateModal } from "./components";
 import { useTableBodyScrollWrap } from "./hooks/table-body-scroll-wrap";
 import { useTableMenu } from "./hooks/table-menu";
 
 const appConfigs = useAppConfigs();
-appConfigs.backgroundColor2StatusBarColor();
 
 useBodyNoScrollbar();
 
@@ -312,14 +311,6 @@ function table_cell_dblclick(record) {
     displayModal.visible = true;
 }
 
-watch(() => [addModal.visible, updateModal.visible, displayModal.visible],
-    ([v0, v1, v2]) => {
-        let visible = v0 || v1 || v2;
-        appConfigs.statusBarColor = visible ? appConfigs.darkTheme ? "#17171a" : "#777a7f"
-            : window.getComputedStyle(document.body).backgroundColor;
-    }
-);
-
 </script>
 
 <template>
@@ -376,9 +367,8 @@ watch(() => [addModal.visible, updateModal.visible, displayModal.visible],
                         <ACol v-bind="{ xs: 24, sm: 22, md: 20, lg: 18, xl: 16, xxl: 14 }"
                             :style="{ height: '100%', overflow: 'hidden' }">
                             <ATable class="pwd-table" :columns="tableColumns" :data="tableData" row-key="id"
-                                :scroll="tableScroll" :pagination="tablePaginationProps"
-                                :page-position="tablePagePosition" :loading="searching"
-                                @page-change="table_page_change">
+                                :scroll="tableScroll" :pagination="tablePaginationProps" :page-position="tablePagePosition"
+                                :loading="searching" @page-change="table_page_change">
                                 <template #empty>
                                     <AEmpty />
                                 </template>

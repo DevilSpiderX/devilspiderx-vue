@@ -1,15 +1,15 @@
 <script setup>
 import { useBodyNoScrollbar } from "@/hooks/body";
+import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Message, Scrollbar as AScrollbar } from "@arco-design/web-vue";
 import { computed, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { CpuCard, DiskCard, MemoryCard, NetworkCard } from "./components";
 import { useServerInfoReceiver } from "./hooks/server-info-receiver";
-import { http } from "@/scripts/http";
 
 const appConfigs = useAppConfigs();
-appConfigs.backgroundColor2StatusBarColor();
+
 const router = useRouter();
 useBodyNoScrollbar();
 
@@ -40,11 +40,6 @@ watch(_cd, cd => {
 
 const speedModal = reactive({
     visible: false
-});
-
-watch(() => speedModal.visible, visible => {
-    appConfigs.statusBarColor = visible ? appConfigs.darkTheme ? "#17171a" : "#777a7f"
-        : window.getComputedStyle(document.body).backgroundColor;
 });
 
 const cardsProps = reactive({
@@ -145,8 +140,8 @@ function resetValues() {
                                 <span>ms</span>
                             </template>
                         </AInputNumber>
-                        <AButton v-if="appConfigs.user.admin" type="text" shape="circle"
-                            style="color:var(--color-text-2)" @click="settingsDrawer.visible = true">
+                        <AButton v-if="appConfigs.user.admin" type="text" shape="circle" style="color:var(--color-text-2)"
+                            @click="settingsDrawer.visible = true">
                             <i class="fa-solid fa-gear"></i>
                         </AButton>
                     </ASpace>

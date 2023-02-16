@@ -6,7 +6,6 @@ import { onMounted, ref } from "vue";
 import { MySwitch } from "./components";
 
 const appConfigs = useAppConfigs();
-appConfigs.backgroundColor2StatusBarColor();
 
 const switchStatus = ref(false);
 

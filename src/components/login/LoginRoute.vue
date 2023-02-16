@@ -8,7 +8,6 @@ import { onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
 
 const appConfigs = useAppConfigs();
-appConfigs.backgroundColor2StatusBarColor();
 
 const form = reactive({
     uid: "",
@@ -75,12 +74,10 @@ const running = reactive({
 
 function running_start() {
     running.show = true;
-    appConfigs.statusBarColor = appConfigs.darkTheme ? "#0c0c0d" : "#808080";
 }
 
 function running_stop() {
     running.show = false;
-    appConfigs.backgroundColor2StatusBarColor();
 }
 </script>
 
