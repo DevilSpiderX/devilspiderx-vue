@@ -22,6 +22,7 @@ declare module '@vue/runtime-core' {
     MemoryCard: typeof import('./src/components/controller/components/MemoryCard.vue')['default']
     MySwitch: typeof import('./src/components/v2ray/components/MySwitch.vue')['default']
     NetworkCard: typeof import('./src/components/controller/components/NetworkCard.vue')['default']
+    NotFound: typeof import('./src/components/error/NotFound.vue')['default']
     QueryRoute: typeof import('./src/components/query/QueryRoute.vue')['default']
     QueryTd: typeof import('./src/components/query/components/QueryTd.vue')['default']
     RegisterRoute: typeof import('./src/components/register/RegisterRoute.vue')['default']

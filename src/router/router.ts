@@ -1,6 +1,12 @@
-import { createRouter, createWebHashHistory, RouteLocationNormalized, RouteRecordRaw } from "vue-router";
+import { createRouter, createWebHistory, RouteLocationNormalized, RouteRecordRaw } from "vue-router";
 
 const routes: RouteRecordRaw[] = [
+    {
+        name: "NotFound",
+        path: "/:pathMatch(.*)*",
+        component: () => import("@/components/error/NotFound.vue"),
+        meta: { title: "Not Found - DevilSpiderX" }
+    },
     {
         name: "welcome",
         path: "/",
@@ -66,7 +72,7 @@ if (Object.hasOwn === undefined) {
 }
 
 const router = createRouter({
-    history: createWebHashHistory(),
+    history: createWebHistory(),
     routes: routes
 });
 
