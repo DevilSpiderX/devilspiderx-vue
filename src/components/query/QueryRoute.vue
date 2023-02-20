@@ -1,4 +1,5 @@
 <script setup>
+import SearchNoResultSvg from "@/assets/搜索无结果.svg";
 import { DSXMenu } from "@/components/dsx-menu";
 import { useBodyNoScrollbar } from "@/hooks/body";
 import { http } from "@/scripts/http";
@@ -370,7 +371,11 @@ function table_cell_dblclick(record) {
                                 :scroll="tableScroll" :pagination="tablePaginationProps" :page-position="tablePagePosition"
                                 :loading="searching" @page-change="table_page_change">
                                 <template #empty>
-                                    <AEmpty />
+                                    <AEmpty>
+                                        <template #image>
+                                            <img :src="SearchNoResultSvg" style="width: 300px;height: 300px" />
+                                        </template>
+                                    </AEmpty>
                                 </template>
                                 <template #td="scope">
                                     <QueryTd :value="scope" @contextmenu="table_cell_contextmenu"

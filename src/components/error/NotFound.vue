@@ -15,11 +15,15 @@ const height30 = computed(() => {
 <template>
     <div :style="{ paddingTop: height30 + 'px' }">
         <AResult status="404">
+            <template #icon>
+                <img src="@/assets/404.svg" width="326" height="205" />
+            </template>
             <template #title>
-                <h1>404</h1>
+                <h1>&nbsp;</h1>
             </template>
             <template #subtitle>
-                <p style="font-size: 1.3em">The requested URL {{ $route.path }} was not found on this server.</p>
+                <p style="font-size: 1.3em">The requested URL <strong>{{ $route.path }}</strong> was not found on this
+                    server.</p>
             </template>
         </AResult>
     </div>
