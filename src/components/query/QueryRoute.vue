@@ -139,12 +139,10 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
     tableMenu.onClicks.copy = () => {
         if (typeof navigator.clipboard === "object") {
             navigator.clipboard.writeText(record[column.dataIndex]).then(() => {
-                Message.success("剪切板写入成功");
+                Message.success("复制成功");
             }).catch(() => {
-                Message.error("剪切板写入失败");
+                Message.error("复制失败");
             });
-        } else {
-            Message.error("无法使用剪切板");
         }
     };
 

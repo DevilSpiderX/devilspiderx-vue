@@ -21,6 +21,10 @@ const props = defineProps({
     }
 });
 
+const textLines = computed(() => {
+    return props.text.split(/\n|\r\n/);
+});
+
 const scrollbarStyle = {
     overflow: "auto",
     width: "100%",
@@ -73,7 +77,10 @@ defineExpose({
             ref="scrollbarRef">
             <AEmpty v-if="text === ''" />
             <div v-else class="log-wrapper" :style="logWrapperStyle" ref="logWrapperRef">
-                {{ text }}
+                <div v-for="(item, index) of textLines" class="text-line">
+                    <span class="serial"> {{ index + 1 }} </span>
+                    <div class="text-content"> {{ item }} </div>
+                </div>
             </div>
         </AScrollbar>
     </ASpin>
@@ -91,5 +98,20 @@ defineExpose({
     white-space: pre-wrap;
     word-wrap: break-word;
     line-height: 1.5;
+}
+
+.text-line {
+    display: flex;
+    display: -webkit-flex;
+}
+
+.serial {
+    color: var(--color-text-3);
+    font-size: .8em;
+    margin-right: 1em;
+}
+
+.text-content {
+    flex-basis: 100%;
 }
 </style>
