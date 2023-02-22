@@ -1,4 +1,4 @@
-import { Scrollbar } from "@arco-design/web-vue";
+import { Scrollbar as AScrollbar } from "@arco-design/web-vue";
 import { ref } from "vue";
 import { LogMonitor } from "../components";
 
@@ -7,7 +7,7 @@ export function useLogMonitorRef() {
 }
 
 export function useScrollbarRef() {
-    return ref<InstanceType<typeof Scrollbar> | null>(null);
+    return ref<InstanceType<typeof AScrollbar> | null>(null);
 }
 
 export function useLogWrapperRef() {

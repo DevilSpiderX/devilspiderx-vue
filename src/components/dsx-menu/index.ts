@@ -12,7 +12,7 @@ export interface MenuItemOptionType {
     icon?: VNodeChild,
     tip?: string,
     divider?: boolean,
-    onClick?: (event: MouseEvent) => unknown,
+    onClick?: (event: MouseEvent) => any,
     hidden?: boolean,
     disabled?: boolean
 }
