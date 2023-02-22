@@ -3,7 +3,7 @@ import v2rayNPngUrl from "@/assets/v2rayN.png";
 import { DSXMenuIcon as Icon } from "@/components/dsx-menu";
 import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
-import { Message } from "@arco-design/web-vue";
+import { Message, Scrollbar as AScrollbar } from "@arco-design/web-vue";
 import { IconClose, IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
 import { computed, reactive } from "vue";
 import { useRouter } from "vue-router";
@@ -82,52 +82,54 @@ function on_exit_clicked() {
 </script>
 
 <template>
-    <ALayout>
-        <ALayoutHeader>
-            <APageHeader @back="drawer.visible = true">
-                <template #back-icon>
-                    <span style="font-size: 1.2rem;position: relative">
-                        <i class="fa-solid fa-bars fa-fw" />
-                    </span>
-                </template>
-                <template #title>
-                    <span> DevilSpiderX <ATag color="arcoblue" size="small">v{{ appConfigs.appVersion }}</ATag> </span>
-                </template>
-                <template #extra>
-                    <ASwitch v-model="appConfigs.darkTheme" :disabled="appConfigs.themeFollowSystem"
-                        checked-color="#2f2f2f">
-                        <template #unchecked-icon>
-                            <span style="color: var(--color-text-3)">
-                                <IconSunFill />
-                            </span>
-                        </template>
-                        <template #checked-icon>
-                            <span style="color: #2f2f2f">
-                                <IconMoonFill />
-                            </span>
-                        </template>
-                    </ASwitch>
-                </template>
-            </APageHeader>
-        </ALayoutHeader>
-        <ALayoutContent style="padding:20px 15px;">
-            <ARow justify="center">
-                <ACol :xs="24" :sm="21" :md="16" :lg="14" :xl="12" :xxl="10">
-                    <ASpace direction="vertical" fill size="large">
-                        <template v-for="(btn, index) in buttonList">
-                            <AButton v-if="!btn.hidden" class="my-button" :class="btn.class" long :key="index"
-                                @contextmenu.prevent.stop @click="btn.onClick">
-                                <template #icon v-if="btn.icon">
-                                    <Icon :icon="btn.icon" />
-                                </template>
-                                {{ btn.label }}
-                            </AButton>
-                        </template>
-                    </ASpace>
-                </ACol>
-            </ARow>
-        </ALayoutContent>
-    </ALayout>
+    <AScrollbar class="content-scrollbar" outer-class="content-scrollbar">
+        <ALayout>
+            <ALayoutHeader>
+                <APageHeader @back="drawer.visible = true">
+                    <template #back-icon>
+                        <span style="font-size: 1.2rem;position: relative">
+                            <i class="fa-solid fa-bars fa-fw" />
+                        </span>
+                    </template>
+                    <template #title>
+                        <span> DevilSpiderX <ATag color="arcoblue" size="small">v{{ appConfigs.appVersion }}</ATag> </span>
+                    </template>
+                    <template #extra>
+                        <ASwitch v-model="appConfigs.darkTheme" :disabled="appConfigs.themeFollowSystem"
+                            checked-color="#2f2f2f">
+                            <template #unchecked-icon>
+                                <span style="color: var(--color-text-3)">
+                                    <IconSunFill />
+                                </span>
+                            </template>
+                            <template #checked-icon>
+                                <span style="color: #2f2f2f">
+                                    <IconMoonFill />
+                                </span>
+                            </template>
+                        </ASwitch>
+                    </template>
+                </APageHeader>
+            </ALayoutHeader>
+            <ALayoutContent style="padding:20px 15px;">
+                <ARow justify="center">
+                    <ACol :xs="24" :sm="21" :md="16" :lg="14" :xl="12" :xxl="10">
+                        <ASpace direction="vertical" fill size="large">
+                            <template v-for="(btn, index) in buttonList">
+                                <AButton v-if="!btn.hidden" class="my-button" :class="btn.class" long :key="index"
+                                    @contextmenu.prevent.stop @click="btn.onClick">
+                                    <template #icon v-if="btn.icon">
+                                        <Icon :icon="btn.icon" />
+                                    </template>
+                                    {{ btn.label }}
+                                </AButton>
+                            </template>
+                        </ASpace>
+                    </ACol>
+                </ARow>
+            </ALayoutContent>
+        </ALayout>
+    </AScrollbar>
     <ADrawer v-model:visible="drawer.visible" placement="left" :footer="false">
         <template #header>
             <ARow justify="space-between" style="width: 100%;">
@@ -216,5 +218,12 @@ body[arco-theme=dark] .my-button :deep(img) {
 
 .drawer-close-button {
     --color-secondary: #0000;
+}
+
+.content-scrollbar,
+:deep(.content-scrollbar) {
+    overflow: auto;
+    width: 100%;
+    height: 100%;
 }
 </style>

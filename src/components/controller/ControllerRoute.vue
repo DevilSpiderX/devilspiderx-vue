@@ -49,20 +49,11 @@ const cardsProps = reactive({
     xl: 8
 });
 
-const pageHeaderBoxShadow = ref(undefined);
+const pageHeaderBoxShadow = ref();
 
 function main_card_scrollbar_scroll(event) {
     pageHeaderBoxShadow.value = event.target?.scrollTop === 0 ? undefined : "var(--bs-shadow)";
 }
-
-const mainCardScrollbarStyle = reactive({
-    overflow: "auto",
-    width: "100%",
-    height: computed(() => {
-        const height = appConfigs.client.height - 65;
-        return height <= 0 ? "0" : `${height}px`;
-    })
-});
 
 const settingsDrawer = reactive({
     visible: false,
@@ -121,8 +112,8 @@ function resetValues() {
 </script>
 
 <template>
-    <ALayout>
-        <ALayoutHeader style="max-height: 65px;z-index: 101" :style="{ boxShadow: pageHeaderBoxShadow }">
+    <ALayout style="height: 100%">
+        <ALayoutHeader :style="{ zIndex: 101, boxShadow: pageHeaderBoxShadow }">
             <APageHeader @back="$router.back">
                 <template #title>
                     <span> 控制中心 </span>
@@ -148,8 +139,8 @@ function resetValues() {
                 </template>
             </APageHeader>
         </ALayoutHeader>
-        <ALayoutContent>
-            <AScrollbar :style="mainCardScrollbarStyle" @scroll="main_card_scrollbar_scroll">
+        <ALayoutContent style="height: 1px">
+            <AScrollbar class="content-scrollbar" outer-class="content-scrollbar" @scroll="main_card_scrollbar_scroll">
                 <ACard class="main-card" :header-style="{ height: 'auto' }" style="background-color: var(--color-bg-1)">
                     <template #title>
                         <div>
@@ -235,5 +226,11 @@ function resetValues() {
 
 .my-col:hover {
     z-index: 1;
+}
+
+:deep(.content-scrollbar) {
+    overflow: auto;
+    width: 100%;
+    height: 100%;
 }
 </style>

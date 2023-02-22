@@ -85,7 +85,7 @@ const collapseList = reactive({
 
 <template>
     <ALayout style="height:100%">
-        <ALayoutHeader style="max-height: 65px">
+        <ALayoutHeader>
             <APageHeader @back="$router.back">
                 <template #title>
                     <span> 日志 </span>
@@ -160,7 +160,7 @@ const collapseList = reactive({
                 </div>
             </Transition>
         </div>
-        <ALayoutContent style="height:calc(100% - 65px)">
+        <ALayoutContent style="height:1px">
             <ARow justify="center" style="height:100%">
                 <ACol style="height:calc(100% - 3px)" :xs="24" :sm="23" :md="22" :lg="21" :xl="20" :xxl="19">
                     <LogMonitor :text="log.text" :font-size="log.fontSize" ref="logMonitorRef" :loading="log.loading" />

@@ -41,7 +41,9 @@ const tableData = computed({
         if (len === 0) {
             return [];
         }
-        for (let i = len; i < 10; i++) {
+        const pageSize = tablePaginationProps.pageSize;
+        const n = 10 - (len - Math.floor(len / pageSize) * pageSize);
+        for (let i = 0; i < n; i++) {
             data.push({ id: -i, name: "\xA0", account: "\xA0", password: "\xA0", remark: "\xA0", disabled: true });
         }
         data.splice = (start, deleteCount) => _tableData.value.splice(start, deleteCount);
@@ -52,9 +54,15 @@ const tableData = computed({
 
 const tablePaginationProps = reactive({
     pageSize: 20,
+    "onUpdate:pageSize": newPageSize => tablePaginationProps.pageSize = newPageSize,
     current: 1,
-    hideOnSinglePage: false,
-    simple: computed(() => appConfigs.client.width < 450)
+    "onUpdate:current": newCurrent => {
+        tablePaginationProps.current = newCurrent;
+        setTableScrollTop(0);
+    },
+    hideOnSinglePage: true,
+    simple: computed(() => appConfigs.client.width < 450),
+    pageSizeOptions: [10, 20, 30, 40, 50, 99999]
 });
 
 const tableTotalPage = computed(() => Math.ceil(tableData.value.length / tablePaginationProps.pageSize));
@@ -86,7 +94,7 @@ const tableScroll = reactive({
             return "100%";
         }
     }),
-    y: "calc(100% - 12px)"
+    y: "100%"
 });
 
 const key = ref("");
@@ -294,12 +302,6 @@ function update_submit(form_data) {
     });
 }
 
-async function table_page_change(page) {
-    tablePaginationProps.current = page;
-    await nextTick();
-    setTableScrollTop(0);
-}
-
 const displayModal = reactive({
     visible: false,
     data: {}
@@ -314,7 +316,7 @@ function table_cell_dblclick(record) {
 
 <template>
     <ALayout style="height:100%">
-        <ALayoutHeader style="max-height: 63px">
+        <ALayoutHeader>
             <APageHeader @back="$router.back">
                 <template #title>
                     <span> 密码查询 </span>
@@ -323,15 +325,15 @@ function table_cell_dblclick(record) {
                     <ASpace>
                         <span>数据条数:</span>
                         <ASelect v-model="tablePaginationProps.pageSize">
-                            <AOption v-for="item in [10, 20, 30, 40, 50]" :value="item">
-                                {{ item }}
+                            <AOption v-for="item in tablePaginationProps.pageSizeOptions" :value="item">
+                                {{ item }} 条/页
                             </AOption>
                         </ASelect>
                     </ASpace>
                 </template>
             </APageHeader>
         </ALayoutHeader>
-        <ALayoutContent style="height:calc(100% - 63px)">
+        <ALayoutContent style="height:1px">
             <ALayout style="height:100%">
                 <ALayoutHeader style="padding:8px">
                     <ARow justify="center">
@@ -361,13 +363,13 @@ function table_cell_dblclick(record) {
                         </ACol>
                     </ARow>
                 </ALayoutHeader>
-                <ALayoutContent style="height:calc(100% - 52px)">
+                <ALayoutContent style="height:1px">
                     <ARow justify="center" style="height:100%">
                         <ACol v-bind="{ xs: 24, sm: 22, md: 20, lg: 18, xl: 16, xxl: 14 }"
-                            :style="{ height: '100%', overflow: 'hidden' }">
+                            :style="{ height: 'calc(100% - 12px)', overflow: 'hidden' }">
                             <ATable class="pwd-table" :columns="tableColumns" :data="tableData" row-key="id"
-                                :scroll="tableScroll" :pagination="tablePaginationProps" :page-position="tablePagePosition"
-                                :loading="searching" @page-change="table_page_change">
+                                :scroll="tableScroll" :loading="searching" :pagination="tablePaginationProps"
+                                :page-position="tablePagePosition">
                                 <template #empty>
                                     <AEmpty>
                                         <template #image>
