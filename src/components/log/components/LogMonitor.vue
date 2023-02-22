@@ -108,6 +108,7 @@ defineExpose({
 .serial {
     color: var(--color-text-3);
     font-size: .8em;
+    line-height: 1.875;
     margin-right: 1em;
 }
 
