@@ -1,5 +1,4 @@
 <script setup>
-import { useBodyNoScrollbar } from "@/hooks/body";
 import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Message, Scrollbar as AScrollbar } from "@arco-design/web-vue";
@@ -11,7 +10,6 @@ import { useServerInfoReceiver } from "./hooks/server-info-receiver";
 const appConfigs = useAppConfigs();
 
 const router = useRouter();
-useBodyNoScrollbar();
 
 const props = defineProps({
     cd: {
@@ -51,7 +49,7 @@ const cardsProps = reactive({
 
 const pageHeaderBoxShadow = ref();
 
-function main_card_scrollbar_scroll(event) {
+function on_main_scrollbar_scroll(event) {
     pageHeaderBoxShadow.value = event.target?.scrollTop === 0 ? undefined : "var(--bs-shadow)";
 }
 
@@ -112,9 +110,9 @@ function resetValues() {
 </script>
 
 <template>
-    <ALayout style="height: 100%">
+    <ALayout>
         <ALayoutHeader :style="{ zIndex: 101, boxShadow: pageHeaderBoxShadow }">
-            <APageHeader @back="$router.back">
+            <APageHeader @back="$router.push({ name: 'index' })">
                 <template #title>
                     <span> 控制中心 </span>
                 </template>
@@ -139,8 +137,8 @@ function resetValues() {
                 </template>
             </APageHeader>
         </ALayoutHeader>
-        <ALayoutContent style="height: 1px">
-            <AScrollbar class="content-scrollbar" outer-class="content-scrollbar" @scroll="main_card_scrollbar_scroll">
+        <ALayoutContent>
+            <AScrollbar class="main-scrollbar" outer-class="main-scrollbar-out" @scroll="on_main_scrollbar_scroll">
                 <ACard class="main-card" :header-style="{ height: 'auto' }" style="background-color: var(--color-bg-1)">
                     <template #title>
                         <div>
@@ -211,6 +209,22 @@ function resetValues() {
 <style scoped>
 @import url(./styles/card-transition.css);
 
+.arco-layout,
+.arco-layout-content,
+.main-scrollbar-out,
+.main-scrollbar-out :deep(.main-scrollbar) {
+    width: 100%;
+    height: 100%;
+}
+
+.arco-layout-content {
+    overflow: hidden;
+}
+
+.main-scrollbar-out :deep(.main-scrollbar) {
+    overflow: auto;
+}
+
 .main-card {
     box-sizing: border-box;
     border: 0;
@@ -226,11 +240,5 @@ function resetValues() {
 
 .my-col:hover {
     z-index: 1;
-}
-
-:deep(.content-scrollbar) {
-    overflow: auto;
-    width: 100%;
-    height: 100%;
 }
 </style>

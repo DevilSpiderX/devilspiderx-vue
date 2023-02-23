@@ -1,7 +1,7 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import "./assets/fontawesome/css/all.css";
-import router from './router/router';
+import router from './router';
 import pinia from './store/pinia';
 import "./style.css";
 import "./styles/box-shadow.css";

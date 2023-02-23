@@ -12,7 +12,7 @@ onMounted(() => {
         width: 300,
         okText: "返回",
         onBeforeClose: () => {
-            router.back();
+            router.push({ name: 'index' });
         }
     })
 });

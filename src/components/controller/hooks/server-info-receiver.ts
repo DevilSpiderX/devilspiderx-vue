@@ -1,4 +1,4 @@
-import router from "@/router/router";
+import router from "@/router";
 import { http } from "@/scripts/http";
 import { sleep } from "@/util/util";
 import { Message } from "@arco-design/web-vue";

@@ -4,7 +4,7 @@ import { DSXMenuIcon as Icon } from "@/components/dsx-menu";
 import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Message, Scrollbar as AScrollbar } from "@arco-design/web-vue";
-import { IconClose, IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
+import { IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
 import { computed, reactive } from "vue";
 import { useRouter } from "vue-router";
 
@@ -82,7 +82,7 @@ function on_exit_clicked() {
 </script>
 
 <template>
-    <AScrollbar class="content-scrollbar" outer-class="content-scrollbar">
+    <AScrollbar class="fill-scrollbar" outer-class="fill-scrollbar-out">
         <ALayout>
             <ALayoutHeader>
                 <APageHeader @back="drawer.visible = true">
@@ -130,19 +130,9 @@ function on_exit_clicked() {
             </ALayoutContent>
         </ALayout>
     </AScrollbar>
-    <ADrawer v-model:visible="drawer.visible" placement="left" :footer="false">
-        <template #header>
-            <ARow justify="space-between" style="width: 100%;">
-                <h2 style="margin: 0">
-                    设置
-                </h2>
-                <AButton class="drawer-close-button" shape="circle" size="small" @click="drawer.visible = false">
-                    <template #icon>
-                        <IconClose />
-                    </template>
-                </AButton>
-            </ARow>
-        </template>
+
+    <!-- 设置抽屉 -->
+    <ADrawer title="设置" v-model:visible="drawer.visible" placement="left" :footer="false">
         <AForm :model="drawer.empty_form" auto-label-width>
             <AFormItem label="深色模式">
                 <ASwitch v-model="appConfigs.darkTheme" :disabled="appConfigs.themeFollowSystem" />
@@ -155,6 +145,16 @@ function on_exit_clicked() {
 </template>
 
 <style scoped>
+.fill-scrollbar-out,
+.fill-scrollbar-out :deep(.fill-scrollbar) {
+    width: 100%;
+    height: 100%;
+}
+
+.fill-scrollbar-out :deep(.fill-scrollbar) {
+    overflow: auto;
+}
+
 .my-button {
     --color-text-2: var(--color-text-1);
     --color-secondary: var(--color-bg-1);
@@ -218,12 +218,5 @@ body[arco-theme=dark] .my-button :deep(img) {
 
 .drawer-close-button {
     --color-secondary: #0000;
-}
-
-.content-scrollbar,
-:deep(.content-scrollbar) {
-    overflow: auto;
-    width: 100%;
-    height: 100%;
 }
 </style>

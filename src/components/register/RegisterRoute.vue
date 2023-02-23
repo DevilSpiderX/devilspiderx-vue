@@ -85,7 +85,7 @@ function running_stop() {
 
 <template>
     <ALayout>
-        <ALayoutContent style="padding: 0;overflow: visible;">
+        <ALayoutContent style="padding: 0">
             <ARow justify="center">
                 <ACol class="register-col">
                     <AForm :model="form" @submit="form_submit">

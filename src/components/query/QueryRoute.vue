@@ -1,7 +1,6 @@
 <script setup>
 import SearchNoResultSvg from "@/assets/搜索无结果.svg";
 import { DSXMenu } from "@/components/dsx-menu";
-import { useBodyNoScrollbar } from "@/hooks/body";
 import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Message, Modal } from "@arco-design/web-vue";
@@ -11,8 +10,6 @@ import { useTableBodyScrollWrap } from "./hooks/table-body-scroll-wrap";
 import { useTableMenu } from "./hooks/table-menu";
 
 const appConfigs = useAppConfigs();
-
-useBodyNoScrollbar();
 
 const sortable = {
     sortDirections: ["ascend", "descend"],
@@ -316,9 +313,9 @@ function table_cell_dblclick(record) {
 </script>
 
 <template>
-    <ALayout style="height:100%">
+    <ALayout>
         <ALayoutHeader>
-            <APageHeader @back="$router.back">
+            <APageHeader @back="$router.push({ name: 'index' })">
                 <template #title>
                     <span> 密码查询 </span>
                 </template>
@@ -334,8 +331,8 @@ function table_cell_dblclick(record) {
                 </template>
             </APageHeader>
         </ALayoutHeader>
-        <ALayoutContent style="height:1px">
-            <ALayout style="height:100%">
+        <ALayoutContent>
+            <ALayout>
                 <ALayoutHeader style="padding:8px">
                     <ARow justify="center">
                         <ACol :xs="24" :sm="17" :md="15" :lg="13" :xl="11" :xxl="9">
@@ -364,10 +361,10 @@ function table_cell_dblclick(record) {
                         </ACol>
                     </ARow>
                 </ALayoutHeader>
-                <ALayoutContent style="height:1px">
+                <ALayoutContent>
                     <ARow justify="center" style="height:100%">
                         <ACol v-bind="{ xs: 24, sm: 22, md: 20, lg: 18, xl: 16, xxl: 14 }"
-                            :style="{ height: 'calc(100% - 12px)', overflow: 'hidden' }">
+                            :style="{ height: '100%', paddingBottom: '12px' }">
                             <ATable ref="pwdTableRef" :columns="tableColumns" :data="tableData" row-key="id"
                                 :scroll="tableScroll" :loading="searching" :pagination="tablePaginationProps"
                                 :page-position="tablePagePosition">
@@ -390,9 +387,25 @@ function table_cell_dblclick(record) {
         </ALayoutContent>
     </ALayout>
 
+    <!-- 右键菜单 -->
     <DSXMenu v-model:visible="tableMenu.visible" :event="tableMenu.event" :menus="tableMenu.menus" min-width="100px"
         :style="tableMenu.style" :z-index="1002" />
+    <!-- 添加信息模态框 -->
     <AddModal v-model:visible="addModal.visible" v-model:cleaning="addModal.cleaning" @submit="add_submit" />
+    <!-- 更新信息模态框 -->
     <UpdateModal v-model:visible="updateModal.visible" :data="updateModal.data" @submit="update_submit" />
+    <!-- 展示信息模态框 -->
     <DisplayModal v-model:visible="displayModal.visible" :data="displayModal.data" />
 </template>
+
+<style scoped>
+.arco-layout,
+.arco-layout-content {
+    width: 100%;
+    height: 100%;
+}
+
+.arco-layout-content {
+    overflow: hidden;
+}
+</style>

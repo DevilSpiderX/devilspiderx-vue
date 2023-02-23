@@ -25,21 +25,6 @@ const textLines = computed(() => {
     return props.text.split(/\n|\r\n/);
 });
 
-const scrollbarStyle = {
-    overflow: "auto",
-    width: "100%",
-    height: "100%",
-    borderRadius: ".25rem"
-};
-
-const scrollbarOuterStyle = {
-    boxSizing: "border-box",
-    boxShadow: "var(--shadow2-center)",
-    border: "1px solid #ced4da",
-    ...scrollbarStyle,
-    overflow: "hidden"
-};
-
 const scrollbarRef = useScrollbarRef();
 
 function backTop(isSmooth) {
@@ -51,7 +36,7 @@ const scrollData = reactive({
     top: 0
 });
 
-function scrollbar_scroll(event) {
+function on_scrollbar_scroll(event) {
     scrollData.left = event.target?.scrollLeft;
     scrollData.top = event.target?.scrollTop;
 }
@@ -72,8 +57,8 @@ defineExpose({
 </script>
 
 <template>
-    <ASpin :loading="loading" :style="scrollbarStyle">
-        <AScrollbar :style="scrollbarStyle" :outer-style="scrollbarOuterStyle" @scroll="scrollbar_scroll"
+    <ASpin :loading="loading" class="log-monitor-spin">
+        <AScrollbar class="log-monitor-scrollbar" outer-class="log-monitor-scrollbar-outer" @scroll="on_scrollbar_scroll"
             ref="scrollbarRef">
             <AEmpty v-if="text === ''" />
             <div v-else class="log-wrapper" :style="logWrapperStyle" ref="logWrapperRef">
@@ -87,6 +72,24 @@ defineExpose({
 </template>
 
 <style scoped>
+.log-monitor-spin,
+.log-monitor-scrollbar-outer,
+.log-monitor-scrollbar-outer :deep(.log-monitor-scrollbar) {
+    width: 100%;
+    height: 100%;
+    border-radius: .25rem;
+}
+
+.log-monitor-scrollbar-outer {
+    border: 1px solid #ced4da;
+    box-sizing: border-box;
+    box-shadow: var(--shadow2-center);
+}
+
+.log-monitor-scrollbar-outer :deep(.log-monitor-scrollbar) {
+    overflow: auto;
+}
+
 .log-wrapper {
     background-color: var(--color-bg-2);
     box-sizing: border-box;

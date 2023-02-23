@@ -67,7 +67,7 @@ async function on_switch_clicked() {
 <template>
     <ALayout>
         <ALayoutHeader>
-            <APageHeader @back="$router.back">
+            <APageHeader @back="$router.push({ name: 'index' })">
                 <template #title>
                     <span> V2Ray </span>
                 </template>
