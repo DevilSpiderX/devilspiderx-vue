@@ -32,6 +32,9 @@ const tableColumns = reactive([
     { title: "备注", dataIndex: "remark", ellipsis: true, tooltip: { position: "tr" }, sortable }
 ]);
 
+const pwdTableRef = ref(null);
+const { tableBodyScrollWrap, setTableScrollTop } = useTableBodyScrollWrap(pwdTableRef);
+
 const _tableData = ref([]);
 
 const tableData = computed({
@@ -68,8 +71,6 @@ const tablePaginationProps = reactive({
 const tableTotalPage = computed(() => Math.ceil(tableData.value.length / tablePaginationProps.pageSize));
 
 const tablePagePosition = computed(() => appConfigs.client.width < 450 ? "br" : "bottom");
-
-const { tableBodyScrollWrap, setTableScrollTop } = useTableBodyScrollWrap(".pwd-table");
 
 const tableScroll = reactive({
     x: computed(() => {
@@ -367,7 +368,7 @@ function table_cell_dblclick(record) {
                     <ARow justify="center" style="height:100%">
                         <ACol v-bind="{ xs: 24, sm: 22, md: 20, lg: 18, xl: 16, xxl: 14 }"
                             :style="{ height: 'calc(100% - 12px)', overflow: 'hidden' }">
-                            <ATable class="pwd-table" :columns="tableColumns" :data="tableData" row-key="id"
+                            <ATable ref="pwdTableRef" :columns="tableColumns" :data="tableData" row-key="id"
                                 :scroll="tableScroll" :loading="searching" :pagination="tablePaginationProps"
                                 :page-position="tablePagePosition">
                                 <template #empty>
