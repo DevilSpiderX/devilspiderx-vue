@@ -126,86 +126,98 @@ function QueryError() {
     searching.value = false;
 }
 
-const { tableMenu } = useTableMenu();
-
-tableMenu.close = () => {
-    tableMenu.visible = false;
-    removeTableMenuListener();
-}
-
-const updateModal = reactive({
-    visible: false,
-    data: {}
-});
+const { tableMenu, tableMenuIcons, tableMenuItemStyle } = useTableMenu();
 
 function table_cell_contextmenu(column, record, rowIndex, event) {
     const recordIndex = tablePaginationProps.pageSize * (tablePaginationProps.current - 1) + rowIndex;
 
-    //复制按钮
-    tableMenu.onClicks.copy = () => {
-        if (typeof navigator.clipboard === "object") {
-            navigator.clipboard.writeText(record[column.dataIndex]).then(() => {
-                Message.success("复制成功");
-            }).catch(() => {
-                Message.error("复制失败");
-            });
-        }
-    };
-
-    //删除按钮
-    tableMenu.onClicks.delete = () => {
-        Modal.confirm({
-            title: "提示",
-            content: "确认删除？",
-            width: 300,
-            okText: "确定",
-            cancelText: "取消",
-            onOk: async () => {
-                let resp = await http.query.delete(record.id);
-                switch (resp.code) {
-                    case 0: {
-                        tableData.value.splice(recordIndex, 1);
-                        if (tablePaginationProps.current > tableTotalPage.value) {
-                            tablePaginationProps.current--;
-                        }
-                        break;
-                    }
-                    case 1: {
-                        Message.error("删除失败");
-                        break;
-                    }
+    tableMenu.menus = [
+        //查看按钮
+        {
+            label: "查看",
+            onClick: () => {
+                table_cell_dblclick(record);
+            },
+            style: tableMenuItemStyle,
+            icon: tableMenuIcons.see
+        },
+        //复制按钮
+        {
+            label: "复制",
+            onClick: () => {
+                if (typeof navigator.clipboard === "object") {
+                    navigator.clipboard.writeText(record[column.dataIndex]).then(() => {
+                        Message.success("复制成功");
+                    }).catch(() => {
+                        Message.error("复制失败");
+                    });
                 }
-            }
-        });
-    };
-
-    //编辑按钮
-    tableMenu.onClicks.edit = async () => {
-        updateModal.visible = true;
-        updateModal.data = {};
-        await nextTick();
-        updateModal.data = record;
-    };
-
-    //查看按钮
-    tableMenu.onClicks.see = () => {
-        table_cell_dblclick(record);
-    }
+            },
+            style: tableMenuItemStyle,
+            icon: tableMenuIcons.copy
+        },
+        //删除按钮
+        {
+            label: "删除",
+            onClick: () => {
+                Modal.confirm({
+                    title: "提示",
+                    content: "确认删除？",
+                    width: 300,
+                    okText: "确定",
+                    cancelText: "取消",
+                    onOk: async () => {
+                        let resp = await http.query.delete(record.id);
+                        switch (resp.code) {
+                            case 0: {
+                                tableData.value.splice(recordIndex, 1);
+                                if (tablePaginationProps.current > tableTotalPage.value) {
+                                    tablePaginationProps.current--;
+                                }
+                                break;
+                            }
+                            case 1: {
+                                Message.error("删除失败");
+                                break;
+                            }
+                        }
+                    }
+                });
+            },
+            style: tableMenuItemStyle,
+            icon: tableMenuIcons.delete
+        },
+        //编辑按钮
+        {
+            label: "编辑",
+            onClick: async () => {
+                updateModal.visible = true;
+                updateModal.data = {};
+                await nextTick();
+                updateModal.data = record;
+            },
+            style: tableMenuItemStyle,
+            icon: tableMenuIcons.edit
+        }
+    ];
 
     //滚动表格消除右键菜单
-    if (tableBodyScrollWrap.value)
-        tableBodyScrollWrap.value.addEventListener("scroll", tableMenu.close, { once: true });
+    tableBodyScrollWrap.value?.addEventListener("scroll", closeTableMenu, { once: true });
     //窗体尺寸变化消除右键菜单
-    window.addEventListener("resize", tableMenu.close, { once: true });
+    window.addEventListener("resize", closeTableMenu, { once: true });
 
     tableMenu.event = event;
     tableMenu.visible = true;
 }
 
+function closeTableMenu() {
+    tableMenu.visible = false;
+    removeTableMenuListener();
+}
+
 function removeTableMenuListener() {
-    if (tableBodyScrollWrap.value)
-        tableBodyScrollWrap.value.removeEventListener("scroll", tableMenu.close, { once: true });
-    window.removeEventListener("resize", tableMenu.close, { once: true });
+    tableBodyScrollWrap.value?.removeEventListener("scroll", closeTableMenu);
+    window.removeEventListener("resize", closeTableMenu);
 }
 
 const addModal = reactive({
@@ -258,6 +270,11 @@ async function add_submit(form_data) {
         Message.error("服务器错误");
     }
 }
+
+const updateModal = reactive({
+    visible: false,
+    data: {}
+});
 
 function update_submit(form_data) {
     //form_data是有响应性的

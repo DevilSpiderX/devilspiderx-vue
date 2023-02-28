@@ -7,9 +7,8 @@ import { useRouter } from "vue-router";
 import { CpuCard, DiskCard, MemoryCard, NetworkCard } from "./components";
 import { useServerInfoReceiver } from "./hooks/server-info-receiver";
 
-const appConfigs = useAppConfigs();
-
-const router = useRouter();
+const appConfigs = useAppConfigs(),
+    router = useRouter();
 
 const props = defineProps({
     cd: {
@@ -34,10 +33,6 @@ watch(_cd, cd => {
     console.log("更改数据刷新速率", cd, "ms");
     setCD(cd);
     Message.success(`数据刷新速率：${cd}ms`);
-});
-
-const speedModal = reactive({
-    visible: false
 });
 
 const cardsProps = reactive({
@@ -118,10 +113,8 @@ function resetValues() {
                 </template>
                 <template #extra>
                     <ASpace>
-                        <ATooltip v-if="appConfigs.client.width <= 576" :content="String(_cd)" mini>
-                            <AButton shape="round" @click="speedModal.visible = true">刷新速率</AButton>
-                        </ATooltip>
-                        <AInputNumber v-else v-model="_cd" :min="500" hide-button style="max-width: 12em">
+                        <AInputNumber v-if="appConfigs.client.width > 576" v-model="_cd" :min="500" hide-button
+                            :style="{ maxWidth: '12em' }">
                             <template #prefix>
                                 <span>刷新速率</span>
                             </template>
@@ -152,32 +145,39 @@ function resetValues() {
                         <ACol v-bind="cardsProps">
                             <CpuCard :value="values.cpu" :loading="!values.cpu" />
                         </ACol>
+
                         <ACol v-bind="cardsProps">
                             <MemoryCard :value="values.memory" :process-count="values.os?.processCount"
                                 :loading="!values.memory" />
                         </ACol>
+
                         <ACol v-bind="cardsProps">
                             <NetworkCard :value="values.network" :loading="!values.network" />
                         </ACol>
+
                         <TransitionGroup name="body">
                             <ACol v-for="(disk, index) in values.disk" v-bind="cardsProps" :key="index">
                                 <DiskCard :value="disk" :disk-index="index" />
                             </ACol>
                         </TransitionGroup>
+
                     </ARow>
                 </ACard>
             </AScrollbar>
         </ALayoutContent>
     </ALayout>
-    <AModal title="数据刷新速率" v-model:visible="speedModal.visible" width="auto" simple :footer="false">
-        <AInputNumber v-model="_cd" @change="speedModal.visible = false" :min="500" hide-button style="max-width: 15em">
-            <template #suffix>
-                <span>ms</span>
-            </template>
-        </AInputNumber>
-    </AModal>
+
     <ADrawer v-model:visible="settingsDrawer.visible" title="服务器操作" :footer="false">
         <ASpace direction="vertical" fill>
+            <AInputNumber v-if="appConfigs.client.width <= 576" v-model="_cd" :min="500" hide-button>
+                <template #prefix>
+                    <span>刷新速率</span>
+                </template>
+                <template #suffix>
+                    <span>ms</span>
+                </template>
+            </AInputNumber>
+
             <APopconfirm content="确认重启？" position="bottom" type="warning" @ok="settingsDrawer.reboot">
                 <AButton type="primary" long status="warning" size="large" :loading="settingsDrawer.loadding">
                     <template #icon>
@@ -186,6 +186,7 @@ function resetValues() {
                     重启
                 </AButton>
             </APopconfirm>
+
             <APopconfirm content="确认关机？" position="bottom" type="warning" @ok="settingsDrawer.shutdown">
                 <AButton type="primary" long status="danger" size="large" :loading="settingsDrawer.loadding">
                     <template #icon>
@@ -194,6 +195,7 @@ function resetValues() {
                     关机
                 </AButton>
             </APopconfirm>
+
             <APopconfirm content="确认停止服务器进程？" position="bottom" @ok="settingsDrawer.stop">
                 <AButton type="primary" long size="large" :loading="settingsDrawer.loadding">
                     <template #icon>
@@ -202,6 +204,7 @@ function resetValues() {
                     停止
                 </AButton>
             </APopconfirm>
+
         </ASpace>
     </ADrawer>
 </template>
@@ -240,5 +243,9 @@ function resetValues() {
 
 .my-col:hover {
     z-index: 1;
+}
+
+.arco-input-number :deep(.arco-input) {
+    text-align: center;
 }
 </style>
