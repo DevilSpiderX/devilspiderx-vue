@@ -8,7 +8,7 @@ const httpInstance = axios.create({
 });
 
 httpInstance.interceptors.response.use(resp => {
-    let code = resp.data.code;
+    const code = resp.data.code;
     switch (code) {
         case 1000: {
             console.error("请求返回错误:", resp.data.msg);
@@ -23,8 +23,9 @@ httpInstance.interceptors.response.use(resp => {
             router.push({ name: "login" });
             break;
         }
-        case 1003: {
-            Message.error("没有权限");
+        case 1003:
+        case 1004: {
+            Message.error(resp.data.msg);
             break
         }
     }

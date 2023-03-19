@@ -2,7 +2,7 @@ import router from "@/router";
 import { http } from "@/scripts/http";
 import { sleep } from "@/util/util";
 import { Message } from "@arco-design/web-vue";
-import { onUnmounted, reactive, Ref, ref } from "vue";
+import { h, onUnmounted, reactive, Ref, ref } from "vue";
 import { ValuesType } from "../scripts/interface";
 
 
@@ -27,20 +27,27 @@ class ServerInfoReceiver {
     }
 
     onOpen(cd: number) {
-        Message.success({ content: "WebSocket成功接入服务器", duration: 1000 });
+        Message.success({ content: "推送服务接入成功", duration: 1000 });
         console.log(Date() + "\nWebSocket成功接入服务器");
         this.setCD(cd);
     }
 
     onClose() {
-        Message.success({ content: "WebSocket连接已关闭", duration: 1000 });
-        console.log(Date() + "\n连接已关闭");
+        Message.success({ content: "推送服务已关闭", duration: 1000 });
+        console.log(Date() + "\nWebSocket连接已关闭");
     }
 
     onError(event: Event) {
-        Message.error({ content: "WebSocket发生错误，使用Http请求获取信息", duration: 1000 });
+        Message.error({
+            content: () => h("span", null, [
+                "连接服务发生错误",
+                h("br"),
+                "使用Http请求获取信息"
+            ]),
+            duration: 1000
+        });
         console.log(event);
-        console.log(Date() + "\nWebSocket发生错误，使用Http请求获取信息");
+        console.log(Date() + "\nWebSocket连接发生错误，使用Http请求获取信息");
         this.getHardware();
     }
 

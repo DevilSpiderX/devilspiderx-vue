@@ -1,4 +1,5 @@
 <script setup>
+import { http } from "@/scripts/http";
 import { Modal } from "@arco-design/web-vue";
 import { onMounted } from "vue";
 import { useRouter } from "vue-router";
