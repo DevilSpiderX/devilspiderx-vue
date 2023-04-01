@@ -3,9 +3,9 @@ import v2rayNPngUrl from "@/assets/v2rayN.png";
 import { DSXMenuIcon as Icon } from "@/components/dsx-menu";
 import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
-import { Message, Scrollbar as AScrollbar } from "@arco-design/web-vue";
+import { Scrollbar as AScrollbar, Message } from "@arco-design/web-vue";
 import { IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
-import { computed, reactive } from "vue";
+import { computed, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 
 const appConfigs = useAppConfigs();
@@ -15,42 +15,32 @@ const router = useRouter();
 const buttonList = reactive([
     {
         label: "控制中心",
-        icon: (<i class="fa-solid fa-sliders fa-fw"></i>),
+        icon: (<i class="fa-solid fa-sliders"></i>),
         onClick: () => { router.push({ name: 'controller' }) }
     },
     {
         label: "密码查询",
-        icon: (<i class="fa-solid fa-magnifying-glass fa-fw"></i>),
+        icon: (<i class="fa-solid fa-magnifying-glass"></i>),
         onClick: () => { router.push({ name: 'query' }) }
     },
     {
         label: "V2Ray",
         icon: (
-            <i class="fa-solid fa-fw">
+            <i class="fa-solid">
                 <img src={v2rayNPngUrl} alt="v2ray" width="27" height="27" style="transform: translateY(4px)" />
             </i>),
         onClick: () => { router.push({ name: 'v2ray' }) }
     },
     {
         label: "日\u00a0\u00a0志",
-        icon: (<i class="fa-solid fa-file-lines fa-fw"></i>),
+        icon: (<i class="fa-solid fa-file-lines"></i>),
         onClick: () => { router.push({ name: 'log' }) },
         hidden: computed(() => !appConfigs.user.admin)
     },
     {
-        label: "修改密码",
-        icon: (<i class="fa-solid fa-pen-to-square fa-fw"></i>),
-        onClick: () => { router.push({ name: 'updatePwd' }) },
-    },
-    {
-        label: "退出登录",
-        icon: (<i class="fa-solid fa-right-from-bracket fa-fw"></i>),
-        onClick: on_logoutButton_clicked
-    },
-    {
         class: ["exit-button"],
         label: " 退\u00a0\u00a0出",
-        icon: (<i class="fa-solid fa-power-off fa-fw"></i>),
+        icon: (<i class="fa-solid fa-power-off"></i>),
         onClick: on_exit_clicked
     }
 ]);
@@ -79,6 +69,8 @@ function on_exit_clicked() {
     window.open("about:blank", "_self").close();
 }
 
+const avatarSrc = ref();
+
 </script>
 
 <template>
@@ -88,26 +80,53 @@ function on_exit_clicked() {
                 <APageHeader @back="drawer.visible = true">
                     <template #back-icon>
                         <span style="font-size: 1.2rem;position: relative">
-                            <i class="fa-solid fa-bars fa-fw" />
+                            <i class="fa-solid fa-bars" />
                         </span>
                     </template>
                     <template #title>
                         <span> DevilSpiderX <ATag color="arcoblue" size="small">v{{ appConfigs.appVersion }}</ATag> </span>
                     </template>
                     <template #extra>
-                        <ASwitch v-model="appConfigs.darkTheme" :disabled="appConfigs.themeFollowSystem"
-                            checked-color="#2f2f2f">
-                            <template #unchecked-icon>
-                                <span style="color: var(--color-text-3)">
-                                    <IconSunFill />
-                                </span>
-                            </template>
-                            <template #checked-icon>
-                                <span style="color: #2f2f2f">
-                                    <IconMoonFill />
-                                </span>
-                            </template>
-                        </ASwitch>
+                        <ASpace>
+                            <ASwitch v-model="appConfigs.darkTheme" :disabled="appConfigs.themeFollowSystem"
+                                checked-color="#2f2f2f">
+                                <template #unchecked-icon>
+                                    <span style="color: var(--color-text-3)">
+                                        <IconSunFill />
+                                    </span>
+                                </template>
+                                <template #checked-icon>
+                                    <span style="color: #2f2f2f">
+                                        <IconMoonFill />
+                                    </span>
+                                </template>
+                            </ASwitch>
+                            <ADropdown trigger="hover" position="br">
+                                <AAvatar style="cursor: pointer" :image-url="avatarSrc">
+                                    <i v-if="!avatarSrc" class="fa-solid fa-user"></i>
+                                </AAvatar>
+                                <template #content>
+                                    <a-doption>
+                                        设置头像
+                                        <template #icon>
+                                            <i class="fa-solid fa-camera"></i>
+                                        </template>
+                                    </a-doption>
+                                    <a-doption @click="$router.push({ name: 'updatePwd' })">
+                                        修改密码
+                                        <template #icon>
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </template>
+                                    </a-doption>
+                                    <a-doption @click="on_logoutButton_clicked">
+                                        退出登录
+                                        <template #icon>
+                                            <i class="fa-solid fa-right-from-bracket"></i>
+                                        </template>
+                                    </a-doption>
+                                </template>
+                            </ADropdown>
+                        </ASpace>
                     </template>
                 </APageHeader>
             </ALayoutHeader>
