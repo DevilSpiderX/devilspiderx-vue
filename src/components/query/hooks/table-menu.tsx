@@ -21,9 +21,10 @@ export function useTableMenu() {
 
     const tableMenuIcons = {
         copy: (<i class="fa-regular fa-copy" />),
-        delete: (<i class="fa-regular fa-trash-xmark" />),
-        edit: (<i class="fa-regular fa-pen-to-square" />),
-        see: (<i class="fa-regular fa-eye" />)
+        trash_xmark: (<i class="fa-regular fa-trash-xmark" />),
+        pen_to_square: (<i class="fa-regular fa-pen-to-square" />),
+        eye: (<i class="fa-regular fa-eye" />),
+        globe: (<i class="fa-solid fa-globe" />),
     }
 
     const tableMenu = reactive<tableMenuType>({

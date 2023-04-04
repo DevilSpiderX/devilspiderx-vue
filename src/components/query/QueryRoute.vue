@@ -131,15 +131,16 @@ const { tableMenu, tableMenuIcons, tableMenuItemStyle } = useTableMenu();
 function table_cell_contextmenu(column, record, rowIndex, event) {
     const recordIndex = tablePaginationProps.pageSize * (tablePaginationProps.current - 1) + rowIndex;
 
+    console.log(column, record, rowIndex, event);
+
     tableMenu.menus = [
-        //查看按钮
+        //判断是内容是网址的时候才会出现
         {
-            label: "查看",
-            onClick: () => {
-                table_cell_dblclick(record);
-            },
+            label: "打开",
+            onClick: () => window.open(record[column.dataIndex]),
             style: tableMenuItemStyle,
-            icon: tableMenuIcons.see
+            icon: tableMenuIcons.globe,
+            disappeared: !/^http(s)?:\/\/.+(:\d{1,5})?\/?[\w\/\?=&]*$/.test(record[column.dataIndex])
         },
         //复制按钮
         {
@@ -185,7 +186,7 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
                 });
             },
             style: tableMenuItemStyle,
-            icon: tableMenuIcons.delete
+            icon: tableMenuIcons.trash_xmark
         },
         //编辑按钮
         {
@@ -197,7 +198,16 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
                 updateModal.data = record;
             },
             style: tableMenuItemStyle,
-            icon: tableMenuIcons.edit
+            icon: tableMenuIcons.pen_to_square
+        },
+        //查看按钮
+        {
+            label: "查看",
+            onClick: () => {
+                table_cell_dblclick(record);
+            },
+            style: tableMenuItemStyle,
+            icon: tableMenuIcons.eye
         }
     ];
 

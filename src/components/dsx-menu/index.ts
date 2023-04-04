@@ -1,33 +1,16 @@
-import { DSXMenuIcon, DSXMenuItem } from "./components";
-import DSXMenu from "./DSXMenu.vue";
-
-export { DSXMenu, DSXMenuItem, DSXMenuIcon };
+import { DSXMenuIcon, DSXMenuItem, DSXMenuItemProps } from "./components";
+import DSXMenu, { Props as DSXMenuProps } from "./DSXMenu.vue";
 
 import { CSSProperties, VNodeChild } from "vue";
 
-export interface MenuItemOptionType {
+export { DSXMenu, DSXMenuItem, DSXMenuIcon };
+export type { DSXMenuProps, DSXMenuItemProps };
+
+export interface MenuItemOptionType extends DSXMenuItemProps {
     label?: string,
     class?: string,
     style?: CSSProperties,
     icon?: VNodeChild,
     tip?: string,
-    divider?: boolean,
-    onClick?: (event: MouseEvent) => any,
-    hidden?: boolean,
-    disabled?: boolean
-}
-
-export interface DSXMenuProps {
-    visible: boolean,
-    event: { x: number, y: number } | MouseEvent,
-    zIndex?: number,
-    menus?: Array<MenuItemOptionType>,
-    minWidth?: number | string;
-    maxWidth?: number | string;
-}
-
-export interface DSXMenuItemProps {
-    divider?: boolean,
-    hidden?: boolean,
-    disabled?: boolean
+    onClick?: (event: MouseEvent) => any
 }

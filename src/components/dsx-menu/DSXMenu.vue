@@ -19,9 +19,9 @@ import {
     ref, toRefs,
     watch
 } from 'vue';
-import { DSXMenuIcon as Icon, DSXMenuItem, MenuItemOptionType } from '.';
+import { DSXMenuItem, DSXMenuIcon as Icon, MenuItemOptionType } from '.';
 
-interface Props {
+export interface Props {
     visible: boolean,
     event: { x: number, y: number } | MouseEvent,
     zIndex?: number,
@@ -115,7 +115,8 @@ function getItemBinds(item: MenuItemOptionType) {
         style,
         divider,
         hidden,
-        disabled
+        disabled,
+        disappeared: options.disappeared
     });
 }
 
