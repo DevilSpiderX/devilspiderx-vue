@@ -1,7 +1,7 @@
 import { isVNode, VNodeChild } from "vue";
 
 interface Props {
-    icon: VNodeChild
+    icon: VNodeChild;
 }
 
 const DSXMenuIcon = (props: Props) => {

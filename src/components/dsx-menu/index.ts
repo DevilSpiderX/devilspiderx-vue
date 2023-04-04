@@ -7,10 +7,10 @@ export { DSXMenu, DSXMenuItem, DSXMenuIcon };
 export type { DSXMenuProps, DSXMenuItemProps };
 
 export interface MenuItemOptionType extends DSXMenuItemProps {
-    label?: string,
-    class?: string,
-    style?: CSSProperties,
-    icon?: VNodeChild,
-    tip?: string,
-    onClick?: (event: MouseEvent) => any
+    label?: string;
+    class?: string;
+    style?: CSSProperties;
+    icon?: VNodeChild;
+    tip?: string;
+    onClick?: (event: MouseEvent) => any;
 }

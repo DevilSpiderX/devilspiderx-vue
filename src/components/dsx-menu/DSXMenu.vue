@@ -22,10 +22,10 @@ import {
 import { DSXMenuItem, DSXMenuIcon as Icon, MenuItemOptionType } from '.';
 
 export interface Props {
-    visible: boolean,
-    event: { x: number, y: number } | MouseEvent,
-    zIndex?: number,
-    menus?: Array<MenuItemOptionType>,
+    visible: boolean;
+    event: { x: number, y: number } | MouseEvent;
+    zIndex?: number;
+    menus?: Array<MenuItemOptionType>;
     minWidth?: number | string;
     maxWidth?: number | string;
 }

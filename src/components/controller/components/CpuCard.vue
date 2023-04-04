@@ -7,8 +7,8 @@ import BaseCard from "./BaseCard.vue";
 
 const props = withDefaults(
     defineProps<{
-        value: CpuValueType,
-        loading: boolean
+        value: CpuValueType;
+        loading: boolean;
     }>(),
     {
         value: () => ({

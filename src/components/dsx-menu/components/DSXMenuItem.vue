@@ -2,10 +2,10 @@
 import { computed } from 'vue';
 
 export interface Props {
-    divider?: boolean,
-    hidden?: boolean,
-    disappeared?: boolean,
-    disabled?: boolean,
+    divider?: boolean;
+    hidden?: boolean;
+    disappeared?: boolean;
+    disabled?: boolean;
 }
 
 const props = defineProps<Props>();

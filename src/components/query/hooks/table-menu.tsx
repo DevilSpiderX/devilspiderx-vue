@@ -2,10 +2,10 @@ import { MenuItemOptionType } from "@/components/dsx-menu";
 import { reactive, StyleValue } from "vue";
 
 interface tableMenuType {
-    visible: boolean,
-    event?: { x: number, y: number } | MouseEvent,
-    menus: Array<MenuItemOptionType>,
-    style: StyleValue
+    visible: boolean;
+    event?: { x: number, y: number } | MouseEvent;
+    menus: Array<MenuItemOptionType>;
+    style: StyleValue;
 }
 
 export function useTableMenu() {

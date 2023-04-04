@@ -3,10 +3,10 @@ import { TableColumnData, TableData } from "@arco-design/web-vue";
 
 interface Props {
     value: {
-        column: TableColumnData,
-        record: TableData,
-        rowIndex: number
-    }
+        column: TableColumnData;
+        record: TableData;
+        rowIndex: number;
+    };
 }
 
 const props = defineProps<Props>();

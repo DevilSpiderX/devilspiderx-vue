@@ -7,11 +7,11 @@ import { ValuesType } from "../scripts/interface";
 
 
 class ServerInfoReceiver {
-    token: string
-    websocket: WebSocket
-    values: ValuesType
-    cd: number
-    closed: boolean
+    token: string;
+    websocket: WebSocket;
+    values: ValuesType;
+    cd: number;
+    closed: boolean;
 
     constructor(values: ValuesType, token: string, cd: number) {
         this.values = values;

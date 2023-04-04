@@ -7,8 +7,8 @@ import BaseCard from "./BaseCard.vue";
 
 const props = withDefaults(
     defineProps<{
-        value: NetworkValueType,
-        loading: boolean
+        value: NetworkValueType;
+        loading: boolean;
     }>(),
     {
         value: () => ({

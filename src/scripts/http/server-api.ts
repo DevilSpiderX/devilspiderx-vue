@@ -2,10 +2,10 @@ import { AxiosResponse } from "axios";
 import httpInstance from './http-instance';
 
 export interface Resp {
-    code: number,
-    msg: string,
-    data: any,
-    dataCount?: number
+    code: number;
+    msg: string;
+    data: any;
+    dataCount?: number;
 }
 
 const http = {

@@ -1,6 +1,6 @@
 <script setup>
 import SearchNoResultSvg from "@/assets/搜索无结果.svg";
-import { DSXMenu } from "@/components/dsx-menu";
+import { DSXMenu, DSXMenuItem } from "@/components/dsx-menu";
 import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Message, Modal } from "@arco-design/web-vue";
@@ -423,6 +423,9 @@ function table_cell_dblclick(record) {
     <UpdateModal v-model:visible="updateModal.visible" :data="updateModal.data" @submit="update_submit" />
     <!-- 展示信息模态框 -->
     <DisplayModal v-model:visible="displayModal.visible" :data="displayModal.data" />
+
+    <DSXMenu :event="tableMenu.event" :menus="tableMenu.menus"></DSXMenu>
+    
 </template>
 
 <style scoped>
