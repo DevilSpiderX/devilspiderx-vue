@@ -29,6 +29,12 @@ const http = {
         async updatePassword(oldPassword: string, newPassword: string): Promise<Resp> {
             const resp = await httpInstance.post("/api/user/updatePassword", { oldPassword, newPassword });
             return resp.data;
+        },
+        async uploadAvatar(imageFile: File): Promise<Resp> {
+            const formData = new FormData();
+            formData.append("image", imageFile);
+            const resp = await httpInstance.post("/api/user/uploadAvatar", formData);
+            return resp.data;
         }
     },
     query: {

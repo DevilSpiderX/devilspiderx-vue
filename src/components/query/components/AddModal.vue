@@ -5,7 +5,7 @@ import { useModalWidth } from "../hooks/modal-width";
 const props = defineProps({
     visible: Boolean,
     cleaning: Boolean
-})
+});
 const emit = defineEmits(["submit", "update:visible", "update:cleaning"]);
 
 const _visible = computed({

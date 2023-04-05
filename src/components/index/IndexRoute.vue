@@ -5,8 +5,9 @@ import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Scrollbar as AScrollbar, Message } from "@arco-design/web-vue";
 import { IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
-import { computed, reactive, ref } from "vue";
+import { computed, nextTick, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
+import UpdatePwdModal from "./components/UpdatePwdModal.vue";
 
 const appConfigs = useAppConfigs();
 
@@ -69,7 +70,37 @@ function on_exit_clicked() {
     window.open("about:blank", "_self").close();
 }
 
-const avatarSrc = ref();
+const avatarUrl = "/api/user/avatar";
+const avatarSrc = ref(avatarUrl);
+
+function on_avatar_error() {
+    avatarSrc.value = undefined;
+}
+
+function on_upload_avatar_button_click() {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/jpeg,image/png";
+    fileInput.addEventListener("change", on_avatar_file_input_change, { once: true });
+    fileInput.click();
+}
+
+async function on_avatar_file_input_change(ev) {
+    const files = ev.target.files;
+    if (files.length > 0) {
+        const resp = await http.user.uploadAvatar(files.item(0));
+        if (resp.code === 0) {
+            Message.success("修改成功");
+            avatarSrc.value = undefined;
+            await nextTick();
+            avatarSrc.value = `${avatarUrl}?time=${new Date().getTime()}`;
+        }
+    }
+}
+
+const updatePwdModal = ref({
+    visible: false
+});
 
 </script>
 
@@ -102,17 +133,19 @@ const avatarSrc = ref();
                                 </template>
                             </ASwitch>
                             <ADropdown trigger="hover" position="br">
-                                <AAvatar style="cursor: pointer" :image-url="avatarSrc">
-                                    <i v-if="!avatarSrc" class="fa-solid fa-user"></i>
+                                <AAvatar v-if="avatarSrc" style="cursor: pointer" :image-url="avatarSrc"
+                                    @error="on_avatar_error" />
+                                <AAvatar v-else style="cursor: pointer">
+                                    <i class="fa-solid fa-user"></i>
                                 </AAvatar>
                                 <template #content>
-                                    <a-doption>
+                                    <a-doption @click="on_upload_avatar_button_click">
                                         设置头像
                                         <template #icon>
                                             <i class="fa-solid fa-camera"></i>
                                         </template>
                                     </a-doption>
-                                    <a-doption @click="$router.push({ name: 'updatePwd' })">
+                                    <a-doption @click="updatePwdModal.visible = true">
                                         修改密码
                                         <template #icon>
                                             <i class="fa-solid fa-pen-to-square"></i>
@@ -161,6 +194,9 @@ const avatarSrc = ref();
             </AFormItem>
         </AForm>
     </ADrawer>
+
+    <!-- 修改密码模态框 -->
+    <UpdatePwdModal v-model:visible="updatePwdModal.visible" />
 </template>
 
 <style scoped>

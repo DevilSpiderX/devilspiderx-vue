@@ -31,6 +31,7 @@ declare module '@vue/runtime-core' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     UpdateModal: typeof import('./src/components/query/components/UpdateModal.vue')['default']
+    UpdatePwdModal: typeof import('./src/components/index/components/UpdatePwdModal.vue')['default']
     UpdatePwdRoute: typeof import('./src/components/update-pwd/UpdatePwdRoute.vue')['default']
     V2rayRoute: typeof import('./src/components/v2ray/V2rayRoute.vue')['default']
     WelcomeRoute: typeof import('./src/components/welcome/WelcomeRoute.vue')['default']
