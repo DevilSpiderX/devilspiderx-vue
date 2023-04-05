@@ -57,12 +57,6 @@ const routes: RouteRecordRaw[] = [
         component: () => import("@/components/log/LogRoute.vue"),
         meta: { title: "日志 - DevilSpiderX" }
     },
-    {
-        name: "updatePwd",
-        path: "/updatePwd",
-        component: () => import("@/components/update-pwd/UpdatePwdRoute.vue"),
-        meta: { title: "修改密码 - DevilSpiderX" }
-    }
 ]
 
 if (Object.hasOwn === undefined) {
