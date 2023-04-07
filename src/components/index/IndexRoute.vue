@@ -77,6 +77,12 @@ function on_avatar_error() {
     avatarSrc.value = undefined;
 }
 
+function on_avatar_dblclick() {
+    if (avatarSrc.value) {
+        avatarPreview.value.visible = true;
+    }
+}
+
 function on_upload_avatar_button_click() {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -100,6 +106,11 @@ async function on_avatar_file_input_change(ev) {
 
 const updatePwdModal = ref({
     visible: false
+});
+
+const avatarPreview = ref({
+    visible: false,
+    actions: ['zoomIn', 'originalSize', 'zoomOut']
 });
 
 </script>
@@ -134,7 +145,7 @@ const updatePwdModal = ref({
                             </ASwitch>
                             <ADropdown trigger="hover" position="br">
                                 <AAvatar v-if="avatarSrc" style="cursor: pointer" :image-url="avatarSrc"
-                                    @error="on_avatar_error" />
+                                    @error="on_avatar_error" @dblclick="on_avatar_dblclick" />
                                 <AAvatar v-else style="cursor: pointer">
                                     <i class="fa-solid fa-user"></i>
                                 </AAvatar>
@@ -197,6 +208,8 @@ const updatePwdModal = ref({
 
     <!-- 修改密码模态框 -->
     <UpdatePwdModal v-model:visible="updatePwdModal.visible" />
+
+    <AImagePreview v-model:visible="avatarPreview.visible" :src="avatarUrl" :actions-layout="avatarPreview.actions" />
 </template>
 
 <style scoped>
