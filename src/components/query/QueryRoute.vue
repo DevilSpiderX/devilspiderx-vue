@@ -1,6 +1,6 @@
 <script setup>
 import SearchNoResultSvg from "@/assets/搜索无结果.svg";
-import { DSXMenu, DSXMenuItem } from "@/components/dsx-menu";
+import { DSXMenu } from "@/components/dsx-menu";
 import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Message, Modal } from "@arco-design/web-vue";
@@ -14,6 +14,14 @@ const appConfigs = useAppConfigs();
 const sortable = {
     sortDirections: ["ascend", "descend"],
     sorter: (a, b, { dataIndex, direction }) => {
+        if (a.id < 0 && b.id < 0) {
+            return 0;
+        } else if (a.id < 0) {
+            return 1;
+        } else if (b.id < 0) {
+            return -1;
+        }
+
         if (direction === "ascend") {
             return a[dataIndex] < b[dataIndex] ? -1 : a[dataIndex] > b[dataIndex] ? 1 : 0
         } else {
@@ -44,7 +52,14 @@ const tableData = computed({
         const pageSize = tablePaginationProps.pageSize;
         const n = 10 - (len - Math.floor(len / pageSize) * pageSize);
         for (let i = 0; i < n; i++) {
-            data.push({ id: -i, name: "\xA0", account: "\xA0", password: "\xA0", remark: "\xA0", disabled: true });
+            data.push({
+                id: -(i + 1),
+                name: "\xA0",
+                account: "\xA0",
+                password: "\xA0",
+                remark: "\xA0",
+                disabled: true
+            });
         }
         data.splice = (start, deleteCount) => _tableData.value.splice(start, deleteCount);
         return data;
@@ -62,7 +77,7 @@ const tablePaginationProps = reactive({
     },
     hideOnSinglePage: true,
     simple: computed(() => appConfigs.client.width < 450),
-    pageSizeOptions: [10, 20, 30, 40, 50, 99999]
+    pageSizeOptions: [10, 20, 30, 40, 50, 200, 500, 1000]
 });
 
 const tableTotalPage = computed(() => Math.ceil(tableData.value.length / tablePaginationProps.pageSize));
@@ -130,8 +145,6 @@ const { tableMenu, tableMenuIcons, tableMenuItemStyle } = useTableMenu();
 
 function table_cell_contextmenu(column, record, rowIndex, event) {
     const recordIndex = tablePaginationProps.pageSize * (tablePaginationProps.current - 1) + rowIndex;
-
-    console.log(column, record, rowIndex, event);
 
     tableMenu.menus = [
         //判断是内容是网址的时候才会出现
@@ -423,9 +436,6 @@ function table_cell_dblclick(record) {
     <UpdateModal v-model:visible="updateModal.visible" :data="updateModal.data" @submit="update_submit" />
     <!-- 展示信息模态框 -->
     <DisplayModal v-model:visible="displayModal.visible" :data="displayModal.data" />
-
-    <DSXMenu :event="tableMenu.event" :menus="tableMenu.menus"></DSXMenu>
-    
 </template>
 
 <style scoped>

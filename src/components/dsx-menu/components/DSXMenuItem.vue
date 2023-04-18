@@ -32,8 +32,10 @@ function item_click(event: MouseEvent) {
 
 <template>
     <template v-if="!disappeared">
-        <div v-if="divider" v-show="!hidden" class="dsx-menu-item-divider" :class="classObj" @contextmenu.prevent />
-        <div v-else v-show="!hidden" class="dsx-menu-item" :class="classObj" @click="item_click" @contextmenu.prevent>
+        <div v-if="divider" v-show="!hidden" v-bind="$attrs" class="dsx-menu-item-divider" :class="classObj"
+            @contextmenu.prevent />
+        <div v-else v-show="!hidden" v-bind="$attrs" class="dsx-menu-item" :class="classObj" @click="item_click"
+            @contextmenu.prevent>
             <div v-if="$slots.icon" class="dsx-menu-item-icon">
                 <slot name="icon" />
             </div>

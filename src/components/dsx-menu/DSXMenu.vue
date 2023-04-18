@@ -16,7 +16,8 @@ import {
     onMounted,
     onUnmounted,
     reactive,
-    ref, toRefs,
+    ref,
+    toRefs,
     watch
 } from 'vue';
 import { DSXMenuItem, DSXMenuIcon as Icon, MenuItemOptionType } from '.';
@@ -108,15 +109,14 @@ onUnmounted(() => {
 });
 
 function getItemBinds(item: MenuItemOptionType) {
-    const options = toRefs(item);
-    const { style, divider, hidden, disabled } = options;
+    const { class: className, style, divider, hidden, disabled, disappeared } = toRefs(item);
     return reactive({
-        class: options.class,
+        class: className,
         style,
         divider,
         hidden,
         disabled,
-        disappeared: options.disappeared
+        disappeared
     });
 }
 
