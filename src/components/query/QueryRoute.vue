@@ -448,4 +448,8 @@ function table_cell_dblclick(record) {
 .arco-layout-content {
     overflow: hidden;
 }
+
+.arco-table :deep(.arco-spin) {
+    justify-content: space-between;
+}
 </style>

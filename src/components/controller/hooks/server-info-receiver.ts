@@ -139,9 +139,7 @@ export function useServerInfoReceiver(cd: number) {
     generate(receiver, values, cd);
 
     function close() {
-        if (receiver.value) {
-            receiver.value.close();
-        }
+        receiver.value?.close();
     }
 
     onUnmounted(close);
