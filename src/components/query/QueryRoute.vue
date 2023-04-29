@@ -110,6 +110,8 @@ const tableScroll = reactive({
     y: "100%"
 });
 
+const tablePaddingBottom = computed(() => tableTotalPage.value > 1 ? "12px" : undefined);
+
 const key = ref("");
 const searching = ref(false);
 
@@ -403,8 +405,7 @@ function table_cell_dblclick(record) {
                 </ALayoutHeader>
                 <ALayoutContent>
                     <ARow justify="center" style="height:100%">
-                        <ACol v-bind="{ xs: 24, sm: 22, md: 20, lg: 18, xl: 16, xxl: 14 }"
-                            :style="{ height: '100%', paddingBottom: '12px' }">
+                        <ACol v-bind="{ xs: 24, sm: 22, md: 20, lg: 18, xl: 16, xxl: 14 }" style="height: 100%">
                             <ATable ref="pwdTableRef" :columns="tableColumns" :data="tableData" row-key="id"
                                 :scroll="tableScroll" :loading="searching" :pagination="tablePaginationProps"
                                 :page-position="tablePagePosition">
@@ -447,6 +448,11 @@ function table_cell_dblclick(record) {
 
 .arco-layout-content {
     overflow: hidden;
+}
+
+.arco-table {
+    box-sizing: border-box;
+    padding-bottom: v-bind(tablePaddingBottom);
 }
 
 .arco-table :deep(.arco-spin) {
