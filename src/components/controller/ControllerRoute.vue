@@ -98,8 +98,12 @@ function resetValues() {
     values.memory.used = 0;
     values.memory.free = values.memory.total;
     values.os.processCount = 0;
-    values.network.uploadSpeed = 0;
-    values.network.downloadSpeed = 0;
+    values.networks?.forEach(network => {
+        network.bytesSent = 0;
+        network.bytesRecv = 0;
+        network.uploadSpeed = 0;
+        network.downloadSpeed = 0;
+    });
 }
 
 </script>
@@ -152,11 +156,11 @@ function resetValues() {
                         </ACol>
 
                         <ACol v-bind="cardsProps">
-                            <NetworkCard :value="values.network" :loading="!values.network" />
+                            <NetworkCard :values="values.networks" :loading="!values.networks" />
                         </ACol>
 
                         <TransitionGroup name="body">
-                            <ACol v-for="(disk, index) in values.disk" v-bind="cardsProps" :key="index">
+                            <ACol v-for="(disk, index) in values.disks" v-bind="cardsProps" :key="index">
                                 <DiskCard :value="disk" :disk-index="index" />
                             </ACol>
                         </TransitionGroup>

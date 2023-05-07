@@ -28,13 +28,20 @@ class ServerInfoReceiver {
 
     onOpen(cd: number) {
         Message.success({ content: "推送服务接入成功", duration: 1000 });
-        console.log(Date() + "\nWebSocket成功接入服务器");
+        console.log(`${Date()}\nWebSocket成功接入服务器`);
         this.setCD(cd);
     }
 
-    onClose() {
+    onClose(ev: CloseEvent) {
         Message.success({ content: "推送服务已关闭", duration: 1000 });
-        console.log(Date() + "\nWebSocket连接已关闭");
+        console.log(`${Date()}\nWebSocket连接已关闭(code${ev.code}:${ev.reason})`);
+        if (ev.code === 1000) {
+            http.user.status().then(resp => {
+                if (resp.code !== 0 || !resp.data.login) {
+                    router.push({ name: "login" });
+                }
+            });
+        }
     }
 
     onError(event: Event) {
@@ -73,7 +80,7 @@ class ServerInfoReceiver {
     close() {
         if (this.isWSOpen()) {
             this.send(JSON.stringify({ cmd: "stop" }));
-            this.websocket.close();
+            this.websocket.close(1000, "客户端主动关闭");
         }
         this.closed = true;
     }
@@ -82,27 +89,27 @@ class ServerInfoReceiver {
         while (!this.closed) {
             http.serverInfo.cpu().then(resp => {
                 if (resp.code === 0) {
-                    this.values.cpu = { ...resp.data }
+                    this.values.cpu = resp.data;
                 }
             });
             http.serverInfo.memory().then(resp => {
                 if (resp.code === 0) {
-                    this.values.memory = { ...resp.data }
+                    this.values.memory = resp.data;
                 }
             });
-            http.serverInfo.network().then(resp => {
+            http.serverInfo.networks().then(resp => {
                 if (resp.code === 0) {
-                    this.values.network = { ...resp.data }
+                    this.values.networks = resp.data;
                 }
             });
-            http.serverInfo.disk().then(resp => {
+            http.serverInfo.disks().then(resp => {
                 if (resp.code === 0) {
-                    this.values.disk = [...resp.data]
+                    this.values.disks = resp.data;
                 }
             });
             http.serverInfo.os().then(resp => {
                 if (resp.code === 0) {
-                    this.values.os = { ...resp.data }
+                    this.values.os = resp.data;
                 }
             });
             await sleep(this.cd);
@@ -130,8 +137,8 @@ export function useServerInfoReceiver(cd: number) {
     const values = reactive<ValuesType>({
         cpu: undefined,
         memory: undefined,
-        network: undefined,
-        disk: [],
+        networks: [],
+        disks: [],
         os: undefined
     });
 

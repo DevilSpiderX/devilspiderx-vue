@@ -5,24 +5,38 @@ import { computed } from "vue";
 import { NetworkValueType } from "../scripts/interface";
 import BaseCard from "./BaseCard.vue";
 
+const defaultValue: NetworkValueType = {
+    name: "All",
+    bytesSent: 0,
+    bytesRecv: 0,
+    uploadSpeed: 0,
+    downloadSpeed: 0
+};
+
 const props = withDefaults(
     defineProps<{
-        value: NetworkValueType;
+        values: NetworkValueType[];
         loading: boolean;
     }>(),
     {
-        value: () => ({
-            uploadSpeed: 0,
-            downloadSpeed: 0
-        }),
+        values: () => [],
         loading: false
     }
-)
+);
+
+const value = computed(() => {
+    for (const network of props.values) {
+        if (network.name === "All") {
+            return network;
+        }
+    }
+    return defaultValue;
+});
 
 const formatted = computed(() => {
-    let uploadSpeed = unitBytes(props.value.uploadSpeed);
+    let uploadSpeed = unitBytes(value.value.uploadSpeed);
     uploadSpeed.unit += "/s";
-    let downloadSpeed = unitBytes(props.value.downloadSpeed);
+    let downloadSpeed = unitBytes(value.value.downloadSpeed);
     downloadSpeed.unit += "/s";
     return { uploadSpeed, downloadSpeed };
 });

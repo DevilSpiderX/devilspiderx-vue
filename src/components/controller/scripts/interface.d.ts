@@ -1,8 +1,8 @@
 export interface ValuesType {
     cpu?: CpuValueType;
     memory?: MemoryValueType;
-    network?: NetworkValueType;
-    disk?: Array<DiskValueType>;
+    networks?: NetworkValueType[];
+    disks?: DiskValueType[];
     os?: OSValueType;
 }
 
@@ -22,8 +22,15 @@ export interface MemoryValueType {
 }
 
 export interface NetworkValueType {
+    name: string;
+    displayName?: string;
+    macAddr?: string;
+    bytesSent: number;
+    bytesRecv: number;
     uploadSpeed: number;
     downloadSpeed: number;
+    IPv4addr?: string[];
+    IPv6addr?: string[];
 }
 
 export interface DiskValueType {

@@ -33,7 +33,7 @@ function form_submit() {
         inputNameStatus.value = true;
         return;
     }
-    emit('submit', form);
+    emit('submit', { ...form });
 }
 
 const { width } = useModalWidth();

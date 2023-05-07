@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { defineStore } from 'pinia';
 import { computed, ref, watch, watchEffect } from 'vue';
 
@@ -57,6 +58,14 @@ export const useAppConfigs = defineStore("appConfigs", () => {
 
     const appVersion = ref("");
 
+    axios.get("/api/user/status").then(resp => {
+        appVersion.value = resp.headers["application-version"];
+    });
+
+    const pwdQuery = ref({
+        onePageLineCount: 10
+    });
+
     return {
         client,
         darkTheme,
@@ -66,7 +75,8 @@ export const useAppConfigs = defineStore("appConfigs", () => {
         user,
         isTouchDevice: ref<boolean>("ontouchstart" in window && navigator.maxTouchPoints !== 0),
         log,
-        appVersion
+        appVersion,
+        pwdQuery
     }
 }, {
     persist: {
@@ -77,7 +87,8 @@ export const useAppConfigs = defineStore("appConfigs", () => {
             "user.uid",
             "isTouchDevice",
             "log",
-            "appVersion"
+            "appVersion",
+            "pwdQuery"
         ]
     }
 });

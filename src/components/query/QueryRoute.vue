@@ -6,6 +6,7 @@ import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Message, Modal } from "@arco-design/web-vue";
 import { computed, h, nextTick, reactive, ref } from "vue";
 import { AddModal, DisplayModal, QueryTd, UpdateModal } from "./components";
+import { usePasswordSearch } from "./hooks/password-search";
 import { useTableBodyScrollWrap } from "./hooks/table-body-scroll-wrap";
 import { useTableMenu } from "./hooks/table-menu";
 
@@ -37,21 +38,42 @@ const tableColumns = reactive([
     { title: "备注", dataIndex: "remark", ellipsis: true, tooltip: { position: "tr" }, sortable }
 ]);
 
+/**
+ * @template T
+ * @typedef {import("vue").Ref<T>} Ref
+ */
+
+/**
+ * @typedef {import("@arco-design/web-vue").Table} ATable
+ */
+
+/** @type {Ref<InstanceType<ATable> | null>} */
 const pwdTableRef = ref(null);
 const { tableBodyScrollWrap, setTableScrollTop } = useTableBodyScrollWrap(pwdTableRef);
 
-const _tableData = ref([]);
+/**
+ * @typedef {import("./hooks/password-search").PasswordDataType} tableData
+ */
+
+const {
+    key,
+    passwordData,
+    tablePaginationCurrent,
+    tablePaginationPageSize
+} = usePasswordSearch();
 
 const tableData = computed({
     get: () => {
-        const data = _tableData.value.map(v => v);
-        const len = data.length
+        /** @type {tableData[]} */
+        const data = passwordData.value.map(v => v);
+        const len = data.length;
         if (len === 0) {
             return [];
         }
+        const onePageLineCount = appConfigs.pwdQuery.onePageLineCount;
         const pageSize = tablePaginationProps.pageSize;
-        const n = 10 - (len - Math.floor(len / pageSize) * pageSize);
-        for (let i = 0; i < n; i++) {
+        const n = onePageLineCount - len % pageSize;
+        for (let i = 0; i < n && n < onePageLineCount; i++) {
             data.push({
                 id: -(i + 1),
                 name: "\xA0",
@@ -61,16 +83,16 @@ const tableData = computed({
                 disabled: true
             });
         }
-        data.splice = (start, deleteCount) => _tableData.value.splice(start, deleteCount);
+        data.splice = (start, deleteCount) => passwordData.value.splice(start, deleteCount);
         return data;
     },
-    set: data => _tableData.value = data
+    set: data => passwordData.value = data
 });
 
 const tablePaginationProps = reactive({
-    pageSize: 20,
+    pageSize: tablePaginationPageSize,
     "onUpdate:pageSize": newPageSize => tablePaginationProps.pageSize = newPageSize,
-    current: 1,
+    current: tablePaginationCurrent,
     "onUpdate:current": newCurrent => {
         tablePaginationProps.current = newCurrent;
         setTableScrollTop(0);
@@ -112,7 +134,6 @@ const tableScroll = reactive({
 
 const tablePaddingBottom = computed(() => tableTotalPage.value > 1 ? "12px" : undefined);
 
-const key = ref("");
 const searching = ref(false);
 
 async function Search() {
@@ -125,16 +146,16 @@ async function Search() {
     }
 }
 
+/**
+ * @param {import("@/scripts/http").Resp} resp 
+ */
 function QuerySucceed(resp) {
     console.log("QuerySucceed:", resp);
     searching.value = false;
     tablePaginationProps.current = 1
-    switch (resp.code) {
-        case 0: {
-            tableData.value = resp.data;
-            setTableScrollTop(0);
-            break;
-        }
+    if (resp.code === 0) {
+        passwordData.value = resp.data;
+        setTableScrollTop(0);
     }
 }
 
@@ -251,7 +272,6 @@ const addModal = reactive({
 });
 
 async function add_submit(form_data) {
-    //form_data是有响应性的
     let name = form_data.name;
     let account = form_data.account;
     let password = form_data.password;
@@ -302,7 +322,6 @@ const updateModal = reactive({
 });
 
 function update_submit(form_data) {
-    //form_data是有响应性的
     Modal.confirm({
         title: "提示",
         content: "确认修改？",

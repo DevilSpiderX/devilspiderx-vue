@@ -1,4 +1,5 @@
 import httpInstance from "./http-instance";
-import http from "./server-api";
+import http, { Resp } from "./server-api";
 
 export { http, httpInstance };
+export type { Resp };

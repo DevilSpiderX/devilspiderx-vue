@@ -1,4 +1,3 @@
-import { AxiosResponse } from "axios";
 import httpInstance from './http-instance';
 
 export interface Resp {
@@ -22,9 +21,9 @@ const http = {
             const resp = await httpInstance.post("/api/user/register", { uid, pwd });
             return resp.data;
         },
-        async status(): Promise<AxiosResponse<Resp>> {
+        async status(): Promise<Resp> {
             const resp = await httpInstance.post("/api/user/status");
-            return resp;
+            return resp.data;
         },
         async updatePassword(oldPassword: string, newPassword: string): Promise<Resp> {
             const resp = await httpInstance.post("/api/user/updatePassword", { oldPassword, newPassword });
@@ -105,12 +104,12 @@ const http = {
             const resp = await httpInstance.get("/api/ServerInfo/memory");
             return resp.data;
         },
-        async network(): Promise<Resp> {
-            const resp = await httpInstance.get("/api/ServerInfo/network");
+        async networks(): Promise<Resp> {
+            const resp = await httpInstance.get("/api/ServerInfo/networks");
             return resp.data;
         },
-        async disk(): Promise<Resp> {
-            const resp = await httpInstance.get("/api/ServerInfo/disk");
+        async disks(): Promise<Resp> {
+            const resp = await httpInstance.get("/api/ServerInfo/disks");
             return resp.data;
         },
         async os(): Promise<Resp> {
