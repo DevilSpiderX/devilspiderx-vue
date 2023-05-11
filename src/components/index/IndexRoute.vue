@@ -5,7 +5,7 @@ import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Scrollbar as AScrollbar, Message } from "@arco-design/web-vue";
 import { IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
-import { computed, nextTick, reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import UpdatePwdModal from "./components/UpdatePwdModal.vue";
 
@@ -70,8 +70,14 @@ function on_exit_clicked() {
     window.open("about:blank", "_self").close();
 }
 
-const avatarUrl = "/api/user/avatar";
-const avatarSrc = ref(avatarUrl);
+/** @type {import("vue").Ref<string|undefined>} */
+const avatarSrc = ref();
+
+http.user.getAvatar().then(resp => {
+    if (resp.code === 0) {
+        avatarSrc.value = resp.data;
+    }
+});
 
 function on_avatar_error() {
     avatarSrc.value = undefined;
@@ -97,9 +103,7 @@ async function on_avatar_file_input_change(ev) {
         const resp = await http.user.uploadAvatar(files.item(0));
         if (resp.code === 0) {
             Message.success("修改成功");
-            avatarSrc.value = undefined;
-            await nextTick();
-            avatarSrc.value = `${avatarUrl}?time=${new Date().getTime()}`;
+            avatarSrc.value = `${resp.data.avatar}?time=${new Date().getTime()}`;
         }
     }
 }
@@ -209,7 +213,7 @@ const avatarPreview = ref({
     <!-- 修改密码模态框 -->
     <UpdatePwdModal v-model:visible="updatePwdModal.visible" />
 
-    <AImagePreview v-model:visible="avatarPreview.visible" :src="avatarUrl" :actions-layout="avatarPreview.actions" />
+    <AImagePreview v-model:visible="avatarPreview.visible" :src="avatarSrc" :actions-layout="avatarPreview.actions" />
 </template>
 
 <style scoped>

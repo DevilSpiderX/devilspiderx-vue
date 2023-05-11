@@ -61,6 +61,7 @@ export default defineConfig({
         host: "0.0.0.0",
         proxy: {
             "/api": { target: `http://localhost:10048` },
+            "/user/avatar": { target: `http://localhost:10048` },
             "/websocket": {
                 target: 'ws://localhost:10048',
                 ws: true

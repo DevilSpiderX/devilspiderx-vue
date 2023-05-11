@@ -34,6 +34,10 @@ const http = {
             formData.append("image", imageFile);
             const resp = await httpInstance.post("/api/user/uploadAvatar", formData);
             return resp.data;
+        },
+        async getAvatar(): Promise<Resp> {
+            const resp = await httpInstance.get("/api/user/avatar");
+            return resp.data;
         }
     },
     query: {
