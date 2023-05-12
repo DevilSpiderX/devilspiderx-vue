@@ -70,14 +70,18 @@ function on_exit_clicked() {
     window.open("about:blank", "_self").close();
 }
 
-/** @type {import("vue").Ref<string|undefined>} */
-const avatarSrc = ref();
-
-http.user.getAvatar().then(resp => {
-    if (resp.code === 0) {
-        avatarSrc.value = resp.data;
-    }
+const avatarSrc = computed({
+    get: () => appConfigs.user.avatar,
+    set: newAvatar => appConfigs.user.avatar = newAvatar
 });
+
+if (avatarSrc.value === undefined) {
+    http.user.getAvatar().then(resp => {
+        if (resp.code === 0) {
+            avatarSrc.value = resp.data;
+        }
+    });
+}
 
 function on_avatar_error() {
     avatarSrc.value = undefined;

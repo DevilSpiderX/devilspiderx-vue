@@ -45,11 +45,20 @@ export const useAppConfigs = defineStore("appConfigs", () => {
         statusBarColor.value = darkTheme.value ? "#17171a" : "#ffffff";
     });
 
-    const user = ref<{ uid: string | undefined, admin: boolean, login: boolean, checkIntervalTime: number }>({
+    interface UserType {
+        uid?: string;
+        admin: boolean;
+        login: boolean;
+        checkIntervalTime: number;
+        avatar?: string;
+    }
+
+    const user = ref<UserType>({
         uid: undefined,
         admin: false,
         login: false,
-        checkIntervalTime: 600 * 1000 //ms
+        checkIntervalTime: 600 * 1000, //ms
+        avatar: undefined
     });
 
     const log = ref<{ fontSize: number }>({
