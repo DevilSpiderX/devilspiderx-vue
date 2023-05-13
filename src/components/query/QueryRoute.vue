@@ -52,7 +52,7 @@ const pwdTableRef = ref(null);
 const { tableBodyScrollWrap, setTableScrollTop } = useTableBodyScrollWrap(pwdTableRef);
 
 /**
- * @typedef {import("./hooks/password-search").PasswordDataType} tableData
+ * @typedef {import("./hooks/password-search").PasswordDataType} PasswordDataType
  */
 
 const {
@@ -64,7 +64,7 @@ const {
 
 const tableData = computed({
     get: () => {
-        /** @type {tableData[]} */
+        /** @type {PasswordDataType[]} */
         const data = passwordData.value.map(v => v);
         const len = data.length;
         if (len === 0) {
@@ -166,6 +166,12 @@ function QueryError() {
 
 const { tableMenu, tableMenuIcons, tableMenuItemStyle } = useTableMenu();
 
+/**
+ * @param {import("@arco-design/web-vue").TableColumnData} column 
+ * @param {PasswordDataType} record 
+ * @param {number} rowIndex 
+ * @param {MouseEvent} event 
+ */
 function table_cell_contextmenu(column, record, rowIndex, event) {
     const recordIndex = tablePaginationProps.pageSize * (tablePaginationProps.current - 1) + rowIndex;
 
@@ -199,7 +205,7 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
             onClick: () => {
                 Modal.confirm({
                     title: "提示",
-                    content: "确认删除？",
+                    content: `确认删除(${record.name})？`,
                     width: 300,
                     okText: "确定",
                     cancelText: "取消",
@@ -366,6 +372,9 @@ const displayModal = reactive({
     data: {}
 });
 
+/**
+ * @param {PasswordDataType} record 
+ */
 function table_cell_dblclick(record) {
     displayModal.data = record;
     displayModal.visible = true;

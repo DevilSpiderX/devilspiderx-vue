@@ -1,6 +1,7 @@
+import { TableData } from "@arco-design/web-vue";
 import { onMounted, ref, watchEffect } from "vue";
 
-export interface PasswordDataType {
+export interface PasswordDataType extends TableData {
     id: number;
     name: string;
     account: string;
