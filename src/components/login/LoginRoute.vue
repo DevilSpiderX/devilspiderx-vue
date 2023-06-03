@@ -1,13 +1,13 @@
 <script setup>
 import { http } from "@/scripts/http";
-import { useAppConfigs } from "@/store/AppConfigsStore";
+import { useUserStore } from "@/store/UserStore";
 import { Message } from "@arco-design/web-vue";
 import Hex from "crypto-js/enc-hex";
 import SHA256 from "crypto-js/sha256";
 import { onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
 
-const appConfigs = useAppConfigs();
+const userStore = useUserStore();
 
 const form = reactive({
     uid: "",
@@ -15,7 +15,7 @@ const form = reactive({
 });
 
 onMounted(() => {
-    let loginUid = appConfigs.user.uid;
+    const loginUid = userStore.uid;
     if (loginUid !== undefined) {
         form.uid = loginUid;
     }
@@ -36,7 +36,7 @@ async function form_submit() {
         inputStatus[1] = true;
         return;
     }
-    appConfigs.user.uid = uid;
+    userStore.uid = uid;
 
     running_start();
     pwd = SHA256(pwd).toString(Hex);
@@ -45,8 +45,8 @@ async function form_submit() {
         console.log("Login:", resp);
         switch (resp.code) {
             case 0: {
-                appConfigs.user.login = true;
-                Object.assign(appConfigs.user, resp.data);
+                userStore.login = true;
+                Object.assign(userStore, resp.data);
                 router.push({ name: "index" });
                 break;
             }

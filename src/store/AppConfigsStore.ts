@@ -1,13 +1,17 @@
 import axios from 'axios';
 import { defineStore } from 'pinia';
-import { computed, ref, watch, watchEffect } from 'vue';
+import { computed, ref, watchEffect } from 'vue';
 
-const themeColorMetaElement = document.createElement("meta");
-themeColorMetaElement.setAttribute("name", "theme-color");
-document.head.append(themeColorMetaElement);
+const themeColorMetaElement: HTMLMetaElement = document.querySelector("meta[name=theme-color]")!;
+const colorMatchMedia = window.matchMedia("(prefers-color-scheme:dark)");
+
+const lightStatusBarColor = "#ffffff",
+    darkStatusBarColor = "#17171a";
 
 export const useAppConfigs = defineStore("appConfigs", () => {
     //setup
+
+    /** 窗口的宽高 */
     const client = ref<{ width: number, height: number }>({
         width: document.documentElement.clientWidth,
         height: document.documentElement.clientHeight
@@ -19,58 +23,53 @@ export const useAppConfigs = defineStore("appConfigs", () => {
         client.value.height = rect.height;
     }).observe(document.documentElement);
 
+    /** 是否深色模式 */
     const darkTheme = ref<boolean>(false);
 
+    /** 主题名 */
     const themeName = computed<string>(() => darkTheme.value ? "dark" : "light");
 
     watchEffect(() => {
         document.body.setAttribute("arco-theme", themeName.value);
     });
 
+    /** 主题是否跟随系统 */
     const themeFollowSystem = ref<boolean>(false);
 
     watchEffect(() => {
         if (themeFollowSystem.value) {
-            darkTheme.value = window.matchMedia('(prefers-color-scheme:dark)').matches;
+            darkTheme.value = colorMatchMedia.matches;
         }
     });
 
-    const statusBarColor = ref<string>("");
+    colorMatchMedia.onchange = event => {
+        if (themeFollowSystem.value) {
+            darkTheme.value = event.matches;
+        }
+    };
 
-    watch(statusBarColor, statusBarColor => {
-        themeColorMetaElement.setAttribute("content", statusBarColor);
-    });
+    /** 状态栏颜色 */
+    const statusBarColor = ref<string>();
 
     watchEffect(() => {
-        statusBarColor.value = darkTheme.value ? "#17171a" : "#ffffff";
+        themeColorMetaElement.setAttribute("content",
+            statusBarColor.value || (darkTheme.value ? darkStatusBarColor : lightStatusBarColor)
+        );
     });
 
-    interface UserType {
-        uid?: string;
-        admin: boolean;
-        login: boolean;
-        checkIntervalTime: number;
-        avatar?: string;
-    }
-
-    const user = ref<UserType>({
-        uid: undefined,
-        admin: false,
-        login: false,
-        checkIntervalTime: 600 * 1000, //ms
-        avatar: undefined
-    });
-
+    /** 日志窗口相关配置 */
     const log = ref<{ fontSize: number }>({
         fontSize: 16
     });
 
+    /** 版本号 */
     const appVersion = ref("");
 
     axios.get("/api/user/status").then(resp => {
         appVersion.value = resp.headers["application-version"];
     });
 
+    /** 密码查询窗口相关配置 */
     const pwdQuery = ref({
         onePageLineCount: 10
     });
@@ -78,10 +77,8 @@ export const useAppConfigs = defineStore("appConfigs", () => {
     return {
         client,
         darkTheme,
-        themeName,
         themeFollowSystem,
         statusBarColor,
-        user,
         isTouchDevice: ref<boolean>("ontouchstart" in window && navigator.maxTouchPoints !== 0),
         log,
         appVersion,
@@ -93,7 +90,6 @@ export const useAppConfigs = defineStore("appConfigs", () => {
         paths: [
             "darkTheme",
             "themeFollowSystem",
-            "user.uid",
             "isTouchDevice",
             "log",
             "appVersion",

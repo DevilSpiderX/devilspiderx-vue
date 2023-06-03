@@ -2,33 +2,29 @@
 import { ref } from "vue";
 import { http } from "./scripts/http";
 import { useAppConfigs } from "./store/AppConfigsStore";
+import { useUserStore } from "./store/UserStore";
 
 window.appInited = ref(false);
-const appConfigs = useAppConfigs();
+useAppConfigs();
+const userStore = useUserStore();
 
-window.matchMedia("(prefers-color-scheme:dark)").onchange = event => {
-    if (appConfigs.themeFollowSystem) {
-        appConfigs.darkTheme = event.matches;
+async function checkUserStatus() {
+    try {
+        let resp = await http.user.status();
+        console.log("user_status:", resp);
+        Object.assign(userStore, resp.data);
+    } catch (ignored) {
+        userStore.admin = false;
+        userStore.login = false;
     }
-};
+}
 
 (async () => {
     await checkUserStatus();
     window.appInited.value = true;
 })();
 
-async function checkUserStatus() {
-    try {
-        let resp = await http.user.status();
-        console.log("user_status:", resp);
-        Object.assign(appConfigs.user, resp.data);
-    } catch (ignored) {
-        appConfigs.user.admin = false;
-        appConfigs.user.login = false;
-    }
-}
-
-setInterval(checkUserStatus, appConfigs.user.checkIntervalTime);
+setInterval(checkUserStatus, userStore.checkIntervalTime);
 
 </script>
 

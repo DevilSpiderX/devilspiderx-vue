@@ -1,6 +1,7 @@
 <script setup>
 import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
+import { useUserStore } from "@/store/UserStore";
 import { Message, Scrollbar as AScrollbar } from "@arco-design/web-vue";
 import { computed, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
@@ -8,6 +9,7 @@ import { CpuCard, DiskCard, MemoryCard, NetworkCard } from "./components";
 import { useServerInfoReceiver } from "./hooks/server-info-receiver";
 
 const appConfigs = useAppConfigs(),
+    userStore = useUserStore(),
     router = useRouter();
 
 const props = defineProps({
@@ -126,7 +128,7 @@ function resetValues() {
                                 <span>ms</span>
                             </template>
                         </AInputNumber>
-                        <AButton v-if="appConfigs.user.admin" type="text" shape="circle" style="color:var(--color-text-2)"
+                        <AButton v-if="userStore.admin" type="text" shape="circle" style="color:var(--color-text-2)"
                             @click="settingsDrawer.visible = true">
                             <i class="fa-solid fa-gear"></i>
                         </AButton>

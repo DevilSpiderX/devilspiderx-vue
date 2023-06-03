@@ -1,10 +1,10 @@
 <script setup>
-import { useAppConfigs } from "@/store/AppConfigsStore";
+import { useUserStore } from "@/store/UserStore";
 import { sleep } from "@/util/util";
 import { ref, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 
-const appConfigs = useAppConfigs();
+const userStore = useUserStore();
 
 const logo = ref((() => {
     let hour = new Date().getHours();
@@ -22,7 +22,7 @@ const router = useRouter();
 watchEffect(async () => {
     if (window.appInited.value) {
         let name = "login";
-        if (appConfigs.user.login) {
+        if (userStore.login) {
             name = "index";
         }
         await sleep(400);

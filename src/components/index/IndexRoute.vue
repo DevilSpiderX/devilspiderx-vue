@@ -3,15 +3,16 @@ import v2rayNPngUrl from "@/assets/v2rayN.png";
 import { DSXMenuIcon as Icon } from "@/components/dsx-menu";
 import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
+import { useUserStore } from "@/store/UserStore";
 import { Scrollbar as AScrollbar, Message } from "@arco-design/web-vue";
 import { IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
 import { computed, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import UpdatePwdModal from "./components/UpdatePwdModal.vue";
 
-const appConfigs = useAppConfigs();
-
-const router = useRouter();
+const appConfigs = useAppConfigs(),
+    userStore = useUserStore(),
+    router = useRouter();
 
 const buttonList = reactive([
     {
@@ -36,7 +37,7 @@ const buttonList = reactive([
         label: "日\u00a0\u00a0志",
         icon: (<i class="fa-solid fa-file-lines"></i>),
         onClick: () => { router.push({ name: 'log' }) },
-        hidden: computed(() => !appConfigs.user.admin)
+        hidden: computed(() => !userStore.admin)
     },
     {
         class: ["exit-button"],
@@ -56,7 +57,7 @@ async function on_logoutButton_clicked() {
         let resp = await http.user.logout();
         console.log("Logout:", resp);
         if (resp.code === 0) {
-            appConfigs.user.login = false;
+            userStore.login = false;
             Message.success("登出成功");
         }
         router.push({ name: "login" });
@@ -71,8 +72,8 @@ function on_exit_clicked() {
 }
 
 const avatarSrc = computed({
-    get: () => appConfigs.user.avatar,
-    set: newAvatar => appConfigs.user.avatar = newAvatar
+    get: () => userStore.avatar,
+    set: newAvatar => userStore.avatar = newAvatar
 });
 
 if (avatarSrc.value === undefined) {
