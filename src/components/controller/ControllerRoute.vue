@@ -158,7 +158,7 @@ function resetValues() {
                         </ACol>
 
                         <ACol v-bind="cardsProps">
-                            <NetworkCard :values="values.networks" :loading="values.networks.length == 0" />
+                            <NetworkCard :values="values.networks" :loading="values.networks.length === 0" />
                         </ACol>
 
                         <TransitionGroup name="body">

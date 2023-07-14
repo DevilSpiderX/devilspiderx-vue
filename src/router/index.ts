@@ -57,6 +57,22 @@ const routes: RouteRecordRaw[] = [
         component: () => import("@/components/log/LogRoute.vue"),
         meta: { title: "日志 - DevilSpiderX" }
     },
+    {
+        name: "fjrc",
+        path: "/fjrc",
+        component: () => import("@/components/fjrc/Fjrc.vue"),
+        meta: { title: "农商行试题 - DevilSpiderX" }
+    },
+    {
+        name: "fjrc_topic",
+        path: "/fjrc/:bank/:id",
+        component: () => import("@/components/fjrc/FjrcTopicRoute.vue"),
+        meta: { title: "农商行试题 - DevilSpiderX" },
+        props: route => ({
+            bank: route.params.bank,
+            id: Number(route.params.id)
+        })
+    },
 ]
 
 if (Object.hasOwn === undefined) {
