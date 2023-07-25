@@ -1,4 +1,5 @@
 <script setup>
+import { useAppConfigs } from "@/store/AppConfigsStore";
 import axios from "axios";
 import { computed, nextTick, onMounted, ref, toRef, watchEffect } from "vue";
 import { useRouter } from "vue-router";
@@ -14,6 +15,8 @@ const fjrcStore = useFjrcStore();
 watchEffect(() => {
     fjrcStore.last[props.bank] = props.id;
 });
+
+const appConfigs = useAppConfigs();
 
 const TITLE_NAME = {
     A: "财务会计部",
@@ -66,6 +69,8 @@ async function getCount(bank) {
     });
     if (count.value == data.count) return;
     count.value = data.count;
+    await nextTick();
+    indexButtonRefs.value[props.id].$el.scrollIntoView();
 }
 
 onMounted(() => {
@@ -131,32 +136,59 @@ const indexButtonCorrectRate = computed(() => {
     return success / all;
 });
 
+watchEffect(async () => {
+    if (indexButtonRefs.value.length !== 0) {
+        await nextTick();
+        indexButtonRefs.value[props.id].$el.scrollIntoView();
+    }
+})
+
 </script>
 
 <template>
     <ALayout>
-        <ALayoutHeader>
-            <APageHeader @back="$router.push({ name: 'fjrc' })">
-                <template #title>
-                    <span> {{ getTitleName(bank) }} </span>
-                </template>
-                <template #extra>
-                    <ASpace>
-                        <ATag v-if="indexButtonCorrectRate >= 0" color="green">
-                            {{ (indexButtonCorrectRate * 100).toFixed(0) }}%
-                        </ATag>
-                        <AButton type="text" shape="circle" style="color:var(--color-text-2)"
-                            @click="drawer.visible = true">
-                            <i class="fa-solid fa-bars" />
+        <ALayout>
+            <ALayoutHeader>
+                <APageHeader @back="$router.push({ name: 'fjrc' })">
+                    <template #title>
+                        <span> {{ getTitleName(bank) }} </span>
+                    </template>
+                    <template #extra>
+                        <ASpace>
+                            <ATag v-if="indexButtonCorrectRate >= 0" color="green">
+                                {{ (indexButtonCorrectRate * 100).toFixed(0) }}%
+                            </ATag>
+                            <AButton v-if="appConfigs.client.width < 768" type="text" shape="circle"
+                                style="color:var(--color-text-2)" @click="drawer.visible = true">
+                                <i class="fa-solid fa-bars" />
+                            </AButton>
+                        </ASpace>
+                    </template>
+                </APageHeader>
+            </ALayoutHeader>
+            <ALayoutContent>
+                <FjrcTopic :key="props.id" v-bind="binds" @answer="onFjrcTopicAnswer" />
+            </ALayoutContent>
+        </ALayout>
+        <ALayoutSider v-if="appConfigs.client.width >= 768" :width="250">
+            <div class="arco-drawer-header">
+                <div class="arco-drawer-title">目录</div>
+            </div>
+            <div class="arco-drawer-body">
+                <ASpace wrap>
+                    <template v-for="id in count">
+                        <AButton ref="indexButtonRefs" shape="circle" :type="indexButtonTypes[id - 1]"
+                            :status="indexButtonColors[id - 1]" @click="goTopic(id - 1)">
+                            {{ id }}
                         </AButton>
-                    </ASpace>
-                </template>
-            </APageHeader>
-        </ALayoutHeader>
-        <FjrcTopic :key="props.id" v-bind="binds" @answer="onFjrcTopicAnswer" />
+                    </template>
+                </ASpace>
+            </div>
+        </ALayoutSider>
     </ALayout>
 
-    <ADrawer title="目录" v-model:visible="drawer.visible" placement="right" :footer="false">
+    <ADrawer v-if="appConfigs.client.width < 768" title="目录" v-model:visible="drawer.visible" placement="right"
+        :footer="false">
         <ASpace wrap>
             <template v-for="id in count">
                 <AButton ref="indexButtonRefs" shape="circle" :type="indexButtonTypes[id - 1]"
@@ -169,8 +201,22 @@ const indexButtonCorrectRate = computed(() => {
 </template>
 
 <style scoped>
-.arco-layout {
+.arco-layout,
+.arco-layout-content {
     width: 100%;
     height: 100%;
 }
-</style>./store/FjrcStore
+
+.arco-layout-content {
+    overflow: hidden;
+}
+
+.arco-layout-sider {
+    height: 100%;
+}
+
+.arco-layout-sider :deep(.arco-layout-sider-children) {
+    display: flex;
+    flex-direction: column;
+}
+</style>

@@ -1,4 +1,5 @@
 <script setup>
+import { DSXMenuIcon as Icon } from "@/components/dsx-menu";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Scrollbar as AScrollbar } from "@arco-design/web-vue";
 import { IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
