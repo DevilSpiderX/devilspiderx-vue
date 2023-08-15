@@ -113,6 +113,7 @@ defineExpose({
     font-size: .8em;
     line-height: 1.875;
     margin-right: 1em;
+    user-select: none;
 }
 
 .text-content {
