@@ -9,6 +9,7 @@ const props = withDefaults(
     defineProps<{
         value: CpuValueType;
         loading: boolean;
+        enabled: boolean;
     }>(),
     {
         value: () => ({
@@ -19,7 +20,16 @@ const props = withDefaults(
             is64bit: true,
             cpuTemperature: 0
         }),
-        loading: false
+        loading: false,
+        enabled: true
+    }
+);
+
+const showValue = computed(() => props.enabled ? props.value :
+    {
+        ...props.value,
+        usedRate: 0,
+        cpuTemperature: 0
     }
 );
 
@@ -49,16 +59,16 @@ const progressColor = computed(() => {
                 <template #content>
                     <ADescriptions :column="2" :value-style="{ fontSize: '16px' }">
                         <ADescriptionsItem label="名 称" :span="2">
-                            <span style="font-size: 14px">{{ value.name }}</span>
+                            <span style="font-size: 14px">{{ showValue.name }}</span>
                         </ADescriptionsItem>
-                        <ADescriptionsItem label="物理核心数">{{ value.physicalNum }}</ADescriptionsItem>
-                        <ADescriptionsItem label="逻辑核心数">{{ value.logicalNum }}</ADescriptionsItem>
-                        <ADescriptionsItem label="处理器位宽">{{ value.is64bit ? "64" : "32" }}</ADescriptionsItem>
-                        <ADescriptionsItem label="温 度">{{ value.cpuTemperature }} ℃</ADescriptionsItem>
+                        <ADescriptionsItem label="物理核心数">{{ showValue.physicalNum }}</ADescriptionsItem>
+                        <ADescriptionsItem label="逻辑核心数">{{ showValue.logicalNum }}</ADescriptionsItem>
+                        <ADescriptionsItem label="处理器位宽">{{ showValue.is64bit ? "64" : "32" }}</ADescriptionsItem>
+                        <ADescriptionsItem label="温 度">{{ showValue.cpuTemperature }} ℃</ADescriptionsItem>
                     </ADescriptions>
                     <ADescriptions>
                         <ADescriptionsItem label="使用率" :span="2">
-                            <AProgress :percent="value.usedRate" :stroke-width="22" size="large" :color="progressColor">
+                            <AProgress :percent="showValue.usedRate" :stroke-width="22" size="large" :color="progressColor">
                                 <template #text="{ percent }">
                                     {{ (percent * 100).toFixed(2) }}%
                                 </template>

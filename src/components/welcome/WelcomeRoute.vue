@@ -1,4 +1,5 @@
 <script setup>
+import faSpider from "@/assets/faSpider.svg";
 import { useUserStore } from "@/store/UserStore";
 import { sleep } from "@/util/util";
 import { ref, watchEffect } from "vue";
@@ -35,7 +36,7 @@ watchEffect(async () => {
 <template>
     <div class="main">
         <div>
-            <i class="fa-duotone fa-spider"></i>
+            <img class="spider-img" :src="faSpider" />
             <p class="logo">
                 Good<br>
                 {{ logo }}
@@ -53,8 +54,9 @@ watchEffect(async () => {
     align-items: center;
 }
 
-.fa-spider {
-    font-size: 20rem;
+.spider-img {
+    width: 20rem;
+    height: 20rem;
 }
 
 .logo {

@@ -94,18 +94,14 @@ const settingsDrawer = reactive({
     }
 });
 
+const cpuEnabled = ref(true);
+const memoryEnabled = ref(true);
+const networkEnabled = ref(true);
+
 function resetValues() {
-    values.cpu.cpuTemperature = 0;
-    values.cpu.usedRate = 0;
-    values.memory.used = 0;
-    values.memory.free = values.memory.total;
-    values.os.processCount = 0;
-    values.networks?.forEach(network => {
-        network.bytesSent = 0;
-        network.bytesRecv = 0;
-        network.uploadSpeed = 0;
-        network.downloadSpeed = 0;
-    });
+    cpuEnabled.value = false;
+    memoryEnabled.value = false;
+    networkEnabled.value = false;
 }
 
 </script>
@@ -149,16 +145,17 @@ function resetValues() {
                     </template>
                     <ARow :gutter="10" align="stretch">
                         <ACol v-bind="cardsProps">
-                            <CpuCard :value="values.cpu" :loading="!values.cpu" />
+                            <CpuCard :value="values.cpu" :loading="!values.cpu" :enabled="cpuEnabled" />
                         </ACol>
 
                         <ACol v-bind="cardsProps">
                             <MemoryCard :value="values.memory" :process-count="values.os?.processCount"
-                                :loading="!values.memory" />
+                                :loading="!values.memory" :enabled="memoryEnabled" />
                         </ACol>
 
                         <ACol v-bind="cardsProps">
-                            <NetworkCard :values="values.networks" :loading="values.networks.length === 0" />
+                            <NetworkCard :values="values.networks" :loading="values.networks.length === 0"
+                                :enabled="networkEnabled" />
                         </ACol>
 
                         <TransitionGroup name="body">

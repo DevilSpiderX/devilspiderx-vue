@@ -11,6 +11,7 @@ const props = withDefaults(
         value: MemoryValueType;
         processCount: number;
         loading: boolean;
+        enabled: boolean;
     }>(),
     {
         value: () => ({
@@ -19,18 +20,27 @@ const props = withDefaults(
             free: 0
         }),
         processCount: 0,
-        loading: false
+        loading: false,
+        enabled: true
     }
 )
 
-const usedStr = computed(() => formatBytes(props.value.used, 2, ' '));
+const showValue = computed(() => props.enabled ? props.value :
+    {
+        total: props.value.total,
+        used: 0,
+        free: props.value.total
+    }
+);
 
-const freeStr = computed(() => formatBytes(props.value.free, 2, ' '));
+const usedStr = computed(() => formatBytes(showValue.value.used, 2, ' '));
 
-const totalStr = computed(() => formatBytes(props.value.total, 2, ' '));
+const freeStr = computed(() => formatBytes(showValue.value.free, 2, ' '));
+
+const totalStr = computed(() => formatBytes(showValue.value.total, 2, ' '));
 
 const usedPercent = computed(() => {
-    return props.value.used / props.value.total;
+    return showValue.value.used / showValue.value.total;
 });
 
 const progressColor = computed(() => {
@@ -43,6 +53,8 @@ const progressColor = computed(() => {
         return colors[2];
     }
 });
+
+const showProcessCount = computed(() => props.enabled ? props.processCount : 0);
 
 </script>
 
@@ -61,7 +73,7 @@ const progressColor = computed(() => {
                         <ADescriptionsItem label="已 用">{{ usedStr }}</ADescriptionsItem>
                         <ADescriptionsItem label="剩 余">{{ freeStr }}</ADescriptionsItem>
                         <ADescriptionsItem label="总 量">{{ totalStr }}</ADescriptionsItem>
-                        <ADescriptionsItem label="进 程">{{ processCount }} 个</ADescriptionsItem>
+                        <ADescriptionsItem label="进 程">{{ showProcessCount }} 个</ADescriptionsItem>
                     </ADescriptions>
                     <ADescriptions>
                         <ADescriptionsItem label="使用率">

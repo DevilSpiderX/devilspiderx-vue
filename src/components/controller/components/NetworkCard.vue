@@ -17,14 +17,20 @@ const props = withDefaults(
     defineProps<{
         values: NetworkValueType[];
         loading: boolean;
+        enabled: boolean;
     }>(),
     {
         values: () => [],
-        loading: false
+        loading: false,
+        enabled: true
     }
 );
 
-const value = computed(() => {
+const showValue = computed(() => {
+    if (!props.enabled) {
+        return defaultValue;
+    }
+
     for (const network of props.values) {
         if (network.name === "All") {
             return network;
@@ -34,20 +40,20 @@ const value = computed(() => {
 });
 
 const formatted = computed(() => {
-    let uploadSpeed = unitBytes(value.value.uploadSpeed);
+    const uploadSpeed = unitBytes(showValue.value.uploadSpeed);
     uploadSpeed.unit += "/s";
-    let downloadSpeed = unitBytes(value.value.downloadSpeed);
+    const downloadSpeed = unitBytes(showValue.value.downloadSpeed);
     downloadSpeed.unit += "/s";
     return { uploadSpeed, downloadSpeed };
 });
 
 const precisionUpload = computed(() => {
-    let value = formatted.value.uploadSpeed.value;
+    const value = formatted.value.uploadSpeed.value;
     return Math.floor(value) === value ? 0 : 2;
 });
 
 const precisionDownload = computed(() => {
-    let value = formatted.value.downloadSpeed.value;
+    const value = formatted.value.downloadSpeed.value;
     return Math.floor(value) === value ? 0 : 2;
 });
 
