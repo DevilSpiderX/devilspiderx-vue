@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAppConfigs } from "@/store/AppConfigsStore";
-import { computed, nextTick, ref, watchEffect } from "vue";
+import { computed, ref, watchEffect, watchPostEffect } from "vue";
 
 const props = defineProps<{
     id: number;
@@ -67,9 +67,8 @@ const rows = computed(() => {
     return data;
 });
 
-const scrollWatchStop = watchEffect(async () => {
+const scrollWatchStop = watchPostEffect(() => {
     if (listHeight.value !== 0 && containerRef.value) {
-        await nextTick();
         const rowIndex = Math.floor(props.id / columnCount.value);
         containerRef.value.scrollTo({ top: rowIndex * 40 });
         scrollWatchStop();
