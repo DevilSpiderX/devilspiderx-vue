@@ -18,6 +18,7 @@ declare module 'vue' {
     Fjrc: typeof import('./src/components/fjrc/Fjrc.vue')['default']
     FjrcTopic: typeof import('./src/components/fjrc/FjrcTopic.vue')['default']
     FjrcTopicRoute: typeof import('./src/components/fjrc/FjrcTopicRoute.vue')['default']
+    IndexButtonList: typeof import('./src/components/fjrc/IndexButtonList.vue')['default']
     IndexRoute: typeof import('./src/components/index/IndexRoute.vue')['default']
     LoginRoute: typeof import('./src/components/login/LoginRoute.vue')['default']
     LogMonitor: typeof import('./src/components/log/components/LogMonitor.vue')['default']

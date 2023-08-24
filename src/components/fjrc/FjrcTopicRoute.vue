@@ -1,14 +1,21 @@
 <script setup>
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import axios from "axios";
-import { computed, nextTick, onMounted, ref, toRef, watchEffect } from "vue";
+import { computed, onMounted, ref, toRef, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import FjrcTopic from "./FjrcTopic.vue";
+import IndexButtonList from "./IndexButtonList.vue";
 import { useFjrcStore, useFjrcTopicStore } from "./store/FjrcStore";
 
 const props = defineProps({
-    bank: String,
-    id: Number
+    bank: {
+        type: String,
+        required: true
+    },
+    id: {
+        type: Number,
+        required: true
+    }
 });
 
 const fjrcStore = useFjrcStore();
@@ -69,8 +76,6 @@ async function getCount(bank) {
     });
     if (count.value == data.count) return;
     count.value = data.count;
-    await nextTick();
-    indexButtonRefs.value[props.id].$el.scrollIntoView();
 }
 
 onMounted(() => {
@@ -89,15 +94,8 @@ const binds = computed(() => {
 const drawer = ref({
     visible: false
 });
-const indexButtonRefs = ref([]);
-const indexButtonTypes = ref({});
 
-watchEffect(async () => {
-    if (drawer.value.visible) {
-        await nextTick();
-        indexButtonRefs.value[props.id].$el.scrollIntoView();
-    }
-});
+const indexButtonTypes = ref({});
 
 watchEffect(() => {
     indexButtonTypes.value = {};
@@ -136,13 +134,6 @@ const indexButtonCorrectRate = computed(() => {
     return success / all;
 });
 
-watchEffect(async () => {
-    if (indexButtonRefs.value.length !== 0) {
-        await nextTick();
-        indexButtonRefs.value[props.id].$el.scrollIntoView();
-    }
-})
-
 </script>
 
 <template>
@@ -175,28 +166,16 @@ watchEffect(async () => {
                 <div class="arco-drawer-title">目录</div>
             </div>
             <div class="arco-drawer-body">
-                <ASpace wrap>
-                    <template v-for="id in count">
-                        <AButton ref="indexButtonRefs" shape="circle" :type="indexButtonTypes[id - 1]"
-                            :status="indexButtonColors[id - 1]" @click="goTopic(id - 1)">
-                            {{ id }}
-                        </AButton>
-                    </template>
-                </ASpace>
+                <IndexButtonList :id="props.id" :count="count" :index-button-types="indexButtonTypes"
+                    :index-button-colors="indexButtonColors" @click="goTopic" />
             </div>
         </ALayoutSider>
     </ALayout>
 
     <ADrawer v-if="appConfigs.client.width < 768" title="目录" v-model:visible="drawer.visible" placement="right"
         :footer="false">
-        <ASpace wrap>
-            <template v-for="id in count">
-                <AButton ref="indexButtonRefs" shape="circle" :type="indexButtonTypes[id - 1]"
-                    :status="indexButtonColors[id - 1]" @click="goTopic(id - 1)">
-                    {{ id }}
-                </AButton>
-            </template>
-        </ASpace>
+        <IndexButtonList v-if="drawer.visible" :id="props.id" :count="count" :index-button-types="indexButtonTypes"
+            :index-button-colors="indexButtonColors" @click="goTopic" />
     </ADrawer>
 </template>
 
