@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useAppConfigs } from "@/store/AppConfigsStore";
-import { debounce } from "@/util/util";
 import { computed, nextTick, ref, watchEffect } from "vue";
 
 const props = defineProps<{
@@ -38,13 +37,12 @@ const listHeight = computed(() => rowCount.value * 40);
 
 const scrollTop = ref(0);
 
-function _onContainerScroll(ev: UIEvent) {
+function onContainerScroll(ev: UIEvent) {
     if (ev.target) {
         //@ts-ignore
         scrollTop.value = ev.target.scrollTop;
     }
 }
-const onContainerScroll = debounce(_onContainerScroll, 30);
 
 const showCount = computed(() => Math.ceil(containerHeight.value / 40));
 const firstRowIndex = computed(() => Math.floor(scrollTop.value / 40));
