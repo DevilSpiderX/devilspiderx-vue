@@ -161,15 +161,17 @@ const indexButtonCorrectRate = computed(() => {
                 <FjrcTopic :key="props.id" v-bind="binds" @answer="onFjrcTopicAnswer" />
             </ALayoutContent>
         </ALayout>
-        <ALayoutSider v-if="appConfigs.client.width >= 768" :width="250">
-            <div class="arco-drawer-header">
-                <div class="arco-drawer-title">目录</div>
-            </div>
-            <div class="arco-drawer-body">
-                <IndexButtonList :id="props.id" :count="count" :index-button-types="indexButtonTypes"
-                    :index-button-colors="indexButtonColors" @click="goTopic" />
-            </div>
-        </ALayoutSider>
+        <Transition name="sider">
+            <ALayoutSider v-if="appConfigs.client.width >= 768" :width="250">
+                <div class="arco-drawer-header">
+                    <div class="arco-drawer-title">目录</div>
+                </div>
+                <div class="arco-drawer-body">
+                    <IndexButtonList :id="props.id" :count="count" :index-button-types="indexButtonTypes"
+                        :index-button-colors="indexButtonColors" @click="goTopic" />
+                </div>
+            </ALayoutSider>
+        </Transition>
     </ALayout>
 
     <ADrawer v-if="appConfigs.client.width < 768" title="目录" v-model:visible="drawer.visible" placement="right"
@@ -197,5 +199,28 @@ const indexButtonCorrectRate = computed(() => {
 .arco-layout-sider :deep(.arco-layout-sider-children) {
     display: flex;
     flex-direction: column;
+}
+
+.sider-enter-active,
+.sider-leave-active {
+    transition: all 0.3s cubic-bezier(0.34, 0.69, 0.1, 1);
+    transform-origin: right;
+}
+
+.sider-leave-active {
+    position: fixed;
+    right: 0;
+}
+
+.sider-enter-from,
+.sider-leave-to {
+    transform: scaleX(0);
+    opacity: 0;
+}
+
+.sider-enter-to,
+.sider-leave-from {
+    transform: scaleX(1);
+    opacity: 1;
 }
 </style>
