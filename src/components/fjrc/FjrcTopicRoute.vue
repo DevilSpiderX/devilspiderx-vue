@@ -5,7 +5,8 @@ import { computed, onMounted, ref, toRef, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import FjrcTopic from "./FjrcTopic.vue";
 import IndexButtonList from "./IndexButtonList.vue";
-import { useFjrcStore, useFjrcTopicStore } from "./store/FjrcStore";
+import { useOnlineCount } from "./hooks/online-count";
+import { useFjrcStore, useFjrcTopicStore } from "./stores/FjrcStore";
 
 const props = defineProps({
     bank: {
@@ -134,6 +135,8 @@ const indexButtonCorrectRate = computed(() => {
     return success / all;
 });
 
+const { onlineCount } = useOnlineCount();
+
 </script>
 
 <template>
@@ -146,6 +149,12 @@ const indexButtonCorrectRate = computed(() => {
                     </template>
                     <template #extra>
                         <ASpace>
+                            <APopover position="br">
+                                <span class="dot-green" />
+                                <template #content>
+                                    当前在线人数：<ATag color="arcoblue">{{ onlineCount }}</ATag>
+                                </template>
+                            </APopover>
                             <ATag v-if="indexButtonCorrectRate >= 0" color="green">
                                 {{ (indexButtonCorrectRate * 100).toFixed(0) }}%
                             </ATag>
@@ -222,5 +231,13 @@ const indexButtonCorrectRate = computed(() => {
 .sider-leave-from {
     transform: scaleX(1);
     opacity: 1;
+}
+
+.dot-green {
+    background-color: #34eb0b;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: block;
 }
 </style>

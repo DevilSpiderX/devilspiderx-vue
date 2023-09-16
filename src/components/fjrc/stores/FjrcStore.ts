@@ -5,15 +5,18 @@ export const useFjrcStore = defineStore("fjrcStore", () => {
     //setup
 
     const last = ref<Record<string, number>>({});
+    const fingerprint = ref<string>();
 
     return {
         last,
+        fingerprint
     }
 }, {
     persist: {
         storage: localStorage,
         paths: [
-            "last"
+            "last",
+            "fingerprint"
         ]
     }
 });

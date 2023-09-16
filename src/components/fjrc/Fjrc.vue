@@ -5,7 +5,8 @@ import { Scrollbar as AScrollbar } from "@arco-design/web-vue";
 import { IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { useFjrcStore } from "./store/FjrcStore";
+import { useOnlineCount } from "./hooks/online-count";
+import { useFjrcStore } from "./stores/FjrcStore";
 
 const fjrcStore = useFjrcStore();
 const appConfigs = useAppConfigs();
@@ -56,6 +57,8 @@ const buttonList = ref([
     }
 ]);
 
+const { onlineCount } = useOnlineCount();
+
 </script>
 
 <template>
@@ -67,19 +70,27 @@ const buttonList = ref([
                         <span> 农商行试题 </span>
                     </template>
                     <template #extra>
-                        <ASwitch v-model="appConfigs.darkTheme" :disabled="appConfigs.themeFollowSystem"
-                            checked-color="#2f2f2f">
-                            <template #unchecked-icon>
-                                <span style="color: var(--color-text-3)">
-                                    <IconSunFill />
-                                </span>
-                            </template>
-                            <template #checked-icon>
-                                <span style="color: #2f2f2f">
-                                    <IconMoonFill />
-                                </span>
-                            </template>
-                        </ASwitch>
+                        <ASpace>
+                            <APopover position="br">
+                                <span class="dot-green" />
+                                <template #content>
+                                    当前在线人数：<ATag color="arcoblue">{{ onlineCount }}</ATag>
+                                </template>
+                            </APopover>
+                            <ASwitch v-model="appConfigs.darkTheme" :disabled="appConfigs.themeFollowSystem"
+                                checked-color="#2f2f2f">
+                                <template #unchecked-icon>
+                                    <span style="color: var(--color-text-3)">
+                                        <IconSunFill />
+                                    </span>
+                                </template>
+                                <template #checked-icon>
+                                    <span style="color: #2f2f2f">
+                                        <IconMoonFill />
+                                    </span>
+                                </template>
+                            </ASwitch>
+                        </ASpace>
                     </template>
                 </APageHeader>
             </ALayoutHeader>
@@ -156,5 +167,13 @@ body[arco-theme=dark] .my-button :deep(img) {
 
 .drawer-close-button {
     --color-secondary: #0000;
+}
+
+.dot-green {
+    background-color: #34eb0b;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: block;
 }
 </style>
