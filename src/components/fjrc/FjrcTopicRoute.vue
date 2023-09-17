@@ -5,7 +5,6 @@ import { computed, onMounted, ref, toRef, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import FjrcTopic from "./FjrcTopic.vue";
 import IndexButtonList from "./IndexButtonList.vue";
-import { useOnlineCount } from "./hooks/online-count";
 import { useFjrcStore, useFjrcTopicStore } from "./stores/FjrcStore";
 
 const props = defineProps({
@@ -16,6 +15,10 @@ const props = defineProps({
     id: {
         type: Number,
         required: true
+    },
+    onlineCount: {
+        type: Number,
+        default: 0
     }
 });
 
@@ -135,8 +138,6 @@ const indexButtonCorrectRate = computed(() => {
     return success / all;
 });
 
-const { onlineCount } = useOnlineCount();
-
 </script>
 
 <template>
@@ -150,9 +151,9 @@ const { onlineCount } = useOnlineCount();
                     <template #extra>
                         <ASpace>
                             <APopover position="br">
-                                <span class="dot-green" />
+                                <span class="dot" :class="props.onlineCount < 1 ? 'dot-red' : 'dot-green'" />
                                 <template #content>
-                                    当前在线人数：<ATag color="arcoblue">{{ onlineCount }}</ATag>
+                                    当前在线人数：<ATag color="arcoblue">{{ props.onlineCount }}</ATag>
                                 </template>
                             </APopover>
                             <ATag v-if="indexButtonCorrectRate >= 0" color="green">
@@ -191,6 +192,8 @@ const { onlineCount } = useOnlineCount();
 </template>
 
 <style scoped>
+@import url(./styles/dot.css);
+
 .arco-layout,
 .arco-layout-content {
     width: 100%;
@@ -231,13 +234,5 @@ const { onlineCount } = useOnlineCount();
 .sider-leave-from {
     transform: scaleX(1);
     opacity: 1;
-}
-
-.dot-green {
-    background-color: #34eb0b;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    display: block;
 }
 </style>

@@ -16,6 +16,7 @@ declare module 'vue' {
     DSXMenu: typeof import('./src/components/dsx-menu/DSXMenu.vue')['default']
     DSXMenuItem: typeof import('./src/components/dsx-menu/components/DSXMenuItem.vue')['default']
     Fjrc: typeof import('./src/components/fjrc/Fjrc.vue')['default']
+    FjrcIndex: typeof import('./src/components/fjrc/FjrcIndex.vue')['default']
     FjrcTopic: typeof import('./src/components/fjrc/FjrcTopic.vue')['default']
     FjrcTopicRoute: typeof import('./src/components/fjrc/FjrcTopicRoute.vue')['default']
     IndexButtonList: typeof import('./src/components/fjrc/IndexButtonList.vue')['default']
