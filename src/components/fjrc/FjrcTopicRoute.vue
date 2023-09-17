@@ -113,7 +113,7 @@ const router = useRouter();
 
 async function goTopic(id) {
     if (id < 0 || id >= count.value) return;
-    await router.push(`${id}`);
+    await router.replace(`${id}`);
     drawer.value.visible = false;
 }
 
@@ -144,7 +144,7 @@ const indexButtonCorrectRate = computed(() => {
     <ALayout>
         <ALayout>
             <ALayoutHeader>
-                <APageHeader @back="$router.push({ name: 'fjrc' })">
+                <APageHeader @back="$router.back">
                     <template #title>
                         <span> {{ getTitleName(bank) }} </span>
                     </template>

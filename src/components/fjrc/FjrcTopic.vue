@@ -97,7 +97,7 @@ const router = useRouter();
 
 function goTopic(id) {
     if (id < 0 || id >= count.value) return;
-    router.push(`${id}`);
+    router.replace(`${id}`);
 }
 
 const lastTopic = debounce(() => {
