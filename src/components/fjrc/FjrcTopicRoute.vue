@@ -121,7 +121,7 @@ function onFjrcTopicAnswer(right) {
     indexButtonColors.value[props.id] = right ? "success" : "danger";
 }
 
-const indexButtonCorrectRate = computed(() => {
+const correctRate = computed(() => {
     const indexs = Object.getOwnPropertyNames(indexButtonColors.value);
     const all = indexs.length;
     if (all === 0) {
@@ -137,6 +137,16 @@ const indexButtonCorrectRate = computed(() => {
 
     return success / all;
 });
+
+function getCorrectRateColor(correctRate) {
+    if (correctRate < 0.2) {
+        return "red";
+    }
+    if (correctRate < 0.6) {
+        return "orange";
+    }
+    return "green";
+}
 
 </script>
 
@@ -156,8 +166,8 @@ const indexButtonCorrectRate = computed(() => {
                                     当前在线人数：<ATag color="arcoblue">{{ props.onlineCount }}</ATag>
                                 </template>
                             </APopover>
-                            <ATag v-if="indexButtonCorrectRate >= 0" color="green">
-                                {{ (indexButtonCorrectRate * 100).toFixed(0) }}%
+                            <ATag v-if="correctRate >= 0" :color="getCorrectRateColor(correctRate)">
+                                {{ (correctRate * 100).toFixed(0) }}%
                             </ATag>
                             <AButton v-if="appConfigs.client.width < 768" type="text" shape="circle"
                                 style="color:var(--color-text-2)" @click="drawer.visible = true">
