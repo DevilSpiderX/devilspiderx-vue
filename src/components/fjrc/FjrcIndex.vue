@@ -4,6 +4,7 @@ import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Scrollbar as AScrollbar, Message } from "@arco-design/web-vue";
 import IconHover from "@arco-design/web-vue/es/_components/icon-hover";
 import { IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
+import "@arco-design/web-vue/es/tooltip/style/css";
 import { computed, ref, toRef } from "vue";
 import { useRouter } from "vue-router";
 import { downloadHistoryApi, uploadHistoryApi } from "./scripts/fjrc-api";
@@ -74,7 +75,7 @@ const historyModal = ref({
 });
 
 const modalButtonEnabled = computed(() => historyModal.value.form.key.length >= 8);
-const modalInputError = computed(() => {
+const modalInputStatus = computed(() => {
     const length = historyModal.value.form.key.length;
     return length > 0 && length < 8;
 });
@@ -165,7 +166,7 @@ async function onDownloadButtonClick() {
         width="90%">
         <AForm :model="historyModal.form" auto-label-width>
             <AFormItem field="key" label="同步码" tooltip="如果同步码与别人相同，则会覆盖别人的历史记录">
-                <AInput v-model="historyModal.form.key" :error="modalInputError" placeholder="设定一个不小于8位的码" />
+                <AInput v-model="historyModal.form.key" placeholder="设定一个不小于8位的码" :error="modalInputStatus" />
             </AFormItem>
             <div class="history-modal-btn-wrap">
                 <AButton :disabled="!modalButtonEnabled" @click="onUploadButtonClick"

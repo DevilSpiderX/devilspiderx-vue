@@ -144,7 +144,7 @@ watchEffect(() => {
 
 function onFjrcTopicReset() {
     history.value[props.id] = undefined;
-    fjrcTopicKey.value = fjrcTopicKey.value === "A" ? "B" : "A";
+    fjrcTopicKey.value = Date.now();
 }
 
 const correctRate = computed(() => {
@@ -177,7 +177,7 @@ function getCorrectRateColor(correctRate) {
 
 function resetHistory() {
     history.value = [];
-    fjrcTopicKey.value = "C";
+    fjrcTopicKey.value = Date.now();
 }
 
 function resetErrorHistory() {
@@ -186,7 +186,7 @@ function resetErrorHistory() {
         if (!item || item.right) continue;
         history.value[i] = undefined;
     }
-    fjrcTopicKey.value = "C";
+    fjrcTopicKey.value = Date.now();
 }
 
 </script>
