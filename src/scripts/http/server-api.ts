@@ -7,6 +7,13 @@ export interface Resp {
     dataCount?: number;
 }
 
+export interface RespType<T> {
+    code: number;
+    msg: string;
+    data: T;
+    dataCount?: number;
+}
+
 const http = {
     user: {
         async login(uid: string, pwd: string): Promise<Resp> {

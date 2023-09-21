@@ -1,10 +1,12 @@
 <script setup>
 import { DSXMenuIcon as Icon } from "@/components/dsx-menu";
 import { useAppConfigs } from "@/store/AppConfigsStore";
-import { Scrollbar as AScrollbar } from "@arco-design/web-vue";
+import { Scrollbar as AScrollbar, Message } from "@arco-design/web-vue";
+import IconHover from "@arco-design/web-vue/es/_components/icon-hover";
 import { IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
-import { ref } from "vue";
+import { computed, ref, toRef } from "vue";
 import { useRouter } from "vue-router";
+import { downloadHistoryApi, uploadHistoryApi } from "./scripts/fjrc-api";
 import { useFjrcStore } from "./stores/FjrcStore";
 
 const props = defineProps({
@@ -63,6 +65,43 @@ const buttonList = ref([
     }
 ]);
 
+const historyModal = ref({
+    form: { key: toRef(fjrcStore, "historyKey") },
+    visible: false,
+    buttons: {
+        loading: false
+    }
+});
+
+const modalButtonEnabled = computed(() => historyModal.value.form.key.length >= 8);
+const modalInputError = computed(() => {
+    const length = historyModal.value.form.key.length;
+    return length > 0 && length < 8;
+});
+
+async function onUploadButtonClick() {
+    historyModal.value.buttons.loading = true;
+    const resp = await uploadHistoryApi(historyModal.value.form.key, JSON.stringify(fjrcStore.history));
+    if (resp.code === 0) {
+        Message.success("上传成功");
+    } else {
+        Message.error(`上传失败，错误代码${resp.code}`);
+    }
+    setTimeout(() => historyModal.value.buttons.loading = false, 3000);
+}
+
+async function onDownloadButtonClick() {
+    historyModal.value.buttons.loading = true;
+    const resp = await downloadHistoryApi(historyModal.value.form.key);
+    if (resp.code === 0) {
+        Message.success("下载成功");
+        fjrcStore.history = JSON.parse(resp.data.value);
+    } else {
+        Message.error(`下载失败，错误代码${resp.code}`);
+    }
+    setTimeout(() => historyModal.value.buttons.loading = false, 3000);
+}
+
 </script>
 
 <template>
@@ -81,6 +120,11 @@ const buttonList = ref([
                                     当前在线人数：<ATag color="arcoblue">{{ props.onlineCount }}</ATag>
                                 </template>
                             </APopover>
+                            <IconHover>
+                                <span class="history-btn" tabindex="0" @click="historyModal.visible = true">
+                                    <i class="fa-duotone fa-cloud-arrow-up" />
+                                </span>
+                            </IconHover>
                             <ASwitch v-model="appConfigs.darkTheme" :disabled="appConfigs.themeFollowSystem"
                                 checked-color="#2f2f2f">
                                 <template #unchecked-icon>
@@ -117,6 +161,24 @@ const buttonList = ref([
             </ALayoutContent>
         </ALayout>
     </AScrollbar>
+    <AModal :modal-class="$style.historyModal" v-model:visible="historyModal.visible" :footer="false" title="同步历史记录"
+        width="90%">
+        <AForm :model="historyModal.form" auto-label-width>
+            <AFormItem field="key" label="同步码" tooltip="如果同步码与别人相同，则会覆盖别人的历史记录">
+                <AInput v-model="historyModal.form.key" :error="modalInputError" placeholder="设定一个不小于8位的码" />
+            </AFormItem>
+            <div class="history-modal-btn-wrap">
+                <AButton :disabled="!modalButtonEnabled" @click="onUploadButtonClick"
+                    :loading="historyModal.buttons.loading">
+                    上 传
+                </AButton>
+                <AButton :disabled="!modalButtonEnabled" @click="onDownloadButtonClick"
+                    :loading="historyModal.buttons.loading">
+                    下 载
+                </AButton>
+            </div>
+        </AForm>
+    </AModal>
 </template>
 
 <style scoped>
@@ -173,5 +235,21 @@ body[arco-theme=dark] .my-button :deep(img) {
 
 .drawer-close-button {
     --color-secondary: #0000;
+}
+
+.history-btn {
+    cursor: pointer;
+}
+
+.history-modal-btn-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+</style>
+
+<style module>
+.historyModal {
+    max-width: 400px;
 }
 </style>

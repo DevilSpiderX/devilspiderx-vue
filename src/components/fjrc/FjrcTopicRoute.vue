@@ -1,11 +1,12 @@
 <script setup>
 import { useAppConfigs } from "@/store/AppConfigsStore";
-import axios from "axios";
+import IconHover from "@arco-design/web-vue/es/_components/icon-hover";
 import { computed, onMounted, ref, toRef, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import FjrcTopic from "./FjrcTopic.vue";
 import IndexButtonList from "./IndexButtonList.vue";
-import { useFjrcStore, useFjrcTopicStore } from "./stores/FjrcStore";
+import { getTopicApi, getTopicCountApi } from "./scripts/fjrc-api";
+import { useFjrcStore } from "./stores/FjrcStore";
 
 const props = defineProps({
     bank: {
@@ -48,22 +49,25 @@ function getTitleName(bank) {
     return TITLE_NAME.A;
 }
 
-const topic = ref({
+
+const defaultTopic = {
     itemBank: "题库",
-    type: "类型",
+    type: "题型",
     label: "标签",
-    title: "题目",
+    title: "加载中......",
     answer: "",
-    a: "选项A",
-    b: "选项B",
-    c: "选项C",
-    d: "选项D",
-});
+    a: "加载中...",
+    b: "加载中...",
+    c: "加载中...",
+    d: "加载中...",
+}
+
+const topic = ref(defaultTopic);
 async function getTopic(bank, id) {
-    const { data } = await axios.get("/api/fjrc/topic", {
-        params: { bank, id }
-    });
-    topic.value = data;
+    const resp = await getTopicApi(bank, id);
+    if (resp.code === 0) {
+        topic.value = resp.data
+    }
 }
 
 const loading = ref(true);
@@ -75,23 +79,29 @@ watchEffect(async () => {
 
 const count = ref(0);
 async function getCount(bank) {
-    const { data } = await axios.get("/api/fjrc/count", {
-        params: { bank }
-    });
-    if (count.value == data.count) return;
-    count.value = data.count;
+    const resp = await getTopicCountApi(bank);
+    if (resp.code === 0 && count.value != resp.data.count) {
+        count.value = resp.data.count;
+    }
 }
+
+const history = toRef(fjrcStore.history, props.bank);
 
 onMounted(() => {
     getCount(props.bank);
 });
 
 const binds = computed(() => {
+    let answer;
+    if (history.value[props.id]) {
+        answer = history.value[props.id].answer;
+    }
     return {
         ...props,
         topic: topic.value,
         count: count.value,
-        loading: loading.value
+        loading: loading.value,
+        answer
     }
 });
 
@@ -106,8 +116,14 @@ watchEffect(() => {
     indexButtonTypes.value[props.id] = "primary";
 });
 
-const fjrcTopicStore = useFjrcTopicStore();
-const indexButtonColors = toRef(fjrcTopicStore.indexButtonColors, props.bank);
+const indexButtonColors = computed(() => {
+    const colors = new Array(history.value.length);
+    for (let i = 0; i < colors.length; i++) {
+        if (!history.value[i]) continue;
+        colors[i] = history.value[i].right ? "success" : "danger";
+    }
+    return colors;
+});
 
 const router = useRouter();
 
@@ -117,22 +133,33 @@ async function goTopic(id) {
     drawer.value.visible = false;
 }
 
-function onFjrcTopicAnswer(right) {
-    indexButtonColors.value[props.id] = right ? "success" : "danger";
+function onFjrcTopicAnswer(right, answer) {
+    history.value[props.id] = { right, answer }
+}
+
+const fjrcTopicKey = ref(props.id);
+watchEffect(() => {
+    fjrcTopicKey.value = props.id;
+});
+
+function onFjrcTopicReset() {
+    history.value[props.id] = undefined;
+    fjrcTopicKey.value = fjrcTopicKey.value === "A" ? "B" : "A";
 }
 
 const correctRate = computed(() => {
-    const indexs = Object.getOwnPropertyNames(indexButtonColors.value);
-    const all = indexs.length;
-    if (all === 0) {
-        return -1
-    }
-
     let success = 0;
-    for (const index of indexs) {
-        if (indexButtonColors.value[index] === "success") {
+    let all = 0;
+    for (const item of history.value) {
+        if (!item) continue;
+        all++;
+        if (item.right) {
             success++;
         }
+    }
+
+    if (all === 0) {
+        return -1
     }
 
     return success / all;
@@ -146,6 +173,20 @@ function getCorrectRateColor(correctRate) {
         return "orange";
     }
     return "green";
+}
+
+function resetHistory() {
+    history.value = [];
+    fjrcTopicKey.value = "C";
+}
+
+function resetErrorHistory() {
+    for (let i = 0; i < history.value.length; i++) {
+        const item = history.value[i];
+        if (!item || item.right) continue;
+        history.value[i] = undefined;
+    }
+    fjrcTopicKey.value = "C";
 }
 
 </script>
@@ -178,13 +219,15 @@ function getCorrectRateColor(correctRate) {
                 </APageHeader>
             </ALayoutHeader>
             <ALayoutContent>
-                <FjrcTopic :key="props.id" v-bind="binds" @answer="onFjrcTopicAnswer" />
+                <FjrcTopic :key="fjrcTopicKey" v-bind="binds" @answer="onFjrcTopicAnswer" @reset="onFjrcTopicReset" />
             </ALayoutContent>
         </ALayout>
         <Transition name="sider">
             <ALayoutSider v-if="appConfigs.client.width >= 768" :width="250">
                 <div class="arco-drawer-header">
                     <div class="arco-drawer-title">目录</div>
+                    <AButton type="text" size="mini" @click="resetHistory">重置</AButton>
+                    <AButton type="text" size="mini" status="danger" @click="resetErrorHistory">重置错题</AButton>
                 </div>
                 <div class="arco-drawer-body">
                     <IndexButtonList :id="props.id" :count="count" :index-button-types="indexButtonTypes"
@@ -194,10 +237,20 @@ function getCorrectRateColor(correctRate) {
         </Transition>
     </ALayout>
 
-    <ADrawer v-if="appConfigs.client.width < 768" title="目录" v-model:visible="drawer.visible" placement="right"
-        :footer="false">
+    <ADrawer v-if="appConfigs.client.width < 768" v-model:visible="drawer.visible" placement="right" :footer="false">
         <IndexButtonList v-if="drawer.visible" :id="props.id" :count="count" :index-button-types="indexButtonTypes"
             :index-button-colors="indexButtonColors" @click="goTopic" />
+        <template #header>
+            <div class="arco-drawer-title">目录</div>
+            <AButton type="text" size="mini" @click="resetHistory">重置</AButton>
+            <AButton type="text" size="mini" status="danger" @click="resetErrorHistory">重置错题</AButton>
+            <div tabindex="-1" role="button" aria-label="Close" class="arco-drawer-close-btn"
+                @click="drawer.visible = false">
+                <IconHover>
+                    <IconClose />
+                </IconHover>
+            </div>
+        </template>
     </ADrawer>
 </template>
 

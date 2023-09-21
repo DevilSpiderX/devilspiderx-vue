@@ -1,7 +1,7 @@
 <script setup>
 import { debounce } from "@/util/util";
 import { Scrollbar as AScrollbar } from "@arco-design/web-vue";
-import { ref, toRefs } from "vue";
+import { computed, onMounted, ref, toRefs, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 
 const props = defineProps({
@@ -9,12 +9,27 @@ const props = defineProps({
     id: Number,
     topic: Object,
     count: Number,
-    loading: Boolean
+    loading: Boolean,
+    answer: String
 });
 
-const emits = defineEmits(["answer"]);
+const emits = defineEmits(["answer", "reset"]);
 
-const { topic, count } = toRefs(props);
+const defaultTopic = {
+    itemBank: "题库",
+    type: "题型",
+    label: "标签",
+    title: "加载中......",
+    answer: "",
+    a: "加载中...",
+    b: "加载中...",
+    c: "加载中...",
+    d: "加载中...",
+}
+
+const { count } = toRefs(props);
+
+const topic = computed(() => props.loading ? defaultTopic : props.topic);
 
 const buttonStatus = ref({
     A: "normal",
@@ -38,6 +53,10 @@ const buttonType = ref({
 
 const answerStatus = ref(false);
 
+/**
+ * 
+ * @param {string} answer 
+ */
 function answerTopic(answer) {
     if (answerStatus.value) return;
     if (topic.value.type === "多选题") {
@@ -56,9 +75,9 @@ function answerTopic(answer) {
     if (answer !== rightAnswer) {
         buttonStatus.value[answer] = "danger";
         buttonType.value[answer] = "primary";
-        emits("answer", false);
+        emits("answer", false, answer);
     } else {
-        emits("answer", true);
+        emits("answer", true, answer);
     }
     buttonStatus.value[rightAnswer] = "success";
     buttonType.value[rightAnswer] = "primary";
@@ -74,8 +93,9 @@ function answerMultipleTopic() {
     const rightAnswers = topic.value.answer.match(/[a-zA-Z]/g);
 
     let right = true;
-
+    let answerStr = "";
     for (const answer of multipleAnswer.value) {
+        answerStr += `${answer},`;
         if (!rightAnswers.includes(answer)) {
             buttonStatus.value[answer] = "danger";
             buttonType.value[answer] = "primary";
@@ -90,7 +110,7 @@ function answerMultipleTopic() {
             right = false;
         }
     }
-    emits("answer", right);
+    emits("answer", right, answerStr);
 }
 
 const router = useRouter();
@@ -107,6 +127,36 @@ const lastTopic = debounce(() => {
 const nextTopic = debounce(() => {
     goTopic(props.id + 1);
 }, 30);
+
+onMounted(() => {
+    function autoAnswer() {
+        if (!props.answer) return;
+
+        const answers = props.answer.match(/[a-zA-Z]/g);
+        if (props.topic.type === "多选题") {
+            multipleAnswer.value = new Set(answers);
+            answerMultipleTopic();
+            return;
+        }
+
+        const answer = answers[0];
+        answerTopic(answer);
+    }
+
+    if (!props.loading) {
+        autoAnswer();
+        return;
+    }
+
+    const answerEffect = watchEffect(() => {
+        if (props.loading) return;
+        answerEffect();
+
+        if (!props.answer) return;
+
+        autoAnswer();
+    });
+});
 
 </script>
 
@@ -149,7 +199,10 @@ const nextTopic = debounce(() => {
                         {{ topic.g }}
                     </div>
                 </ASpace>
-                <div v-if="answerStatus" style="margin-top: 30px;">
+                <div v-if="answerStatus" style="margin-top: 20px;">
+                    <AButton type="text" @click="emits('reset')">重做本题</AButton>
+                </div>
+                <div v-if="answerStatus" style="margin-top: 10px;">
                     出题依据: <br />
                     <p>{{ topic.topicBasis }}</p>
                 </div>
