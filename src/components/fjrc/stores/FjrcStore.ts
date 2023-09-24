@@ -18,7 +18,7 @@ export const useFjrcStore = defineStore("fjrcStore", () => {
 
     interface HistoryItem {
         right: boolean,
-        answer: string
+        answer: string | Array<string>
     }
 
     type History = Record<"A" | "B" | "C" | "D" | "E" | "F" | "G" | "H", Array<HistoryItem | undefined | null>>;

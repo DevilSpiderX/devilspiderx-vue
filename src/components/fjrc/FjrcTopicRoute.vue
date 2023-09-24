@@ -75,7 +75,19 @@ watchEffect(async () => {
     loading.value = true;
     await getTopic(props.bank, props.id);
     loading.value = false;
-})
+    const _history = history.value[props.id];
+    if (_history) {
+        const answer = _history.answer;
+        let answers;
+        if (typeof answer === "string") {
+            answers = answer.match(/[a-zA-Z]/g);
+        } else if (answer instanceof Array) {
+            answers = answer;
+        }
+
+        fjrcTopicRef.value.answer(answers);
+    }
+});
 
 const count = ref(0);
 async function getCount(bank) {
@@ -89,20 +101,6 @@ const history = toRef(fjrcStore.history, props.bank);
 
 onMounted(() => {
     getCount(props.bank);
-});
-
-const binds = computed(() => {
-    let answer;
-    if (history.value[props.id]) {
-        answer = history.value[props.id].answer;
-    }
-    return {
-        ...props,
-        topic: topic.value,
-        count: count.value,
-        loading: loading.value,
-        answer
-    }
 });
 
 const drawer = ref({
@@ -147,6 +145,14 @@ function onFjrcTopicReset() {
     fjrcTopicKey.value = Date.now();
 }
 
+const fjrcTopicBinds = computed(() => ({
+    ...props,
+    key: fjrcTopicKey.value,
+    topic: topic.value,
+    count: count.value,
+    loading: loading.value
+}));
+
 const correctRate = computed(() => {
     let success = 0;
     let all = 0;
@@ -189,6 +195,11 @@ function resetErrorHistory() {
     fjrcTopicKey.value = Date.now();
 }
 
+/**
+ * @type {import("vue").Ref<InstanceType<typeof FjrcTopic> | undefined | null>}
+ */
+const fjrcTopicRef = ref(null);
+
 </script>
 
 <template>
@@ -219,7 +230,8 @@ function resetErrorHistory() {
                 </APageHeader>
             </ALayoutHeader>
             <ALayoutContent>
-                <FjrcTopic :key="fjrcTopicKey" v-bind="binds" @answer="onFjrcTopicAnswer" @reset="onFjrcTopicReset" />
+                <FjrcTopic ref="fjrcTopicRef" v-bind="fjrcTopicBinds" @answer="onFjrcTopicAnswer"
+                    @reset="onFjrcTopicReset" />
             </ALayoutContent>
         </ALayout>
         <Transition name="sider">

@@ -1,7 +1,7 @@
 <script setup>
 import { debounce } from "@/util/util";
 import { Scrollbar as AScrollbar } from "@arco-design/web-vue";
-import { computed, onMounted, ref, toRefs, watchEffect } from "vue";
+import { computed, nextTick, ref, toRefs } from "vue";
 import { useRouter } from "vue-router";
 
 const props = defineProps({
@@ -9,8 +9,7 @@ const props = defineProps({
     id: Number,
     topic: Object,
     count: Number,
-    loading: Boolean,
-    answer: String
+    loading: Boolean
 });
 
 const emits = defineEmits(["answer", "reset"]);
@@ -75,9 +74,9 @@ function answerTopic(answer) {
     if (answer !== rightAnswer) {
         buttonStatus.value[answer] = "danger";
         buttonType.value[answer] = "primary";
-        emits("answer", false, answer);
+        emits("answer", false, [answer]);
     } else {
-        emits("answer", true, answer);
+        emits("answer", true, [answer]);
     }
     buttonStatus.value[rightAnswer] = "success";
     buttonType.value[rightAnswer] = "primary";
@@ -93,9 +92,7 @@ function answerMultipleTopic() {
     const rightAnswers = topic.value.answer.match(/[a-zA-Z]/g);
 
     let right = true;
-    let answerStr = "";
     for (const answer of multipleAnswer.value) {
-        answerStr += `${answer},`;
         if (!rightAnswers.includes(answer)) {
             buttonStatus.value[answer] = "danger";
             buttonType.value[answer] = "primary";
@@ -110,7 +107,7 @@ function answerMultipleTopic() {
             right = false;
         }
     }
-    emits("answer", right, answerStr);
+    emits("answer", right, [...multipleAnswer.value]);
 }
 
 const router = useRouter();
@@ -128,34 +125,25 @@ const nextTopic = debounce(() => {
     goTopic(props.id + 1);
 }, 30);
 
-onMounted(() => {
-    function autoAnswer() {
-        if (!props.answer) return;
-
-        const answers = props.answer.match(/[a-zA-Z]/g);
-        if (props.topic.type === "多选题") {
-            multipleAnswer.value = new Set(answers);
-            answerMultipleTopic();
-            return;
-        }
-
-        const answer = answers[0];
-        answerTopic(answer);
-    }
-
-    if (!props.loading) {
-        autoAnswer();
+/**
+ * 
+ * @param {Array<string>} answers 
+ */
+async function answer(answers) {
+    if (answerStatus.value) return;
+    await nextTick();
+    if (topic.value.type === "多选题") {
+        multipleAnswer.value = new Set(answers);
+        answerMultipleTopic();
         return;
     }
 
-    const answerEffect = watchEffect(() => {
-        if (props.loading) return;
-        answerEffect();
+    const answer = answers[0];
+    answerTopic(answer);
+}
 
-        if (!props.answer) return;
-
-        autoAnswer();
-    });
+defineExpose({
+    answer
 });
 
 </script>
