@@ -9,8 +9,6 @@ function sleep(duration: number): Promise<number> {
 function debounce<T extends (...args: any) => any>(callback: T, ms?: number) {
     let timer: NodeJS.Timeout | undefined;
     return function (this: ThisType<T>, ...args: Parameters<T>) {
-        console.log(this);
-
         if (timer !== undefined) {
             clearTimeout(timer);
         }

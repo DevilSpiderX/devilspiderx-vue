@@ -11,12 +11,7 @@ const { onlineCount, refresh } = useOnlineCount();
 async function _onOnlineCountRefresh(stopSpining) {
     try {
         const succ = await refresh();
-        if (succ) {
-            Message.success({
-                id: "online-count-refresh",
-                content: "刷新成功"
-            });
-        } else {
+        if (!succ) {
             Message.error({
                 id: "online-count-refresh",
                 content: "刷新失败"
@@ -28,7 +23,7 @@ async function _onOnlineCountRefresh(stopSpining) {
     stopSpining();
 }
 
-const onOnlineCountRefresh = debounce(_onOnlineCountRefresh, 2000);
+const onOnlineCountRefresh = debounce(_onOnlineCountRefresh, 1200);
 
 </script>
 
