@@ -32,7 +32,7 @@ export async function getTopicCountApi(bank: string): Promise<RespType<{
     return resp.data;
 }
 
-export async function getOnlineCountApi(fingerprint: string | undefined): Promise<RespType<{
+export async function getOnlineCountApi(fingerprint?: string): Promise<RespType<{
     count: number,
     fingerprint: string
 }>> {

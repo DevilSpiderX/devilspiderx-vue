@@ -1,7 +1,8 @@
 <script setup>
 import { useAppConfigs } from "@/store/AppConfigsStore";
+import { Modal } from "@arco-design/web-vue";
 import IconHover from "@arco-design/web-vue/es/_components/icon-hover";
-import { computed, onMounted, ref, toRef, watchEffect } from "vue";
+import { computed, h, onMounted, ref, toRef, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import FjrcTopic from "./FjrcTopic.vue";
 import IndexButtonList from "./IndexButtonList.vue";
@@ -22,6 +23,8 @@ const props = defineProps({
         default: 0
     }
 });
+
+const emits = defineEmits(["onlineCountRefresh"]);
 
 const fjrcStore = useFjrcStore();
 watchEffect(() => {
@@ -135,14 +138,14 @@ function onFjrcTopicAnswer(right, answer) {
     history.value[props.id] = { right, answer }
 }
 
-const fjrcTopicKey = ref(props.id);
+const fjrcTopicKey = ref(Symbol(props.id));
 watchEffect(() => {
-    fjrcTopicKey.value = props.id;
+    fjrcTopicKey.value = Symbol(props.id);
 });
 
 function onFjrcTopicReset() {
     history.value[props.id] = undefined;
-    fjrcTopicKey.value = Date.now();
+    fjrcTopicKey.value = Symbol(props.id);
 }
 
 const fjrcTopicBinds = computed(() => ({
@@ -182,23 +185,55 @@ function getCorrectRateColor(correctRate) {
 }
 
 function resetHistory() {
-    history.value = [];
-    fjrcTopicKey.value = Date.now();
+    Modal.confirm({
+        content: () => h(
+            "div",
+            { style: { width: "100%", textAlign: "center" } },
+            "确认重置记录？"
+        ),
+        width: "auto",
+        onOk: () => {
+            history.value = [];
+            fjrcTopicKey.value = Symbol(props.id);
+        }
+    });
 }
 
 function resetErrorHistory() {
-    for (let i = 0; i < history.value.length; i++) {
-        const item = history.value[i];
-        if (!item || item.right) continue;
-        history.value[i] = undefined;
-    }
-    fjrcTopicKey.value = Date.now();
+    Modal.confirm({
+        content: () => h(
+            "div",
+            { style: { width: "100%", textAlign: "center" } },
+            "确认重置错题记录？"
+        ),
+        width: "auto",
+        onOk: () => {
+            const resetCurrent = history.value[props.id] && !history.value[props.id].right;
+
+            for (let i = 0; i < history.value.length; i++) {
+                const item = history.value[i];
+                if (!item || item.right) continue;
+                history.value[i] = undefined;
+            }
+
+            if (resetCurrent) fjrcTopicKey.value = Symbol(props.id);
+        }
+    });
 }
 
 /**
  * @type {import("vue").Ref<InstanceType<typeof FjrcTopic> | undefined | null>}
  */
 const fjrcTopicRef = ref(null);
+
+const refreshButtonSpining = ref(false);
+
+function onRefreshButtonClick() {
+    refreshButtonSpining.value = true;
+    emits("onlineCountRefresh", () => {
+        refreshButtonSpining.value = false;
+    });
+}
 
 </script>
 
@@ -216,6 +251,9 @@ const fjrcTopicRef = ref(null);
                                 <span class="dot" :class="props.onlineCount < 1 ? 'dot-red' : 'dot-green'" />
                                 <template #content>
                                     当前在线人数：<ATag color="arcoblue">{{ props.onlineCount }}</ATag>
+                                    <button class="refresh-btn" @click="onRefreshButtonClick">
+                                        <i class="fa-solid fa-arrows-rotate" :class="{ 'fa-spin': refreshButtonSpining }" />
+                                    </button>
                                 </template>
                             </APopover>
                             <ATag v-if="correctRate >= 0" :color="getCorrectRateColor(correctRate)">
@@ -268,6 +306,7 @@ const fjrcTopicRef = ref(null);
 
 <style scoped>
 @import url(./styles/dot.css);
+@import url(./styles/refresh-btn.css);
 
 .arco-layout,
 .arco-layout-content {

@@ -1,15 +1,4 @@
-<script lang="ts">
-import { defineComponent } from "vue";
-
-export default defineComponent({
-    name: "DSXMenu",
-    inheritAttrs: false
-});
-
-</script>
-
 <script setup lang="ts">
-import { sleep } from '@/util/util';
 import {
     computed,
     nextTick,
@@ -21,6 +10,10 @@ import {
     watch
 } from 'vue';
 import { DSXMenuItem, DSXMenuIcon as Icon, MenuItemOptionType } from '.';
+
+defineOptions({
+    inheritAttrs: false
+});
 
 export interface Props {
     visible: boolean;
@@ -50,7 +43,7 @@ function close() {
 const isMoving = ref(false);
 
 const classObj = computed(() => ({
-    "dsx-menu-fade-enter-active": isMoving.value,
+    "dsx-menu-fade-enter-active": isMoving.value
 }));
 
 const position = ref({
@@ -60,9 +53,11 @@ const position = ref({
 
 watch(position, async () => {
     isMoving.value = true;
-    await sleep(200);
-    isMoving.value = false;
 });
+
+function onDSXMenuAnimationEnd() {
+    isMoving.value = false;
+}
 
 const transformOrigin = ref("left top");
 
@@ -126,7 +121,7 @@ function getItemBinds(item: MenuItemOptionType) {
     <Teleport to="body">
         <Transition name='dsx-menu-fade'>
             <div v-if="visible" v-bind="$attrs" class="dsx-menu" :class="classObj" :style="styleObj" ref="DSXMenuRef"
-                @contextmenu.prevent="close">
+                @contextmenu.prevent="close" @animationend="onDSXMenuAnimationEnd">
                 <div class="dsx-menu-body">
                     <template v-if="$slots.default">
                         <slot />

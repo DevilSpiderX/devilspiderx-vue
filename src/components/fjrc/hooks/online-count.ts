@@ -14,6 +14,7 @@ export function useOnlineCount() {
             fjrcStore.fingerprint = data.fingerprint;
             onlineCount.value = data.count;
         }
+        return resp.code === 0;
     }
 
     let intervalId: NodeJS.Timer | undefined;
@@ -27,6 +28,7 @@ export function useOnlineCount() {
     });
 
     return {
-        onlineCount
+        onlineCount,
+        refresh
     };
 }

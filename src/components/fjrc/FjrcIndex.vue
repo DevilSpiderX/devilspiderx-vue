@@ -17,6 +17,8 @@ const props = defineProps({
     }
 });
 
+const emits = defineEmits(["onlineCountRefresh"]);
+
 const fjrcStore = useFjrcStore();
 const appConfigs = useAppConfigs();
 const router = useRouter();
@@ -103,6 +105,15 @@ async function onDownloadButtonClick() {
     setTimeout(() => historyModal.value.buttons.loading = false, 3000);
 }
 
+const refreshButtonSpining = ref(false);
+
+function onRefreshButtonClick() {
+    refreshButtonSpining.value = true;
+    emits("onlineCountRefresh", () => {
+        refreshButtonSpining.value = false;
+    });
+}
+
 </script>
 
 <template>
@@ -119,6 +130,9 @@ async function onDownloadButtonClick() {
                                 <span class="dot" :class="props.onlineCount < 1 ? 'dot-red' : 'dot-green'" />
                                 <template #content>
                                     当前在线人数：<ATag color="arcoblue">{{ props.onlineCount }}</ATag>
+                                    <button class="refresh-btn" @click="onRefreshButtonClick">
+                                        <i class="fa-solid fa-arrows-rotate" :class="{ 'fa-spin': refreshButtonSpining }" />
+                                    </button>
                                 </template>
                             </APopover>
                             <IconHover>
@@ -184,6 +198,7 @@ async function onDownloadButtonClick() {
 
 <style scoped>
 @import url(./styles/dot.css);
+@import url(./styles/refresh-btn.css);
 
 .fill-scrollbar-out {
     width: 100%;
