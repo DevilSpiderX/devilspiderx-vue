@@ -1,14 +1,25 @@
 .dot {
+    --show-color:#00000000;
     width: 6px;
     height: 6px;
     border-radius: 50%;
     display: block;
+    background-color:var(--show-color);
 }
 
 .dot-green {
-    background-color: #34eb0b;
+    --show-color: #34eb0b;
 }
 
 .dot-red {
-    background-color: red;
+    --show-color: red;
+}
+
+.dot-outer{
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
 }

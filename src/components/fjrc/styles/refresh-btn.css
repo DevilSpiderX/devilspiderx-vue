@@ -14,11 +14,11 @@
 
 .refresh-btn:hover,
 .refresh-btn:focus-visible {
-    background-color: #f0f0f0;
+    background-color: var(--color-neutral-2);
 }
 
 .refresh-btn:active{
-    background-color: #e0e0e0;
+    background-color: var(--color-neutral-3);
 }
 
 .refresh-btn:focus-visible {

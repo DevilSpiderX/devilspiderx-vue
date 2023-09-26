@@ -127,7 +127,9 @@ function onRefreshButtonClick() {
                     <template #extra>
                         <ASpace>
                             <APopover position="br">
-                                <span class="dot" :class="props.onlineCount < 1 ? 'dot-red' : 'dot-green'" />
+                                <div class="dot-outer">
+                                    <span class="dot" :class="props.onlineCount < 1 ? 'dot-red' : 'dot-green'" />
+                                </div>
                                 <template #content>
                                     当前在线人数：<ATag color="arcoblue">{{ props.onlineCount }}</ATag>
                                     <button class="refresh-btn" @click="onRefreshButtonClick">
