@@ -1,10 +1,10 @@
-import { MenuItemOptionType } from "@/components/dsx-menu";
-import { reactive, StyleValue } from "vue";
+import { DSXMenuEvent, MenuItemOption } from "@/components/dsx-menu";
+import { StyleValue, reactive } from "vue";
 
 interface tableMenuType {
     visible: boolean;
-    event?: { x: number, y: number } | MouseEvent;
-    menus: Array<MenuItemOptionType>;
+    event?: DSXMenuEvent;
+    menus: Array<MenuItemOption>;
     style: StyleValue;
 }
 

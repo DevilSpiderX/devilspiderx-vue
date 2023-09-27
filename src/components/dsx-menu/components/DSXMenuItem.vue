@@ -1,12 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-
-export interface Props {
-    divider?: boolean;
-    hidden?: boolean;
-    disappeared?: boolean;
-    disabled?: boolean;
-}
+import { DSXMenuItemProps as Props } from ".";
 
 const props = defineProps<Props>();
 

@@ -4,25 +4,14 @@ import {
     nextTick,
     onMounted,
     onUnmounted,
-    reactive,
     ref,
-    toRefs,
     watch
 } from 'vue';
-import { DSXMenuItem, DSXMenuIcon as Icon, MenuItemOptionType } from '.';
+import { DSXMenuItem, DSXMenuIcon as Icon, MenuItemOption, DSXMenuProps as Props } from '.';
 
 defineOptions({
     inheritAttrs: false
 });
-
-export interface Props {
-    visible: boolean;
-    event: { x: number, y: number } | MouseEvent;
-    zIndex?: number;
-    menus?: Array<MenuItemOptionType>;
-    minWidth?: number | string;
-    maxWidth?: number | string;
-}
 
 const props = withDefaults(defineProps<Props>(), {
     visible: false,
@@ -103,16 +92,12 @@ onUnmounted(() => {
     window.removeEventListener("click", close);
 });
 
-function getItemBinds(item: MenuItemOptionType) {
-    const { class: className, style, divider, hidden, disabled, disappeared } = toRefs(item);
-    return reactive({
-        class: className,
-        style,
-        divider,
-        hidden,
-        disabled,
-        disappeared
-    });
+function getItemBinds(item: MenuItemOption) {
+    const binds = { ...item };
+    delete binds.icon;
+    delete binds.label;
+    delete binds.tip;
+    return binds;
 }
 
 </script>
@@ -127,7 +112,7 @@ function getItemBinds(item: MenuItemOptionType) {
                         <slot />
                     </template>
                     <template v-else>
-                        <DSXMenuItem v-for="item in menus" v-bind="getItemBinds(item)" @click="item.onClick">
+                        <DSXMenuItem v-for="item in menus" v-bind="getItemBinds(item)">
                             <!-- 图标 -->
                             <template #icon v-if="item.icon">
                                 <Icon :icon="item.icon" />
