@@ -1,10 +1,12 @@
 <script setup>
 import faSpider from "@/assets/faSpider.svg";
+import { useAppConfigs } from "@/store/AppConfigsStore";
 import { useUserStore } from "@/store/UserStore";
 import { sleep } from "@/util/util";
-import { ref, watchEffect } from "vue";
+import { computed, ref, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 
+const appConfigs = useAppConfigs();
 const userStore = useUserStore();
 
 const logo = ref((() => {
@@ -30,6 +32,8 @@ watchEffect(async () => {
         router.push({ name });
     }
 });
+
+const spiderImgFilter = computed(() => appConfigs.darkTheme ? "invert(100%)" : "");
 
 </script>
 
@@ -57,6 +61,7 @@ watchEffect(async () => {
 .spider-img {
     width: 20rem;
     height: 20rem;
+    filter: v-bind(spiderImgFilter);
 }
 
 .logo {

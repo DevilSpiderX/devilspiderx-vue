@@ -1,6 +1,7 @@
-import { StyleValue, VNodeChild } from "vue";
+import type { CSSProperties, VNodeChild } from "vue";
 import DSXMenu from "./DSXMenu.vue";
-import { DSXMenuIcon, DSXMenuItem, DSXMenuItemProps } from "./components";
+import type { DSXMenuItemProps } from "./components";
+import { DSXMenuIcon, DSXMenuItem } from "./components";
 
 export { DSXMenu, DSXMenuIcon, DSXMenuItem };
 export type { DSXMenuItemProps };
@@ -10,7 +11,7 @@ export type DSXMenuEvent = { x: number, y: number } | MouseEvent;
 export interface MenuItemOption extends DSXMenuItemProps {
     label?: string;
     class?: string;
-    style?: StyleValue;
+    style?: CSSProperties;
     icon?: VNodeChild;
     tip?: string;
     onClick?: (event: MouseEvent) => any;

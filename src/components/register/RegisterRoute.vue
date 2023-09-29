@@ -1,11 +1,8 @@
 <script setup>
 import { http } from "@/scripts/http";
-import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Message } from "@arco-design/web-vue";
 import { reactive } from "vue";
 import { useRouter } from "vue-router";
-
-const appConfigs = useAppConfigs();
 
 const inputStatus = reactive([false, false, false]);
 const form = reactive({

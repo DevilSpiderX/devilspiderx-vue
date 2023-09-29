@@ -1,8 +1,5 @@
-import { VNodeChild, isVNode } from "vue";
-
-interface Props {
-    icon: VNodeChild;
-}
+import { isVNode } from "vue";
+import type { DSXMenuIconProps as Props } from ".";
 
 const DSXMenuIcon = ({ icon }: Props) => {
     if (icon && isVNode(icon)) {

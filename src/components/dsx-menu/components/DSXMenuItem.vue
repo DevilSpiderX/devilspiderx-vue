@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { DSXMenuItemProps as Props } from ".";
+import type { DSXMenuItemProps as Props } from ".";
 
 const props = defineProps<Props>();
 

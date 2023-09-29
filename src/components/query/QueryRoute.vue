@@ -190,9 +190,15 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
             onClick: () => {
                 if (typeof navigator.clipboard === "object") {
                     navigator.clipboard.writeText(record[column.dataIndex]).then(() => {
-                        Message.success("复制成功");
+                        Message.success({
+                            id: "copy_success",
+                            content: "复制成功"
+                        });
                     }).catch(() => {
-                        Message.error("复制失败");
+                        Message.error({
+                            id: "copy_error",
+                            content: "复制失败"
+                        });
                     });
                 }
             },
@@ -457,8 +463,7 @@ function table_cell_dblclick(record) {
     </ALayout>
 
     <!-- 右键菜单 -->
-    <DSXMenu v-model:visible="tableMenu.visible" :event="tableMenu.event" :menus="tableMenu.menus" min-width="100px"
-        :style="tableMenu.style" :z-index="1002" />
+    <DSXMenu v-bind="tableMenu" v-model:visible="tableMenu.visible" min-width="100px" :z-index="1002" />
     <!-- 添加信息模态框 -->
     <AddModal v-model:visible="addModal.visible" v-model:cleaning="addModal.cleaning" @submit="add_submit" />
     <!-- 更新信息模态框 -->

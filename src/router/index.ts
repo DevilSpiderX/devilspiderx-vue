@@ -1,3 +1,4 @@
+import WelcomeRoute from "@/components/welcome/WelcomeRoute.vue";
 import { createRouter, createWebHistory, RouteLocationNormalized, RouteRecordRaw } from "vue-router";
 
 const routes: RouteRecordRaw[] = [
@@ -10,7 +11,7 @@ const routes: RouteRecordRaw[] = [
     {
         name: "welcome",
         path: "/",
-        component: () => import("@/components/welcome/WelcomeRoute.vue")
+        component: WelcomeRoute
     },
     {
         name: "login",

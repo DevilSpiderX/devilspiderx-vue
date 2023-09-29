@@ -7,7 +7,8 @@ import {
     ref,
     watch
 } from 'vue';
-import { DSXMenuItem, DSXMenuIcon as Icon, MenuItemOption, DSXMenuProps as Props } from '.';
+import type { MenuItemOption, DSXMenuProps as Props } from ".";
+import { DSXMenuItem, DSXMenuIcon as Icon } from '.';
 
 defineOptions({
     inheritAttrs: false

@@ -2,18 +2,19 @@ import router from "@/router";
 import { http } from "@/scripts/http";
 import { sleep } from "@/util/util";
 import { Message } from "@arco-design/web-vue";
-import { h, onUnmounted, reactive, Ref, ref } from "vue";
-import { ValuesType } from "../scripts/interface";
+import type { Ref } from "vue";
+import { h, onUnmounted, ref } from "vue";
+import type { ValuesType } from "../scripts/interface";
 
 
 class ServerInfoReceiver {
     token: string;
     websocket: WebSocket;
-    values: ValuesType;
+    values: Ref<ValuesType>;
     cd: number;
     closed: boolean;
 
-    constructor(values: ValuesType, token: string, cd: number) {
+    constructor(values: Ref<ValuesType>, token: string, cd: number) {
         this.values = values;
         this.token = token;
         this.cd = cd;
@@ -27,13 +28,21 @@ class ServerInfoReceiver {
     }
 
     onOpen(cd: number) {
-        Message.success({ content: "推送服务接入成功", duration: 1000 });
+        Message.success({
+            id: "server-info-receiver",
+            content: "推送服务接入成功",
+            duration: 1000
+        });
         console.log(`${Date()}\nWebSocket成功接入服务器`);
         this.setCD(cd);
     }
 
     onClose(ev: CloseEvent) {
-        Message.success({ content: "推送服务已关闭", duration: 1000 });
+        Message.success({
+            id: "server-info-receiver",
+            content: "推送服务已关闭",
+            duration: 1000
+        });
         console.log(`${Date()}\nWebSocket连接已关闭(code${ev.code}:${ev.reason})`);
         if (ev.code === 1000) {
             http.user.status().then(resp => {
@@ -46,6 +55,7 @@ class ServerInfoReceiver {
 
     onError(event: Event) {
         Message.error({
+            id: "server-info-receiver",
             content: () => h("span", null, [
                 "连接服务发生错误",
                 h("br"),
@@ -59,7 +69,7 @@ class ServerInfoReceiver {
     }
 
     onMessage(msgEvent: MessageEvent<any>) {
-        Object.assign(this.values, JSON.parse(msgEvent.data));
+        Object.assign(this.values.value, JSON.parse(msgEvent.data));
     }
 
     isWSOpen() {
@@ -89,27 +99,27 @@ class ServerInfoReceiver {
         while (!this.closed) {
             http.serverInfo.cpu().then(resp => {
                 if (resp.code === 0) {
-                    this.values.cpu = resp.data;
+                    this.values.value.cpu = resp.data;
                 }
             });
             http.serverInfo.memory().then(resp => {
                 if (resp.code === 0) {
-                    this.values.memory = resp.data;
+                    this.values.value.memory = resp.data;
                 }
             });
             http.serverInfo.networks().then(resp => {
                 if (resp.code === 0) {
-                    this.values.networks = resp.data;
+                    this.values.value.networks = resp.data;
                 }
             });
             http.serverInfo.disks().then(resp => {
                 if (resp.code === 0) {
-                    this.values.disks = resp.data;
+                    this.values.value.disks = resp.data;
                 }
             });
             http.serverInfo.os().then(resp => {
                 if (resp.code === 0) {
-                    this.values.os = resp.data;
+                    this.values.value.os = resp.data;
                 }
             });
             await sleep(this.cd);
@@ -117,7 +127,7 @@ class ServerInfoReceiver {
     }
 }
 
-async function generate(receiver: Ref<ServerInfoReceiver | null>, values: ValuesType, cd: number) {
+async function generate(receiver: Ref<ServerInfoReceiver | null>, values: Ref<ValuesType>, cd: number) {
     try {
         const resp = await http.serverInfo.token();
         console.log("token:", resp);
@@ -128,13 +138,16 @@ async function generate(receiver: Ref<ServerInfoReceiver | null>, values: Values
         }
     } catch (error: any) {
         console.error("(beforeCreate)", `url:${error.config?.url}`, error);
-        Message.error("服务器错误");
+        Message.error({
+            id: "server-info-receiver",
+            content: "服务器错误"
+        });
         router.back();
     }
 }
 
 export function useServerInfoReceiver(cd: number) {
-    const values = reactive<ValuesType>({
+    const values = ref<ValuesType>({
         cpu: undefined,
         memory: undefined,
         networks: [],

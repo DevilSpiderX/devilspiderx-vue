@@ -1,11 +1,12 @@
-import { DSXMenuEvent, MenuItemOption } from "@/components/dsx-menu";
-import { StyleValue, reactive } from "vue";
+import type { DSXMenuEvent, MenuItemOption } from "@/components/dsx-menu";
+import type { CSSProperties } from "vue";
+import { reactive } from "vue";
 
-interface tableMenuType {
+interface TableMenuType {
     visible: boolean;
     event?: DSXMenuEvent;
     menus: Array<MenuItemOption>;
-    style: StyleValue;
+    style: CSSProperties;
 }
 
 export function useTableMenu() {
@@ -27,7 +28,7 @@ export function useTableMenu() {
         globe: (<i class="fa-solid fa-globe" />),
     }
 
-    const tableMenu = reactive<tableMenuType>({
+    const tableMenu = reactive<TableMenuType>({
         visible: false,
         event: undefined,
         menus: [],
