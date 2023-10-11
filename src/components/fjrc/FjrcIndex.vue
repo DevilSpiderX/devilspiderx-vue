@@ -3,9 +3,9 @@ import { DSXMenuIcon as Icon } from "@/components/dsx-menu";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Scrollbar as AScrollbar, Message } from "@arco-design/web-vue";
 import IconHover from "@arco-design/web-vue/es/_components/icon-hover";
-import { IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
+import { IconMoonFill, IconSunFill, IconUp } from "@arco-design/web-vue/es/icon";
 import "@arco-design/web-vue/es/tooltip/style/css";
-import { computed, ref, toRef } from "vue";
+import { computed, onMounted, ref, toRef } from "vue";
 import { useRouter } from "vue-router";
 import { downloadHistoryApi, uploadHistoryApi } from "./scripts/fjrc-api";
 import { useFjrcStore } from "./stores/FjrcStore";
@@ -147,10 +147,26 @@ function onRefreshButtonClick() {
     });
 }
 
+const fillScrollbarRef = ref(null);
+onMounted(() => {
+    const scrollTop = sessionStorage.getItem("FjrcIndexScrollTop");
+    if (scrollTop) {
+        fillScrollbarRef.value.scrollTop(Number(scrollTop));
+    }
+});
+
+function onFillScrollbarScroll({ target }) {
+    if (target && target instanceof HTMLDivElement) {
+        sessionStorage.setItem("FjrcIndexScrollTop", target.scrollTop);
+        fillScrollbarContainerRef.value = target;
+    }
+}
+
 </script>
 
 <template>
-    <AScrollbar class="fill-scrollbar" outer-class="fill-scrollbar-out">
+    <AScrollbar :class="$style.fillScrollbar" :outer-class="$style.fillScrollbarOut" ref="fillScrollbarRef"
+        @scroll="onFillScrollbarScroll">
         <ALayout>
             <ALayoutHeader>
                 <APageHeader :show-back="false">
@@ -159,7 +175,7 @@ function onRefreshButtonClick() {
                     </template>
                     <template #extra>
                         <ASpace>
-                            <APopover position="br">
+                            <APopover position="br" :popup-container="`.${$style.fillScrollbar}`">
                                 <div class="dot-outer">
                                     <span class="dot" :class="props.onlineCount < 1 ? 'dot-red' : 'dot-green'" />
                                 </div>
@@ -229,22 +245,16 @@ function onRefreshButtonClick() {
             </div>
         </AForm>
     </AModal>
+    <ABackTop :target-container="`.${$style.fillScrollbar}`">
+        <AButton class="site-backtop-btn" size="large" shape="circle">
+            <IconUp />
+        </AButton>
+    </ABackTop>
 </template>
 
 <style scoped>
 @import url(./styles/dot.css);
 @import url(./styles/refresh-btn.css);
-
-.fill-scrollbar-out {
-    width: 100%;
-    height: calc(100% - 1px);
-}
-
-.fill-scrollbar-out :deep(.fill-scrollbar) {
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-}
 
 .my-button {
     --color-text-2: var(--color-text-1);
@@ -297,10 +307,27 @@ body[arco-theme=dark] .my-button :deep(img) {
     align-items: center;
     justify-content: space-around;
 }
+
+.site-backtop-btn {
+    background: var(--color-bg-5) !important;
+    border: 1px solid var(--color-fill-3) !important;
+    box-shadow: 0 2px 12px #0000001a;
+}
 </style>
 
 <style module>
 .historyModal {
     max-width: 400px;
+}
+
+.fillScrollbarOut {
+    width: 100%;
+    height: calc(100% - 1px);
+}
+
+.fillScrollbar {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
 }
 </style>
