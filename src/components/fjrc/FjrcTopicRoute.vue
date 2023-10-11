@@ -41,7 +41,15 @@ const TITLE_NAME = {
     E: "风险管理类",
     F: "金融市场类",
     G: "普惠金融部",
-    H: "审计部"
+    H: "审计部",
+    I: "财务会计类(客户经理)",
+    J: "法律合规类(客户经理)",
+    K: "风险管理类(客户经理)",
+    L: "纪检类(客户经理)",
+    M: "金融市场类(客户经理)",
+    N: "普惠金融类(客户经理)",
+    O: "审计类(客户经理)",
+    P: "运营管理类(客户经理)"
 }
 
 function getTitleName(bank) {
@@ -290,8 +298,6 @@ function onRefreshButtonClick() {
     </ALayout>
 
     <ADrawer v-if="appConfigs.client.width < 768" v-model:visible="drawer.visible" placement="right" :footer="false">
-        <IndexButtonList v-if="drawer.visible" :id="props.id" :count="count" :index-button-types="indexButtonTypes"
-            :index-button-colors="indexButtonColors" @click="goTopic" />
         <template #header>
             <div class="arco-drawer-title">目录</div>
             <AButton type="text" size="mini" @click="resetHistory">重置</AButton>
@@ -303,6 +309,8 @@ function onRefreshButtonClick() {
                 </IconHover>
             </div>
         </template>
+        <IndexButtonList v-if="drawer.visible" :id="props.id" :count="count" :index-button-types="indexButtonTypes"
+            :index-button-colors="indexButtonColors" @click="goTopic" />
     </ADrawer>
 </template>
 

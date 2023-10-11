@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useAppConfigs } from "@/store/AppConfigsStore";
-import { computed, ref, watchEffect, watchPostEffect } from "vue";
+import { Scrollbar as AScrollbar } from "@arco-design/web-vue";
+import { computed, ref, useCssModule, watchEffect, watchPostEffect } from "vue";
 
 const props = defineProps<{
     id: number;
@@ -14,17 +15,27 @@ const emit = defineEmits<{
 }>();
 
 const appConfigs = useAppConfigs();
+const $style = useCssModule();
 
-const containerRef = ref<HTMLDivElement>();
+const scrollbarRef = ref<InstanceType<typeof AScrollbar> | null>(null);
+const scrollbarContainerRef = ref<HTMLDivElement | null>(null);
+watchEffect(() => {
+    if (scrollbarRef.value) {
+        scrollbarContainerRef.value = scrollbarRef.value.$el.querySelector(`.${$style.scrollbar}`);
+    } else {
+        scrollbarContainerRef.value = null;
+    }
+}, { flush: "post" });
+
 const containerWidth = ref(0);
 const containerHeight = ref(0);
 
 watchEffect(() => {
     appConfigs.client.width;
     appConfigs.client.height;
-    if (containerRef.value) {
-        containerWidth.value = containerRef.value.clientWidth;
-        containerHeight.value = containerRef.value.clientHeight;
+    if (scrollbarContainerRef.value) {
+        containerWidth.value = scrollbarContainerRef.value.clientWidth;
+        containerHeight.value = scrollbarContainerRef.value.clientHeight;
     }
 });
 
@@ -37,10 +48,10 @@ const listHeight = computed(() => rowCount.value * 40);
 
 const scrollTop = ref(0);
 
-function onContainerScroll(ev: UIEvent) {
-    if (ev.target) {
-        //@ts-ignore
-        scrollTop.value = ev.target.scrollTop;
+function onScroll(ev: Event) {
+    if (ev.target && ev.target instanceof HTMLDivElement) {
+        const target = ev.target as HTMLDivElement;
+        scrollTop.value = target.scrollTop;
     }
 }
 
@@ -68,9 +79,9 @@ const rows = computed(() => {
 });
 
 const scrollWatchStop = watchPostEffect(() => {
-    if (listHeight.value !== 0 && containerRef.value) {
+    if (listHeight.value !== 0 && scrollbarRef.value) {
         const rowIndex = Math.floor(props.id / columnCount.value);
-        containerRef.value.scrollTo({ top: rowIndex * 40 });
+        scrollbarRef.value.scrollTop(rowIndex * 40);
         scrollWatchStop();
     }
 });
@@ -78,7 +89,7 @@ const scrollWatchStop = watchPostEffect(() => {
 </script>
 
 <template>
-    <div class="container" ref="containerRef" @scroll="onContainerScroll">
+    <AScrollbar :class="$style.scrollbar" :outer-class="$style.scrollbarOuter" ref="scrollbarRef" @scroll="onScroll">
         <div :style="{ width: '100%', height: listHeight + 'px' }">
             <template v-for="(row, rI) in rows">
                 <div v-if="row.show" class="list-row" :style="row.style">
@@ -94,18 +105,10 @@ const scrollWatchStop = watchPostEffect(() => {
                 <template v-else />
             </template>
         </div>
-    </div>
+    </AScrollbar>
 </template>
 
 <style scoped>
-.container {
-    box-sizing: border-box;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    position: relative;
-}
-
 .list-row {
     width: 100%;
     height: 40px;
@@ -115,5 +118,17 @@ const scrollWatchStop = watchPostEffect(() => {
 .list-row > button {
     margin-right: 8px;
     margin-bottom: 8px;
+}
+</style>
+
+<style module>
+.scrollbarOuter,
+.scrollbar {
+    width: 100%;
+    height: 100%;
+}
+
+.scrollbar {
+    overflow: auto;
 }
 </style>

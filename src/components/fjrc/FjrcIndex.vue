@@ -65,7 +65,40 @@ const buttonList = ref([
     {
         label: "审计部",
         onClick: () => pushToTopic('H')
-    }
+    },
+    {
+        label: "财务会计类(客户经理)",
+        onClick: () => pushToTopic('I')
+    },
+    {
+        label: "法律合规类(客户经理)",
+        onClick: () => pushToTopic('J')
+    },
+    {
+        label: "风险管理类(客户经理)",
+        onClick: () => pushToTopic('K')
+    },
+    {
+        label: "纪检类(客户经理)",
+        onClick: () => pushToTopic('L')
+    },
+    {
+        label: "金融市场类(客户经理)",
+        onClick: () => pushToTopic('M')
+    },
+    {
+        label: "普惠金融类(客户经理)",
+        onClick: () => pushToTopic('N')
+    },
+    {
+        label: "审计类(客户经理)",
+        onClick: () => pushToTopic('O')
+    },
+    {
+        label: "运营管理类(客户经理)",
+        onClick: () => pushToTopic('P')
+    },
+
 ]);
 
 const historyModal = ref({
