@@ -158,7 +158,6 @@ onMounted(() => {
 function onFillScrollbarScroll({ target }) {
     if (target && target instanceof HTMLDivElement) {
         sessionStorage.setItem("FjrcIndexScrollTop", target.scrollTop);
-        fillScrollbarContainerRef.value = target;
     }
 }
 
