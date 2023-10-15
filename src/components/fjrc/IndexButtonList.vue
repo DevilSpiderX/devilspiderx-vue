@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useAppConfigs } from "@/store/AppConfigsStore";
+import { sleep } from "@/util/util";
 import { Scrollbar as AScrollbar } from "@arco-design/web-vue";
-import { computed, ref, useCssModule, watchEffect, watchPostEffect } from "vue";
+import { computed, onMounted, ref, useCssModule, watchEffect, watchPostEffect } from "vue";
 
 const props = defineProps<{
     id: number;
@@ -19,13 +20,10 @@ const $style = useCssModule();
 
 const scrollbarRef = ref<InstanceType<typeof AScrollbar> | null>(null);
 const scrollbarContainerRef = ref<HTMLDivElement | null>(null);
-watchEffect(() => {
-    if (scrollbarRef.value) {
-        scrollbarContainerRef.value = scrollbarRef.value.$el.querySelector(`.${$style.scrollbar}`);
-    } else {
-        scrollbarContainerRef.value = null;
-    }
-}, { flush: "post" });
+watchPostEffect(() => {
+    scrollbarRef.value;
+    scrollbarContainerRef.value = document.querySelector(`.${$style.scrollbar}`);
+});
 
 const containerWidth = ref(0);
 const containerHeight = ref(0);
@@ -78,12 +76,16 @@ const rows = computed(() => {
     return data;
 });
 
-const scrollWatchStop = watchPostEffect(() => {
-    if (listHeight.value !== 0 && scrollbarRef.value) {
-        const rowIndex = Math.floor(props.id / columnCount.value);
-        scrollbarRef.value.scrollTop(rowIndex * 40);
-        scrollWatchStop();
-    }
+onMounted(() => {
+    const scrollWatchStop = watchPostEffect(async () => {
+        if (listHeight.value !== 0 && scrollbarRef.value) {
+            const rowIndex = Math.floor(props.id / columnCount.value);
+            // 很奇怪，不加这个，滑块就不会自动下滑
+            await sleep(0);
+            scrollbarRef.value.scrollTop(rowIndex * 40);
+            scrollWatchStop?.apply(this);
+        }
+    });
 });
 
 </script>
