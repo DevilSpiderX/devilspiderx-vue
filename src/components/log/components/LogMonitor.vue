@@ -99,7 +99,7 @@ defineExpose({
     padding: 1rem;
     word-break: normal;
     white-space: pre-wrap;
-    word-wrap: break-word;
+    overflow-wrap: break-word;
     line-height: 1.5;
 }
 
