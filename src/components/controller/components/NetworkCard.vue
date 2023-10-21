@@ -107,7 +107,7 @@ useBodyNoScrollbar();
                 <ASkeletonLine :rows="2" :line-height="30" />
                 <template #content>
                     <ADescriptions :column="1">
-                        <ADescriptionsItem label="名称">
+                        <ADescriptionsItem label="名 称">
                             <ASelect v-model:model-value="selection">
                                 <AOption v-for="value of props.values" :value="value.name">
                                     {{ value.name }}
@@ -151,7 +151,7 @@ useBodyNoScrollbar();
                             <span class="line-feed">{{ showValue.macAddr }}</span>
                         </ADescriptionsItem>
 
-                        <ADescriptionsItem label="上传" key="5">
+                        <ADescriptionsItem label="上 传" key="5">
                             <div class="div-flex-between">
                                 <AStatistic :value="uploadSpeed.value" :precision="precisionUpload"
                                     :value-style="{ color: 'rgb(var(--green-7))', fontSize: '20px' }">
@@ -173,7 +173,7 @@ useBodyNoScrollbar();
                         </ADescriptionsItem>
 
 
-                        <ADescriptionsItem label="下载" key="6">
+                        <ADescriptionsItem label="下 载" key="6">
                             <div class="div-flex-between">
                                 <AStatistic :value="downloadSpeed.value" :precision="precisionDownload"
                                     :value-style="{ color: 'rgb(var(--blue-7))', fontSize: '20px' }">>
