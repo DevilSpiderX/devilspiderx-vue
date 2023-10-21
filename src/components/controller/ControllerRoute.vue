@@ -143,7 +143,7 @@ function resetValues() {
                             </h1>
                         </div>
                     </template>
-                    <ARow :gutter="10" align="stretch">
+                    <ARow :gutter="10" align="start">
                         <ACol v-bind="cardsProps">
                             <CpuCard :value="values.cpu" :loading="!values.cpu" :enabled="cpuEnabled" />
                         </ACol>

@@ -104,19 +104,17 @@ useBodyNoScrollbar();
         </template>
         <div class="my-card-body">
             <ASkeleton animation :loading="loading">
-                <ASkeletonLine :rows="2" :line-height="30" />
+                <ASkeletonLine :rows="7" :line-height="30" />
                 <template #content>
                     <ADescriptions :column="1">
-                        <ADescriptionsItem label="名 称">
+                        <ADescriptionsItem label="名 称" key="0">
                             <ASelect v-model:model-value="selection">
                                 <AOption v-for="value of props.values" :value="value.name">
                                     {{ value.name }}
                                 </AOption>
                             </ASelect>
                         </ADescriptionsItem>
-                    </ADescriptions>
 
-                    <ADescriptions :column="1" :key="selection">
                         <ADescriptionsItem label="网卡类型" key="1">
                             <span class="line-feed">{{ showValue.displayName }}</span>
                         </ADescriptionsItem>
@@ -152,7 +150,7 @@ useBodyNoScrollbar();
                         </ADescriptionsItem>
 
                         <ADescriptionsItem label="上 传" key="5">
-                            <div class="div-flex-between">
+                            <ASpace size="large">
                                 <AStatistic :value="uploadSpeed.value" :precision="precisionUpload"
                                     :value-style="{ color: 'rgb(var(--green-7))', fontSize: '20px' }">
                                     <template #prefix>
@@ -169,12 +167,12 @@ useBodyNoScrollbar();
                                         {{ uploadBytes.unit }}
                                     </template>
                                 </AStatistic>
-                            </div>
+                            </ASpace>
                         </ADescriptionsItem>
 
 
                         <ADescriptionsItem label="下 载" key="6">
-                            <div class="div-flex-between">
+                            <ASpace size="large">
                                 <AStatistic :value="downloadSpeed.value" :precision="precisionDownload"
                                     :value-style="{ color: 'rgb(var(--blue-7))', fontSize: '20px' }">>
                                     <template #prefix>
@@ -191,7 +189,7 @@ useBodyNoScrollbar();
                                         {{ downloadBytes.unit }}
                                     </template>
                                 </AStatistic>
-                            </div>
+                            </ASpace>
                         </ADescriptionsItem>
 
                     </ADescriptions>
@@ -211,10 +209,5 @@ useBodyNoScrollbar();
 .line-feed {
     word-break: break-word;
     overflow-wrap: break-word;
-}
-
-.div-flex-between {
-    display: flex;
-    justify-content: space-between;
 }
 </style>
