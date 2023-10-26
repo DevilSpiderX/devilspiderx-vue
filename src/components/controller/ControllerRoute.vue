@@ -188,7 +188,7 @@ const tripleColDisks = computed(() => {
                     </template>
                     <!-- width < 768px 时单列 -->
                     <template v-if="appConfigs.client.width < 768">
-                        <ARow class="single-my-row" :gutter="10" align="start">
+                        <ARow class="my-row" :gutter="10" align="start">
                             <ACol class="my-col">
                                 <CpuCard :value="values.cpu" :loading="!values.cpu" :enabled="cpuEnabled" />
                             </ACol>
@@ -213,7 +213,7 @@ const tripleColDisks = computed(() => {
                     </template>
                     <!-- 768px <= width < 1200px 时双列 -->
                     <template v-else-if="appConfigs.client.width < 1200">
-                        <ARow class="double-my-row" :gutter="10" align="start" style="margin-right: 10px;">
+                        <ARow class="my-row" :gutter="10" align="start" style="margin-right: 10px;">
                             <ACol class="my-col">
                                 <CpuCard :value="values.cpu" :loading="!values.cpu" :enabled="cpuEnabled" />
                             </ACol>
@@ -231,7 +231,7 @@ const tripleColDisks = computed(() => {
 
                         </ARow>
 
-                        <ARow class="double-my-row" :gutter="10" align="start">
+                        <ARow class="my-row" :gutter="10" align="start">
                             <ACol class="my-col">
                                 <MemoryCard :value="values.memory" :process-count="values.os?.processCount"
                                     :loading="!values.memory" :enabled="memoryEnabled" />
@@ -247,7 +247,7 @@ const tripleColDisks = computed(() => {
                     </template>
                     <!-- 1200px <= width 时三列-->
                     <template v-else>
-                        <ARow class="triple-my-row" :gutter="10" align="start" style="margin-right: 10px;">
+                        <ARow class="my-row" :gutter="10" align="start" style="margin-right: 10px;">
                             <ACol class="my-col">
                                 <CpuCard :value="values.cpu" :loading="!values.cpu" :enabled="cpuEnabled" />
                             </ACol>
@@ -260,7 +260,7 @@ const tripleColDisks = computed(() => {
 
                         </ARow>
 
-                        <ARow class="triple-my-row" :gutter="10" align="start" style="margin-right: 10px;">
+                        <ARow class="my-row" :gutter="10" align="start" style="margin-right: 10px;">
                             <ACol class="my-col">
                                 <MemoryCard :value="values.memory" :process-count="values.os?.processCount"
                                     :loading="!values.memory" :enabled="memoryEnabled" />
@@ -274,7 +274,7 @@ const tripleColDisks = computed(() => {
 
                         </ARow>
 
-                        <ARow class="triple-my-row" :gutter="10" align="start">
+                        <ARow class="my-row" :gutter="10" align="start">
                             <ACol class="my-col">
                                 <NetworkCard :values="values.networks" :loading="values.networks.length === 0"
                                     :enabled="networkEnabled" />
@@ -381,15 +381,7 @@ const tripleColDisks = computed(() => {
     align-items: flex-start;
 }
 
-.single-my-row {
-    width: 100%;
-}
-
-.double-my-row {
-    width: 50%;
-}
-
-.triple-my-row {
-    width: 33.333%;
+.my-row {
+    flex: 1;
 }
 </style>
