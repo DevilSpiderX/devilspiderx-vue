@@ -2,7 +2,7 @@
 import { http } from "@/scripts/http";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { useUserStore } from "@/store/UserStore";
-import { Message, Scrollbar as AScrollbar } from "@arco-design/web-vue";
+import { Scrollbar as AScrollbar, Message } from "@arco-design/web-vue";
 import { computed, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { CpuCard, DiskCard, MemoryCard, NetworkCard } from "./components";
@@ -35,13 +35,6 @@ watch(_cd, cd => {
     console.log("更改数据刷新速率", cd, "ms");
     setCD(cd);
     Message.success(`数据刷新速率：${cd}ms`);
-});
-
-const cardsProps = reactive({
-    class: "my-col",
-    xs: 24,
-    md: 12,
-    xl: 8
 });
 
 const pageHeaderBoxShadow = ref();
@@ -104,6 +97,56 @@ function resetValues() {
     networkEnabled.value = false;
 }
 
+/**
+ * @typedef {import("./scripts/interface").DiskValueType} DiskValueType
+ */
+
+// 双列
+const doubleColDisks = computed(() => {
+    /**
+     * @type { {index:number,disk:DiskValueType}[][] }
+     */
+    const result = [[], []];
+    values.value.disks.forEach((disk, index) => {
+        if (index % 2 === 0 || index === 1) {
+            result[0].push({ index, disk });
+        } else {
+            result[1].push({ index, disk });
+        }
+    })
+    return result;
+});
+
+// 三列
+const tripleColDisks = computed(() => {
+    /**
+     * @type { {index:number,disk:DiskValueType}[][] }
+     */
+    const result = [[], [], []];
+    values.value.disks.forEach((disk, index) => {
+        switch (index) {
+            case 0:
+            case 2: {
+                result[0].push({ index, disk });
+                return;
+            }
+            case 1: {
+                result[1].push({ index, disk });
+                return;
+            }
+        }
+
+        if (index % 3 === 0) {
+            result[1].push({ index, disk });
+        } else if (index % 3 === 1) {
+            result[2].push({ index, disk });
+        } else {
+            result[0].push({ index, disk });
+        }
+    })
+    return result;
+});
+
 </script>
 
 <template>
@@ -143,28 +186,108 @@ function resetValues() {
                             </h1>
                         </div>
                     </template>
-                    <ARow :gutter="10" align="start">
-                        <ACol v-bind="cardsProps">
-                            <CpuCard :value="values.cpu" :loading="!values.cpu" :enabled="cpuEnabled" />
-                        </ACol>
-
-                        <ACol v-bind="cardsProps">
-                            <MemoryCard :value="values.memory" :process-count="values.os?.processCount"
-                                :loading="!values.memory" :enabled="memoryEnabled" />
-                        </ACol>
-
-                        <ACol v-bind="cardsProps">
-                            <NetworkCard :values="values.networks" :loading="values.networks.length === 0"
-                                :enabled="networkEnabled" />
-                        </ACol>
-
-                        <TransitionGroup name="body">
-                            <ACol v-for="(disk, index) in values.disks" v-bind="cardsProps" :key="index">
-                                <DiskCard :value="disk" :disk-index="index" />
+                    <!-- width < 768px 时单列 -->
+                    <template v-if="appConfigs.client.width < 768">
+                        <ARow class="single-my-row" :gutter="10" align="start">
+                            <ACol class="my-col">
+                                <CpuCard :value="values.cpu" :loading="!values.cpu" :enabled="cpuEnabled" />
                             </ACol>
-                        </TransitionGroup>
 
-                    </ARow>
+                            <ACol class="my-col">
+                                <MemoryCard :value="values.memory" :process-count="values.os?.processCount"
+                                    :loading="!values.memory" :enabled="memoryEnabled" />
+                            </ACol>
+
+                            <ACol class="my-col">
+                                <NetworkCard :values="values.networks" :loading="values.networks.length === 0"
+                                    :enabled="networkEnabled" />
+                            </ACol>
+
+                            <TransitionGroup name="body">
+                                <ACol v-for="(disk, index) in values.disks" class="my-col" :key="index">
+                                    <DiskCard :value="disk" :disk-index="index" />
+                                </ACol>
+                            </TransitionGroup>
+
+                        </ARow>
+                    </template>
+                    <!-- 768px <= width < 1200px 时双列 -->
+                    <template v-else-if="appConfigs.client.width < 1200">
+                        <ARow class="double-my-row" :gutter="10" align="start" style="margin-right: 10px;">
+                            <ACol class="my-col">
+                                <CpuCard :value="values.cpu" :loading="!values.cpu" :enabled="cpuEnabled" />
+                            </ACol>
+
+                            <ACol class="my-col">
+                                <NetworkCard :values="values.networks" :loading="values.networks.length === 0"
+                                    :enabled="networkEnabled" />
+                            </ACol>
+
+                            <TransitionGroup name="body">
+                                <ACol v-for="{ disk, index } in doubleColDisks[1]" class="my-col" :key="index">
+                                    <DiskCard :value="disk" :disk-index="index" />
+                                </ACol>
+                            </TransitionGroup>
+
+                        </ARow>
+
+                        <ARow class="double-my-row" :gutter="10" align="start">
+                            <ACol class="my-col">
+                                <MemoryCard :value="values.memory" :process-count="values.os?.processCount"
+                                    :loading="!values.memory" :enabled="memoryEnabled" />
+                            </ACol>
+
+                            <TransitionGroup name="body">
+                                <ACol v-for="{ disk, index } in doubleColDisks[0]" class="my-col" :key="index">
+                                    <DiskCard :value="disk" :disk-index="index" />
+                                </ACol>
+                            </TransitionGroup>
+
+                        </ARow>
+                    </template>
+                    <!-- 1200px <= width 时三列-->
+                    <template v-else>
+                        <ARow class="triple-my-row" :gutter="10" align="start" style="margin-right: 10px;">
+                            <ACol class="my-col">
+                                <CpuCard :value="values.cpu" :loading="!values.cpu" :enabled="cpuEnabled" />
+                            </ACol>
+
+                            <TransitionGroup name="body">
+                                <ACol v-for="{ disk, index } in tripleColDisks[0]" class="my-col" :key="index">
+                                    <DiskCard :value="disk" :disk-index="index" />
+                                </ACol>
+                            </TransitionGroup>
+
+                        </ARow>
+
+                        <ARow class="triple-my-row" :gutter="10" align="start" style="margin-right: 10px;">
+                            <ACol class="my-col">
+                                <MemoryCard :value="values.memory" :process-count="values.os?.processCount"
+                                    :loading="!values.memory" :enabled="memoryEnabled" />
+                            </ACol>
+
+                            <TransitionGroup name="body">
+                                <ACol v-for="{ disk, index }  in tripleColDisks[1]" class="my-col" :key="index">
+                                    <DiskCard :value="disk" :disk-index="index" />
+                                </ACol>
+                            </TransitionGroup>
+
+                        </ARow>
+
+                        <ARow class="triple-my-row" :gutter="10" align="start">
+                            <ACol class="my-col">
+                                <NetworkCard :values="values.networks" :loading="values.networks.length === 0"
+                                    :enabled="networkEnabled" />
+                            </ACol>
+
+                            <TransitionGroup name="body">
+                                <ACol v-for="{ disk, index } in tripleColDisks[2]" class="my-col" :key="index">
+                                    <DiskCard :value="disk" :disk-index="index" />
+                                </ACol>
+                            </TransitionGroup>
+
+                        </ARow>
+                    </template>
                 </ACard>
             </AScrollbar>
         </ALayoutContent>
@@ -250,5 +373,23 @@ function resetValues() {
 
 .arco-input-number :deep(.arco-input) {
     text-align: center;
+}
+
+.main-card :deep(.arco-card-body) {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.single-my-row {
+    width: 100%;
+}
+
+.double-my-row {
+    width: 50%;
+}
+
+.triple-my-row {
+    width: 33.333%;
 }
 </style>
