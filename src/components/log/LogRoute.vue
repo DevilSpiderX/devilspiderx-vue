@@ -1,5 +1,8 @@
 <script setup>
-import { http } from "@/scripts/http";
+import {
+    list as listApi,
+    logFile as logFileApi
+} from "@/scripts/http/log-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { IconCaretDown, IconCaretUp, IconLoop } from "@arco-design/web-vue/es/icon";
 import { computed, reactive, ref, toRef, watch, watchEffect } from "vue";
@@ -20,7 +23,7 @@ const log = reactive({
 const router = useRouter();
 (async () => {
     try {
-        let resp = await http.log.list();
+        const resp = await listApi();
         console.log("logList:", resp.data);
         log.list = resp.data;
     } catch (error) {
@@ -39,7 +42,7 @@ const logSelectOptions = computed(() => {
 async function getLog() {
     log.loading = true;
     try {
-        let resp = await http.log.logFile(log.name);
+        const resp = await logFileApi(log.name);
         if (Object.hasOwn(resp, "code") && (resp.code === 100 || resp.code === 101)) {
             router.push({ name: "login" });
             return;

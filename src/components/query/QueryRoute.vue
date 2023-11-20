@@ -1,7 +1,12 @@
 <script setup>
 import SearchNoResultSvg from "@/assets/搜索无结果.svg";
 import { DSXMenu } from "@/components/dsx-menu";
-import { http } from "@/scripts/http";
+import {
+    add as addApi,
+    deleteApi,
+    get as getApi,
+    update as updateApi
+} from "@/scripts/http/query-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Message, Modal } from "@arco-design/web-vue";
 import { computed, h, nextTick, reactive, ref } from "vue";
@@ -139,7 +144,7 @@ const searching = ref(false);
 async function Search() {
     searching.value = true;
     try {
-        QuerySucceed(await http.query.get(key.value));
+        QuerySucceed(await getApi(key.value));
     } catch (error) {
         console.error("(Search)", `url:${error.config?.url}`, error);
         QueryError();
@@ -216,7 +221,7 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
                     okText: "确定",
                     cancelText: "取消",
                     onOk: async () => {
-                        let resp = await http.query.delete(record.id);
+                        const resp = await deleteApi(record.id);
                         switch (resp.code) {
                             case 0: {
                                 tableData.value.splice(recordIndex, 1);
@@ -284,12 +289,12 @@ const addModal = reactive({
 });
 
 async function add_submit(form_data) {
-    let name = form_data.name;
-    let account = form_data.account;
-    let password = form_data.password;
-    let remark = form_data.remark;
+    const name = form_data.name;
+    const account = form_data.account;
+    const password = form_data.password;
+    const remark = form_data.remark;
     try {
-        let resp = await http.query.add(name, account, password, remark);
+        const resp = await addApi(name, account, password, remark);
         console.log("addPasswords:", resp);
         switch (resp.code) {
             case 0: {
@@ -301,7 +306,7 @@ async function add_submit(form_data) {
                 addModal.clean = true;
                 Message.success("添加成功");
                 try {
-                    QuerySucceed(await http.query.get(val));
+                    QuerySucceed(await getApi(val));
                 } catch (error) {
                     console.error("(add_submit)", `url:${error.config?.url}`, error);
                     QueryError();
@@ -341,12 +346,12 @@ function update_submit(form_data) {
         okText: "确定",
         cancelText: "取消",
         onOk: async () => {
-            let id = form_data.id;
-            let name = form_data.name;
-            let account = form_data.account;
-            let password = form_data.password;
-            let remark = form_data.remark;
-            let resp = await http.query.update(id, name, account, password, remark);
+            const id = form_data.id;
+            const name = form_data.name;
+            const account = form_data.account;
+            const password = form_data.password;
+            const remark = form_data.remark;
+            const resp = await updateApi(id, name, account, password, remark);
             console.log("updatePasswords:", resp);
             switch (resp["code"]) {
                 case 0: {
@@ -357,7 +362,7 @@ function update_submit(form_data) {
                     updateModal.visible = false;
                     Message.success("修改成功");
                     try {
-                        QuerySucceed(await http.query.get(val));
+                        QuerySucceed(await getApi(val));
                     } catch (error) {
                         console.error("(okUpdate)", `url:${error.config?.url}`, error);
                         QueryError();

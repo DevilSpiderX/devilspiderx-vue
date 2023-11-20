@@ -1,5 +1,5 @@
 <script setup>
-import { http } from "@/scripts/http";
+import { register as registerApi } from "@/scripts/http/user-api";
 import { Message } from "@arco-design/web-vue";
 import { reactive } from "vue";
 import { useRouter } from "vue-router";
@@ -37,7 +37,7 @@ async function form_submit() {
     }
     running_start();
     try {
-        let resp = await http.user.register(uid, pwd);
+        const resp = await registerApi(uid, pwd);
         console.log("Register:", resp);
         switch (resp["code"]) {
             case 0: {

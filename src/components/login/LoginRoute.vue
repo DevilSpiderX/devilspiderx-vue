@@ -1,5 +1,7 @@
 <script setup>
-import { http } from "@/scripts/http";
+import {
+    login as loginApi
+} from "@/scripts/http/user-api";
 import { useUserStore } from "@/store/UserStore";
 import { Message } from "@arco-design/web-vue";
 import Hex from "crypto-js/enc-hex";
@@ -41,7 +43,7 @@ async function form_submit() {
     running_start();
     pwd = SHA256(pwd).toString(Hex);
     try {
-        let resp = await http.user.login(uid, pwd);
+        const resp = await loginApi(uid, pwd);
         console.log("Login:", resp);
         switch (resp.code) {
             case 0: {

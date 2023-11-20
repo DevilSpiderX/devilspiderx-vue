@@ -1,5 +1,7 @@
 <script setup>
-import { http } from "@/scripts/http";
+import {
+    updatePassword as updatePasswordApi
+} from "@/scripts/http/user-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Message } from "@arco-design/web-vue";
 import Hex from "crypto-js/enc-hex";
@@ -47,7 +49,7 @@ async function on_form_submit() {
     const oldPassword = SHA256(form.value.oldPassword).toString(Hex);
     const newPassword = SHA256(form.value.password).toString(Hex);
 
-    const resp = await http.user.updatePassword(oldPassword, newPassword);
+    const resp = await updatePasswordApi(oldPassword, newPassword);
     if (resp.code === 0) {
         Message.success("修改成功");
         cleanData();

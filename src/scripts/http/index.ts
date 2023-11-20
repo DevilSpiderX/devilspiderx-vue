@@ -1,6 +1,16 @@
 import httpInstance from "./http-instance";
-import type { Resp, RespType } from "./server-api";
-import http from "./server-api";
 
-export { http, httpInstance };
-export type { Resp, RespType };
+export { httpInstance };
+export interface Resp {
+    code: number;
+    msg: string;
+    data: any;
+    dataCount?: number;
+}
+
+export interface RespType<T> {
+    code: number;
+    msg: string;
+    data: T;
+    dataCount?: number;
+}

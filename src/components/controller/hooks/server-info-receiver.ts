@@ -1,5 +1,13 @@
 import router from "@/router";
-import { http } from "@/scripts/http";
+import {
+    cpu as cpuApi,
+    disks as disksApi,
+    memory as memoryApi,
+    networks as networksApi,
+    os as osApi,
+    token as tokenApi
+} from "@/scripts/http/server-info-api";
+import { status as statusApi } from "@/scripts/http/user-api";
 import { sleep } from "@/util/util";
 import { Message } from "@arco-design/web-vue";
 import type { Ref } from "vue";
@@ -45,7 +53,7 @@ class ServerInfoReceiver {
         });
         console.log(`${Date()}\nWebSocket连接已关闭(code${ev.code}:${ev.reason})`);
         if (ev.code === 1000) {
-            http.user.status().then(resp => {
+            statusApi().then(resp => {
                 if (resp.code !== 0 || !resp.data.login) {
                     router.push({ name: "login" });
                 }
@@ -97,27 +105,27 @@ class ServerInfoReceiver {
 
     async getHardware() {
         while (!this.closed) {
-            http.serverInfo.cpu().then(resp => {
+            cpuApi().then(resp => {
                 if (resp.code === 0) {
                     this.values.value.cpu = resp.data;
                 }
             });
-            http.serverInfo.memory().then(resp => {
+            memoryApi().then(resp => {
                 if (resp.code === 0) {
                     this.values.value.memory = resp.data;
                 }
             });
-            http.serverInfo.networks().then(resp => {
+            networksApi().then(resp => {
                 if (resp.code === 0) {
                     this.values.value.networks = resp.data;
                 }
             });
-            http.serverInfo.disks().then(resp => {
+            disksApi().then(resp => {
                 if (resp.code === 0) {
                     this.values.value.disks = resp.data;
                 }
             });
-            http.serverInfo.os().then(resp => {
+            osApi().then(resp => {
                 if (resp.code === 0) {
                     this.values.value.os = resp.data;
                 }
@@ -129,7 +137,7 @@ class ServerInfoReceiver {
 
 async function generate(receiver: Ref<ServerInfoReceiver | null>, values: Ref<ValuesType>, cd: number) {
     try {
-        const resp = await http.serverInfo.token();
+        const resp = await tokenApi();
         console.log("token:", resp);
         if (resp.code === 0) {
             receiver.value = new ServerInfoReceiver(values, resp.data.token, cd);

@@ -1,17 +1,25 @@
 <script setup>
-import { http } from "@/scripts/http";
+import {
+    restartClient as restartClientApi,
+    start as startApi,
+    state as stateApi,
+    stop as stopApi
+} from "@/scripts/http/v2ray-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
+import { useUserStore } from "@/store/UserStore";
+import { sleep } from "@/util/util";
 import { Message } from '@arco-design/web-vue';
 import { onMounted, ref } from "vue";
 import { MySwitch } from "./components";
 
-const appConfigs = useAppConfigs();
+const appConfigs = useAppConfigs(),
+    userStore = useUserStore();
 
 const switchStatus = ref(false);
 
 onMounted(async () => {
     try {
-        let resp = await http.v2ray.state();
+        const resp = await stateApi();
         console.log("v2rayState:", resp);
         switchStatus.value = resp.data;
     } catch (ignored) {
@@ -21,7 +29,7 @@ onMounted(async () => {
 async function on_switch_clicked() {
     try {
         if (switchStatus.value) {
-            let resp = await http.v2ray.stop();
+            const resp = await stopApi();
             console.log("v2rayStop:", resp);
             switch (resp.code) {
                 case 0: {
@@ -39,7 +47,7 @@ async function on_switch_clicked() {
                 }
             }
         } else {
-            let resp = await http.v2ray.start();
+            const resp = await startApi();
             console.log("v2rayStart:", resp);
             switch (resp.code) {
                 case 0: {
@@ -62,6 +70,19 @@ async function on_switch_clicked() {
         Message.error("服务器错误");
     }
 }
+
+const settingsDrawer = ref({
+    visible: false,
+    loadding: false
+});
+
+async function restartV2rayClient() {
+    settingsDrawer.value.loadding = true;
+    await restartClientApi();
+    await sleep(1000);
+    settingsDrawer.value.loadding = false;
+}
+
 </script>
 
 <template>
@@ -70,6 +91,14 @@ async function on_switch_clicked() {
             <APageHeader @back="$router.push({ name: 'index' })">
                 <template #title>
                     <span> V2Ray </span>
+                </template>
+                <template #extra>
+                    <ASpace>
+                        <AButton v-if="userStore.admin" type="text" shape="circle" style="color:var(--color-text-2)"
+                            @click="settingsDrawer.visible = true">
+                            <i class="fa-solid fa-gear"></i>
+                        </AButton>
+                    </ASpace>
                 </template>
             </APageHeader>
         </ALayoutHeader>
@@ -88,6 +117,19 @@ async function on_switch_clicked() {
             </ARow>
         </ALayoutContent>
     </ALayout>
+
+    <ADrawer v-model:visible="settingsDrawer.visible" title="设置" :footer="false">
+        <ASpace direction="vertical" fill>
+            <APopconfirm content="确认重启服务？" position="bottom" type="warning" @ok="restartV2rayClient">
+                <AButton type="primary" long status="warning" size="large" :loading="settingsDrawer.loadding">
+                    <template #icon>
+                        <i class="fa-solid fa-plug-circle-bolt fa-fw"></i>
+                    </template>
+                    重启V2ray服务
+                </AButton>
+            </APopconfirm>
+        </ASpace>
+    </ADrawer>
 </template>
 
 <style scoped>

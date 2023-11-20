@@ -1,5 +1,9 @@
 <script setup>
-import { http } from "@/scripts/http";
+import {
+    reboot as rebootApi,
+    shutdown as shutdownApi,
+    stop as stopApi
+} from "@/scripts/http/os-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { useUserStore } from "@/store/UserStore";
 import { Scrollbar as AScrollbar, Message } from "@arco-design/web-vue";
@@ -48,7 +52,7 @@ const settingsDrawer = reactive({
     loadding: false,
     reboot: async () => {
         settingsDrawer.loadding = true;
-        const resp = await http.os.reboot();
+        const resp = await rebootApi();
         console.log("settingsDrawer.reboot:", resp);
         if (resp.code === 0) {
             Message.success("服务器重启成功");
@@ -61,7 +65,7 @@ const settingsDrawer = reactive({
     },
     shutdown: async () => {
         settingsDrawer.loadding = true;
-        const resp = await http.os.shutdown();
+        const resp = await shutdownApi();
         console.log("settingsDrawer.reboot:", resp);
         if (resp.code === 0) {
             Message.success("服务器关机成功");
@@ -74,7 +78,7 @@ const settingsDrawer = reactive({
     },
     stop: async () => {
         settingsDrawer.loadding = true;
-        const resp = await http.os.stop();
+        const resp = await stopApi();
         console.log("settingsDrawer.reboot:", resp);
         if (resp.code === 0) {
             Message.success("停止服务器进程成功");

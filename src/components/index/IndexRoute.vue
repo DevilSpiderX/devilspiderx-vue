@@ -1,7 +1,11 @@
 <script setup lang="jsx">
 import v2rayNPngUrl from "@/assets/v2rayN.png";
 import { DSXMenuIcon as Icon } from "@/components/dsx-menu";
-import { http } from "@/scripts/http";
+import {
+    getAvatar as getAvatarApi,
+    logout as logoutApi,
+    uploadAvatar as uploadAvatarApi
+} from "@/scripts/http/user-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { useUserStore } from "@/store/UserStore";
 import { Scrollbar as AScrollbar, Message } from "@arco-design/web-vue";
@@ -54,7 +58,7 @@ const drawer = reactive({
 
 async function on_logoutButton_clicked() {
     try {
-        let resp = await http.user.logout();
+        const resp = await logoutApi();
         console.log("Logout:", resp);
         if (resp.code === 0) {
             userStore.login = false;
@@ -77,7 +81,7 @@ const avatarSrc = computed({
 });
 
 if (avatarSrc.value === undefined) {
-    http.user.getAvatar().then(resp => {
+    getAvatarApi().then(resp => {
         if (resp.code === 0) {
             avatarSrc.value = resp.data;
         }
@@ -105,7 +109,7 @@ function on_upload_avatar_button_click() {
 async function on_avatar_file_input_change(ev) {
     const files = ev.target.files;
     if (files.length > 0) {
-        const resp = await http.user.uploadAvatar(files.item(0));
+        const resp = await uploadAvatarApi(files.item(0));
         if (resp.code === 0) {
             Message.success("修改成功");
             avatarSrc.value = `${resp.data.avatar}?time=${new Date().getTime()}`;
