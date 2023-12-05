@@ -80,6 +80,12 @@ const routes: RouteRecordRaw[] = [
             },
         ]
     },
+    {
+        name: "ANi",
+        path: "/ani",
+        component: () => import("@/components/ANi/AniRoute.vue"),
+        meta: { title: "ANi番剧更新 - DevilSpiderX" }
+    },
 ]
 
 if (Object.hasOwn === undefined) {

@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AddModal: typeof import('./src/components/query/components/AddModal.vue')['default']
+    AniRoute: typeof import('./src/components/ANi/AniRoute.vue')['default']
     BaseCard: typeof import('./src/components/controller/components/BaseCard.vue')['default']
     ControllerRoute: typeof import('./src/components/controller/ControllerRoute.vue')['default']
     CpuCard: typeof import('./src/components/controller/components/CpuCard.vue')['default']
