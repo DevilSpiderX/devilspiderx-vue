@@ -15,11 +15,14 @@ type torrent = {
 const torrentList = ref<torrent[]>([]);
 
 async function getList() {
+    loading.value = true;
     const xmlStr = await getXMLApi();
     const parse = new DOMParser();
     const mDom = parse.parseFromString(xmlStr, "text/xml");
     const nodeList = mDom.querySelectorAll("item");
-    nodeList.forEach(node => {
+    torrentList.value = new Array(nodeList.length);
+    for (let i = 0; i < nodeList.length; i++) {
+        const node = nodeList.item(i);
         const title = node.querySelector("title")?.textContent;
         const link = node.querySelector("link")?.textContent;
         const date = node.querySelector("pubDate")?.textContent;
@@ -31,7 +34,8 @@ async function getList() {
             size: size ? Number(size) : 0,
             success: title != null && link != null && date != null && size != null
         });
-    });
+    }
+    loading.value = false;
 }
 
 onMounted(getList);
@@ -91,6 +95,7 @@ const tableData = computed<Data[]>(() => {
     const list: Data[] = [];
     for (let i = torrentList.value.length - 1; i >= 0; i--) {
         const torrent = torrentList.value[i];
+        if (!torrent.success) continue;
         list.push({
             title: torrent.title,
             link: torrent.link,
@@ -101,12 +106,13 @@ const tableData = computed<Data[]>(() => {
     return list;
 });
 
+const loading = ref(false);
 
 </script>
 
 <template>
     <div :class="$style.root">
-        <ATable :columns="tableColumns" :data="tableData" :pagination="false">
+        <ATable :columns="tableColumns" :data="tableData" :pagination="false" :loading="loading">
             <template #title="{ record }: { record: Data }">
                 <ALink :href="record.link">
                     {{ record.title }}
