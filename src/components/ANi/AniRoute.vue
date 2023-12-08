@@ -20,20 +20,20 @@ async function getList() {
     const parse = new DOMParser();
     const mDom = parse.parseFromString(xmlStr, "text/xml");
     const nodeList = mDom.querySelectorAll("item");
-    torrentList.value = new Array(nodeList.length);
+    torrentList.value = new Array<torrent>(nodeList.length);
     for (let i = 0; i < nodeList.length; i++) {
         const node = nodeList.item(i);
         const title = node.querySelector("title")?.textContent;
         const link = node.querySelector("link")?.textContent;
         const date = node.querySelector("pubDate")?.textContent;
         const size = node.querySelector("enclosure")?.getAttribute("length");
-        torrentList.value.push({
+        torrentList.value[i] = {
             title: title ?? "加载失败",
             link: link ?? "javascript:void(0)",
             date: date ? new Date(date) : new Date(0),
             size: size ? Number(size) : 0,
             success: title != null && link != null && date != null && size != null
-        });
+        };
     }
     loading.value = false;
 }
@@ -44,15 +44,17 @@ const nowDate = new Date();
 const yestDate = new Date(nowDate.getTime() - 864_000_00);
 
 function isToday(date: Date) {
-    return nowDate.getFullYear() === date.getFullYear()
-        && nowDate.getMonth() === date.getMonth()
-        && nowDate.getDay() === date.getDay();
+    return dateEquals(date, nowDate);
 }
 
 function isYesterday(date: Date) {
-    return yestDate.getFullYear() === date.getFullYear()
-        && yestDate.getMonth() === date.getMonth()
-        && yestDate.getDay() === date.getDay();
+    return dateEquals(date, yestDate)
+}
+
+function dateEquals(date: Date, anoDate: Date) {
+    return date.getFullYear() === anoDate.getFullYear()
+        && date.getMonth() === anoDate.getMonth()
+        && date.getDate() === anoDate.getDate();
 }
 
 function formatDate(date: Date) {
