@@ -29,17 +29,29 @@ watchEffect(async () => {
             name = "index";
         }
         await sleep(400);
-        router.push({ name });
+        if (outerRef.value) {
+            aniState.value = true;
+            outerRef.value.addEventListener("animationend", () => {
+                router.push({ name });
+            }, {
+                once: true
+            });
+        } else {
+            router.push({ name });
+        }
     }
 });
 
 const spiderImgFilter = computed(() => appConfigs.darkTheme ? "invert(100%)" : "");
 
+const outerRef = ref(null);
+const aniState = ref(false);
+
 </script>
 
 <template>
     <div class="main">
-        <div>
+        <div ref="outerRef" :class='{ "outer-animation": aniState }'>
             <img class="spider-img" :src="faSpider" />
             <p class="logo">
                 Good<br>
@@ -74,5 +86,20 @@ const spiderImgFilter = computed(() => appConfigs.darkTheme ? "invert(100%)" : "
 
 body[arco-theme=dark] .main {
     color: #fcfcfc;
+}
+
+@keyframes gradient-small {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(0.01);
+    }
+}
+
+.outer-animation {
+    animation: gradient-small 300ms ease-in-out;
+    animation-fill-mode: forwards;
 }
 </style>
