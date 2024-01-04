@@ -17,7 +17,7 @@ export function useOnlineCount() {
         return resp.code === 0;
     }
 
-    let intervalId: NodeJS.Timer | undefined;
+    let intervalId: NodeJS.Timeout | undefined;
     onMounted(() => {
         refresh();
         intervalId = setInterval(refresh, 300_000);
