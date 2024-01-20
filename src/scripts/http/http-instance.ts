@@ -19,7 +19,10 @@ httpInstance.interceptors.response.use(resp => {
             break;
         }
         case 1002: {
-            Message.error("请先登录再试");
+            Message.error({
+                id: "resp_code_1002",
+                content: "请先登录再试"
+            });
             router.push({ name: "login" });
             break;
         }
@@ -35,19 +38,31 @@ httpInstance.interceptors.response.use(resp => {
         console.error(error.response.data);
         switch (error.response.status) {
             case 400: {
-                Message.error("400 Bad Request");
+                Message.error({
+                    id: "resp_error_400",
+                    content: "400 Bad Request"
+                });
                 break;
             }
             case 404: {
-                Message.error("404 Not Found");
+                Message.error({
+                    id: "resp_error_404",
+                    content: "404 Not Found"
+                });
                 break;
             }
             case 405: {
-                Message.error("405 Method Not Allowed");
+                Message.error({
+                    id: "resp_error_405",
+                    content: "405 Method Not Allowed"
+                });
                 break;
             }
             case 500: {
-                Message.error("500 Internal Server Error");
+                Message.error({
+                    id: "resp_error_500",
+                    content: "500 Internal Server Error"
+                });
                 break;
             }
         }
