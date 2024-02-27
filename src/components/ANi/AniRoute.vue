@@ -116,7 +116,7 @@ const loading = ref(false);
     <div :class="$style.root">
         <ATable :columns="tableColumns" :data="tableData" :pagination="false" :loading="loading">
             <template #title="{ record }: { record: Data }">
-                <ALink :href="record.link">
+                <ALink :href="record.link" target="_blank">
                     {{ record.title }}
                 </ALink>
             </template>
