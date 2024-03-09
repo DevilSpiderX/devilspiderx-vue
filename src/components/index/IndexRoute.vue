@@ -44,6 +44,11 @@ const buttonList = reactive([
         hidden: computed(() => !userStore.admin)
     },
     {
+        label: "ANi番剧",
+        icon: (<i class="fa-brands fa-youtube"></i>),
+        onClick: () => { router.push({ name: 'ANi' }) }
+    },
+    {
         class: ["exit-button"],
         label: " 退\u00a0\u00a0出",
         icon: (<i class="fa-solid fa-power-off"></i>),
@@ -139,7 +144,8 @@ const avatarPreview = ref({
                         </span>
                     </template>
                     <template #title>
-                        <span> DevilSpiderX <ATag color="arcoblue" size="small">v{{ appConfigs.appVersion }}</ATag> </span>
+                        <span> DevilSpiderX <ATag color="arcoblue" size="small">v{{ appConfigs.appVersion }}</ATag>
+                        </span>
                     </template>
                     <template #extra>
                         <ASpace>

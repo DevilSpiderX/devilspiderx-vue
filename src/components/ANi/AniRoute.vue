@@ -113,21 +113,66 @@ const loading = ref(false);
 </script>
 
 <template>
-    <div :class="$style.root">
-        <ATable :columns="tableColumns" :data="tableData" :pagination="false" :loading="loading">
-            <template #title="{ record }: { record: Data }">
-                <ALink :href="record.link" target="_blank">
-                    {{ record.title }}
-                </ALink>
-            </template>
-        </ATable>
-    </div>
+    <ALayout :class="$style.root">
+        <ALayoutHeader>
+            <APageHeader @back="$router.push({ name: 'index' })">
+                <template #title>
+                    <span> ANi番剧列表 </span>
+                </template>
+                <template #extra></template>
+            </APageHeader>
+        </ALayoutHeader>
+        <ALayoutContent :class="$style.content">
+            <AScrollbar :class="$style.fillScrollbar" :outer-class="$style.fillScrollbarOut">
+                <ATable :columns="tableColumns" :data="tableData" :pagination="false" :loading="loading">
+                    <template #title="{ record }: { record: Data }">
+                        <ALink :href="record.link" target="_blank">
+                            {{ record.title }}
+                        </ALink>
+                    </template>
+                </ATable>
+            </AScrollbar>
+        </ALayoutContent>
+    </ALayout>
+
+    <ABackTop :target-container="`.${$style.fillScrollbar}`" :style="{ bottom: '80px' }">
+        <AButton :class="$style.siteBacktopBtn" size="large" shape="circle">
+            <IconUp />
+        </AButton>
+    </ABackTop>
 </template>
 
 <style module>
-.root {
+.root,
+.content {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
+}
+
+.content {
+    overflow: hidden;
+}
+
+.fillScrollbarOut,
+.fillScrollbarOut .fillScrollbar {
+    width: 100%;
+    height: 100%;
+}
+
+.fillScrollbarOut .fillScrollbar {
+    overflow: auto;
+}
+
+.siteBacktopBtn {
+    background: var(--color-bg-5) !important;
+    border: 1px solid var(--color-fill-3) !important;
+    box-shadow: 0 2px 12px #0000001a;
+    opacity: 0.6;
+}
+
+.siteBacktopBtn:hover,
+.siteBacktopBtn:active {
+    opacity: 1;
 }
 </style>
