@@ -126,7 +126,7 @@ const loading = ref(false);
             <AScrollbar :class="$style.fillScrollbar" :outer-class="$style.fillScrollbarOut">
                 <ATable :columns="tableColumns" :data="tableData" :pagination="false" :loading="loading">
                     <template #title="{ record }: { record: Data }">
-                        <ALink :href="record.link" target="_blank">
+                        <ALink :href="record.link" download>
                             {{ record.title }}
                         </ALink>
                     </template>
