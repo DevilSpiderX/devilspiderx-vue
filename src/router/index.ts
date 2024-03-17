@@ -81,6 +81,12 @@ const routes: RouteRecordRaw[] = [
         ]
     },
     {
+        name: "fjrc_fee_calculator",
+        path: "/fjrc/fee_calculator",
+        component: () => import("@/components/fjrc/FeeCalculator.vue"),
+        meta: { title: "转账手续费计算器 - DevilSpiderX" },
+    },
+    {
         name: "ANi",
         path: "/ani",
         component: () => import("@/components/ANi/AniRoute.vue"),

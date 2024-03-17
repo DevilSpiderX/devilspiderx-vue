@@ -49,6 +49,11 @@ const buttonList = reactive([
         onClick: () => { router.push({ name: 'ANi' }) }
     },
     {
+        label: "手续费计算器",
+        icon: (<i class="fa-solid fa-calculator"></i>),
+        onClick: () => { router.push({ name: 'fjrc_fee_calculator' }) }
+    },
+    {
         class: ["exit-button"],
         label: " 退\u00a0\u00a0出",
         icon: (<i class="fa-solid fa-power-off"></i>),

@@ -16,6 +16,7 @@ declare module 'vue' {
     DisplayModal: typeof import('./src/components/query/components/DisplayModal.vue')['default']
     DSXMenu: typeof import('./src/components/dsx-menu/DSXMenu.vue')['default']
     DSXMenuItem: typeof import('./src/components/dsx-menu/components/DSXMenuItem.vue')['default']
+    FeeCalculator: typeof import('./src/components/fjrc/FeeCalculator.vue')['default']
     Fjrc: typeof import('./src/components/fjrc/Fjrc.vue')['default']
     FjrcIndex: typeof import('./src/components/fjrc/FjrcIndex.vue')['default']
     FjrcTopic: typeof import('./src/components/fjrc/FjrcTopic.vue')['default']
