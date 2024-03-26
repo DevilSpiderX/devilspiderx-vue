@@ -1,19 +1,24 @@
-<script setup>
-import { computed, reactive, ref, watch } from "vue";
-import { useModalWidth } from "../hooks/modal-width";
+<script setup lang="ts">
+import { computed, ref, watch } from "vue";
+import { useModalWidth } from "@/hooks/modal-width";
+import type { PasswordDataType } from "../hooks/password-search";
 
-const props = defineProps({
-    visible: Boolean,
-    data: Object
-})
-const emit = defineEmits(["submit", "update:visible"]);
+const props = defineProps<{
+    visible: boolean;
+    data: PasswordDataType;
+}>();
+
+const emit = defineEmits<{
+    submit: [form: PasswordDataType],
+    "update:visible": [value: boolean]
+}>();
 
 const _visible = computed({
     get: () => props.visible,
     set: value => emit("update:visible", value)
 });
 
-const form = reactive({
+const form = ref<PasswordDataType>({
     id: -1,
     name: "",
     account: "",
@@ -22,18 +27,18 @@ const form = reactive({
 });
 
 watch(() => props.data, data => {
-    Object.assign(form, data);
+    Object.assign(form.value, data);
 });
 
 const inputNameStatus = ref(false);
 
 function form_submit() {
     inputNameStatus.value = false;
-    if (form.name === "") {
+    if (form.value.name === "") {
         inputNameStatus.value = true;
         return;
     }
-    emit('submit', { ...form });
+    emit('submit', form.value);
 }
 
 const { width } = useModalWidth();

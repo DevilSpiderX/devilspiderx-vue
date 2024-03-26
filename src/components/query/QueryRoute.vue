@@ -298,9 +298,11 @@ async function add_submit(form_data) {
         console.log("addPasswords:", resp);
         switch (resp.code) {
             case 0: {
-                let val = key.value;
-                val = val === undefined || val === "" ? name : `${val} ${name}`;
-                key.value = val;
+                const keys = key.value.split(/[.\s]/);
+                if (keys.indexOf(name) === -1) {
+                    key.value = key.value.length === 0 ? name : `${key.value} ${name}`;
+                }
+
                 searching.value = true;
                 addModal.visible = false;
                 addModal.clean = true;
@@ -338,6 +340,12 @@ const updateModal = reactive({
     data: {}
 });
 
+
+/**
+ * 提交修改
+ * 
+ * @param {PasswordDataType} form_data 
+ */
 function update_submit(form_data) {
     Modal.confirm({
         title: "提示",
@@ -353,16 +361,17 @@ function update_submit(form_data) {
             const remark = form_data.remark;
             const resp = await updateApi(id, name, account, password, remark);
             console.log("updatePasswords:", resp);
-            switch (resp["code"]) {
+            switch (resp.code) {
                 case 0: {
-                    let val = key.value;
-                    val = val === undefined || val === "" ? name : val.indexOf(name) === -1 ? `${val} ${name}` : val;
-                    key.value = val;
                     searching.value = true;
                     updateModal.visible = false;
                     Message.success("修改成功");
                     try {
-                        QuerySucceed(await getApi(val));
+                        const getResp = await getApi(key.value);
+                        searching.value = false;
+                        if (getResp.code === 0) {
+                            passwordData.value = getResp.data;
+                        }
                     } catch (error) {
                         console.error("(okUpdate)", `url:${error.config?.url}`, error);
                         QueryError();
@@ -370,7 +379,9 @@ function update_submit(form_data) {
                     break;
                 }
                 case 1: {
-                    Message.error(resp["msg"]);
+                    console.log("updatePasswords:", `修改失败，返回信息：${resp.msg}`)
+                    Message.error("修改失败");
+                    Message.error("可能存在相同名称的数据");
                     break;
                 }
             }

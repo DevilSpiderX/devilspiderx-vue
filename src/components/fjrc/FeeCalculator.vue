@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useModalWidth } from "@/components/query/hooks/modal-width";
+import { useModalWidth } from "@/hooks/modal-width";
 import { ref } from "vue";
 
 const { width: cardWidth } = useModalWidth();

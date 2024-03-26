@@ -1,12 +1,23 @@
-<script setup>
-import { computed, reactive, ref, watch } from "vue";
-import { useModalWidth } from "../hooks/modal-width";
+<script setup lang="ts">
+import { computed, ref, watch } from "vue";
+import { useModalWidth } from "@/hooks/modal-width";
 
-const props = defineProps({
-    visible: Boolean,
-    cleaning: Boolean
-});
-const emit = defineEmits(["submit", "update:visible", "update:cleaning"]);
+type FormType = {
+    name: string;
+    account: string;
+    password: string;
+    remark: string;
+}
+
+const props = defineProps<{
+    visible: boolean;
+    cleaning: boolean;
+}>();
+const emit = defineEmits<{
+    submit: [form: FormType],
+    "update:visible": [value: boolean],
+    "update:cleaning": [value: boolean]
+}>();
 
 const _visible = computed({
     get: () => props.visible,
@@ -19,15 +30,17 @@ watch(() => props.cleaning, cleaning => {
     }
 });
 
-const form = reactive({
+const defaultForm = {
     name: "",
     account: "",
     password: "",
     remark: ""
-});
+};
+
+const form = ref<FormType>(defaultForm);
 
 function cleanData() {
-    for (let key in form) form[key] = "";
+    form.value = defaultForm;
     emit("update:cleaning", false);
 }
 
@@ -35,11 +48,11 @@ const inputNameStatus = ref(false);
 
 function form_submit() {
     inputNameStatus.value = false;
-    if (form.name === "") {
+    if (form.value.name === "") {
         inputNameStatus.value = true;
         return;
     }
-    emit('submit', { ...form });
+    emit('submit', form.value);
 }
 
 const { width } = useModalWidth();

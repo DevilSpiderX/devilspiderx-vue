@@ -2,7 +2,7 @@
 import { TableColumnData } from "@arco-design/web-vue";
 import { PasswordDataType } from "../hooks/password-search";
 
-interface Props {
+type Props = {
     value: {
         column: TableColumnData;
         record: PasswordDataType;
@@ -12,8 +12,8 @@ interface Props {
 
 const props = defineProps<Props>();
 const emit = defineEmits<{
-    (e: "contextmenu", column: TableColumnData, record: PasswordDataType, rowIndex: number, event: MouseEvent): void,
-    (e: "dblclick", record: PasswordDataType, event: MouseEvent): void
+    contextmenu: [column: TableColumnData, record: PasswordDataType, rowIndex: number, event: MouseEvent],
+    dblclick: [record: PasswordDataType, event: MouseEvent]
 }>();
 
 function handle_td_contextmenu(event: MouseEvent) {

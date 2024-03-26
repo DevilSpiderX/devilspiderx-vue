@@ -1,19 +1,27 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 
-const props = defineProps({
-    visible: Boolean,
+type Props = {
+    visible: boolean;
     data: {
-        type: Object,
-        default: {
-            name: "",
-            account: "",
-            password: "",
-            remark: ""
-        }
+        name: string,
+        account: string,
+        password: string,
+        remark: string
     }
-})
-const emit = defineEmits(["update:visible"]);
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    data: () => ({
+        name: "",
+        account: "",
+        password: "",
+        remark: ""
+    })
+});
+const emit = defineEmits<{
+    "update:visible": [value: boolean]
+}>();
 
 const _visible = computed({
     get: () => props.visible,
