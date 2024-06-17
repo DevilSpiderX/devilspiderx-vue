@@ -72,6 +72,13 @@ const {
 
 const search_debounce = debounce(search, 100);
 
+const tableClientDataMinCount = computed(() => {
+    const clientHeight = appConfigs.client.height;
+    const availableHeight = tablePaginationPageCount.value > 1 ? clientHeight - 200 : clientHeight - 156;
+
+    return Math.floor(availableHeight / 43);
+});
+
 const tableData = computed({
     get: () => {
         /** @type {PasswordDataType[]} */
@@ -80,8 +87,10 @@ const tableData = computed({
         if (len === 0) {
             return [];
         }
-        const onePageLineCount = appConfigs.pwdQuery.onePageLineCount;
         const pageSize = tablePaginationProps.pageSize;
+        const dataMinCount = tableClientDataMinCount.value;
+        const onePageLineCount = Math.min(dataMinCount, pageSize);
+
         const n = onePageLineCount - (len % pageSize);
         for (let i = 0; i < n && n < onePageLineCount; i++) {
             data.push({
