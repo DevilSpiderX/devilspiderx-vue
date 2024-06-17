@@ -1,7 +1,7 @@
 <script setup>
 import SearchNoResultSvg from "@/assets/搜索无结果.svg";
 import { DSXMenu } from "@/components/dsx-menu";
-import { add as addApi, deleteApi, get as getApi, update as updateApi } from "@/scripts/http/query-api";
+import { add as addApi, deleteApi, update as updateApi } from "@/scripts/http/query-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { Message, Modal } from "@arco-design/web-vue";
 import { computed, h, nextTick, reactive, ref } from "vue";
@@ -9,6 +9,7 @@ import { AddModal, DisplayModal, QueryTd, UpdateModal } from "./components";
 import { usePasswordSearch } from "./hooks/password-search";
 import { useTableBodyScrollWrap } from "./hooks/table-body-scroll-wrap";
 import { useTableMenu } from "./hooks/table-menu";
+import { debounce } from "@/util/util";
 
 const appConfigs = useAppConfigs();
 
@@ -58,7 +59,18 @@ const { tableBodyScrollWrap, setTableScrollTop } = useTableBodyScrollWrap(pwdTab
  * @typedef {import("./hooks/password-search").PasswordDataType} PasswordDataType
  */
 
-const { key, passwordData, tablePaginationCurrent, tablePaginationPageSize } = usePasswordSearch();
+const {
+    key,
+    passwordData,
+    tablePaginationTotal,
+    tablePaginationCurrent,
+    tablePaginationPageSize,
+    tablePaginationPageCount,
+    searching,
+    search,
+} = usePasswordSearch();
+
+const search_debounce = debounce(search, 100);
 
 const tableData = computed({
     get: () => {
@@ -88,8 +100,8 @@ const tableData = computed({
 });
 
 const tablePaginationProps = reactive({
+    total: tablePaginationTotal,
     pageSize: tablePaginationPageSize,
-    "onUpdate:pageSize": newPageSize => (tablePaginationProps.pageSize = newPageSize),
     current: tablePaginationCurrent,
     "onUpdate:current": newCurrent => {
         tablePaginationProps.current = newCurrent;
@@ -98,9 +110,21 @@ const tablePaginationProps = reactive({
     hideOnSinglePage: true,
     simple: computed(() => appConfigs.client.width < 450),
     pageSizeOptions: [10, 20, 30, 40, 50, 200, 500, 1000],
+    onChange: current => {
+        if (import.meta.env.DEV) {
+            console.log(`table page change:${current}`);
+        }
+        search_debounce();
+    },
 });
 
-const tableTotalPage = computed(() => Math.ceil(tableData.value.length / tablePaginationProps.pageSize));
+function onTablePaginationPageSizeChange(newPageSize) {
+    if (import.meta.env.DEV) {
+        console.log(`table page size change:${newPageSize}`);
+    }
+    tablePaginationProps.pageSize = newPageSize;
+    search_debounce();
+}
 
 const tablePagePosition = computed(() => (appConfigs.client.width < 450 ? "br" : "bottom"));
 
@@ -130,36 +154,15 @@ const tableScroll = reactive({
     y: "100%",
 });
 
-const tablePaddingBottom = computed(() => (tableTotalPage.value > 1 ? "12px" : undefined));
+const tablePaddingBottom = computed(() => (tablePaginationPageCount.value > 1 ? "12px" : undefined));
 
-const searching = ref(false);
-
-async function Search() {
-    searching.value = true;
+async function onSearch() {
     try {
-        QuerySucceed(await getApi(key.value));
+        await search_debounce(0);
+        setTableScrollTop(0);
     } catch (error) {
         console.error("(Search)", `url:${error.config?.url}`, error);
-        QueryError();
     }
-}
-
-/**
- * @param {import("@/scripts/http").Resp} resp
- */
-function QuerySucceed(resp) {
-    console.log("QuerySucceed:", resp);
-    searching.value = false;
-    tablePaginationProps.current = 1;
-    if (resp.code === 0) {
-        passwordData.value = resp.data;
-        setTableScrollTop(0);
-    }
-}
-
-function QueryError() {
-    Message.error("查询出现错误");
-    searching.value = false;
 }
 
 const { tableMenu, tableMenuIcons, tableMenuItemStyle } = useTableMenu();
@@ -170,7 +173,7 @@ const { tableMenu, tableMenuIcons, tableMenuItemStyle } = useTableMenu();
  * @param {number} rowIndex
  * @param {MouseEvent} event
  */
-function table_cell_contextmenu(column, record, rowIndex, event) {
+function onTableCellContextmenu(column, record, rowIndex, event) {
     const recordIndex = tablePaginationProps.pageSize * (tablePaginationProps.current - 1) + rowIndex;
 
     tableMenu.menus = [
@@ -221,7 +224,7 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
                         switch (resp.code) {
                             case 0: {
                                 tableData.value.splice(recordIndex, 1);
-                                if (tablePaginationProps.current > tableTotalPage.value) {
+                                if (tablePaginationProps.current > tablePaginationPageCount.value) {
                                     tablePaginationProps.current--;
                                 }
                                 break;
@@ -253,7 +256,7 @@ function table_cell_contextmenu(column, record, rowIndex, event) {
         {
             label: "查看",
             onClick: () => {
-                table_cell_dblclick(record);
+                onTableCellDblclick(record);
             },
             style: tableMenuItemStyle,
             icon: tableMenuIcons.eye,
@@ -281,14 +284,15 @@ function removeTableMenuListener() {
 
 const addModal = reactive({
     visible: false,
-    cleaning: false,
 });
 
-async function add_submit(form_data) {
-    const name = form_data.name;
-    const account = form_data.account;
-    const password = form_data.password;
-    const remark = form_data.remark;
+/**
+ * 提交添加
+ *
+ * @param {import("./components/AddModal.vue").FormType}
+ * @param {() => void} clearData
+ */
+async function onAddSubmit({ name, account, password, remark }, clearData) {
     try {
         const resp = await addApi(name, account, password, remark);
         console.log("addPasswords:", resp);
@@ -301,13 +305,13 @@ async function add_submit(form_data) {
 
                 searching.value = true;
                 addModal.visible = false;
-                addModal.clean = true;
+                clearData();
                 Message.success("添加成功");
                 try {
-                    QuerySucceed(await getApi(key.value));
+                    await search_debounce(0);
+                    setTableScrollTop(0);
                 } catch (error) {
                     console.error("(add_submit)", `url:${error.config?.url}`, error);
-                    QueryError();
                 }
                 break;
             }
@@ -334,9 +338,9 @@ const updateModal = reactive({
 /**
  * 提交修改
  *
- * @param {PasswordDataType} form_data
+ * @param {PasswordDataType}
  */
-function update_submit(form_data) {
+function onUpdateSubmit({ id, name, account, password, remark }) {
     Modal.confirm({
         title: "提示",
         content: "确认修改？",
@@ -344,11 +348,6 @@ function update_submit(form_data) {
         okText: "确定",
         cancelText: "取消",
         onOk: async () => {
-            const id = form_data.id;
-            const name = form_data.name;
-            const account = form_data.account;
-            const password = form_data.password;
-            const remark = form_data.remark;
             const resp = await updateApi(id, name, account, password, remark);
             console.log("updatePasswords:", resp);
             switch (resp.code) {
@@ -357,14 +356,9 @@ function update_submit(form_data) {
                     updateModal.visible = false;
                     Message.success("修改成功");
                     try {
-                        const getResp = await getApi(key.value);
-                        searching.value = false;
-                        if (getResp.code === 0) {
-                            passwordData.value = getResp.data;
-                        }
+                        await search_debounce();
                     } catch (error) {
                         console.error("(okUpdate)", `url:${error.config?.url}`, error);
-                        QueryError();
                     }
                     break;
                 }
@@ -387,7 +381,7 @@ const displayModal = reactive({
 /**
  * @param {PasswordDataType} record
  */
-function table_cell_dblclick(record) {
+function onTableCellDblclick(record) {
     displayModal.data = record;
     displayModal.visible = true;
 }
@@ -403,7 +397,9 @@ function table_cell_dblclick(record) {
                 <template #extra>
                     <ASpace>
                         <span>数据条数:</span>
-                        <ASelect v-model="tablePaginationProps.pageSize">
+                        <ASelect
+                            :model-value="tablePaginationProps.pageSize"
+                            @update:model-value="onTablePaginationPageSizeChange">
                             <AOption
                                 v-for="item in tablePaginationProps.pageSizeOptions"
                                 :value="item">
@@ -437,8 +433,8 @@ function table_cell_dblclick(record) {
                                         allow-clear
                                         :button-props="{ type: 'secondary' }"
                                         search-button
-                                        @keydown.enter="Search"
-                                        @search="Search"
+                                        @keydown.enter="onSearch"
+                                        @search="onSearch"
                                         :loading="searching">
                                         <template #prefix>
                                             <i class="fa-duotone fa-terminal fa-fw"></i>
@@ -480,8 +476,8 @@ function table_cell_dblclick(record) {
                                 <template #td="scope">
                                     <QueryTd
                                         :value="scope"
-                                        @contextmenu="table_cell_contextmenu"
-                                        @dblclick="table_cell_dblclick" />
+                                        @contextmenu="onTableCellContextmenu"
+                                        @dblclick="onTableCellDblclick" />
                                 </template>
                             </ATable>
                         </ACol>
@@ -500,13 +496,12 @@ function table_cell_dblclick(record) {
     <!-- 添加信息模态框 -->
     <AddModal
         v-model:visible="addModal.visible"
-        v-model:cleaning="addModal.cleaning"
-        @submit="add_submit" />
+        @submit="onAddSubmit" />
     <!-- 更新信息模态框 -->
     <UpdateModal
         v-model:visible="updateModal.visible"
         :data="updateModal.data"
-        @submit="update_submit" />
+        @submit="onUpdateSubmit" />
     <!-- 展示信息模态框 -->
     <DisplayModal
         v-model:visible="displayModal.visible"

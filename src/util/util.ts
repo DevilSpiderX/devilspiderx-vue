@@ -8,16 +8,32 @@ function sleep(duration: number): Promise<number> {
     });
 }
 
-function debounce<T extends (...args: any) => any>(callback: T, ms?: number) {
+function debounce<T, U extends (...args: any) => T>(callback: U, ms?: number) {
     let timer: NodeJS.Timeout | undefined;
-    return function (this: ThisType<T>, ...args: Parameters<T>) {
+
+    function _debounce(this: ThisType<U>, ...args: Parameters<U>): Promise<T> {
+        return new Promise((resolve, reject) => {
+            if (timer !== undefined) {
+                clearTimeout(timer);
+            }
+            timer = setTimeout(() => {
+                try {
+                    resolve(callback.apply(this, args));
+                } catch (error) {
+                    reject(error);
+                }
+            }, ms);
+        });
+    }
+
+    _debounce.cancel = () => {
         if (timer !== undefined) {
             clearTimeout(timer);
         }
-        timer = setTimeout(() => {
-            callback.apply(this, args);
-        }, ms);
-    }
+        timer = undefined;
+    };
+
+    return _debounce;
 }
 
 function getOnlyID(prefix: string, suffixLength?: number) {

@@ -5,25 +5,36 @@ export async function get(key: string): Promise<Resp> {
     return resp.data;
 }
 
+export async function get_paging(key: string, length: number, page: number): Promise<Resp> {
+    const resp = await httpInstance.post("/api/query/get_paging", { key, length, page });
+    return resp.data;
+}
+
 export async function add(name: string, account: string, password: string, remark: string): Promise<Resp> {
     let postBody = {
         name,
         account,
         password,
         remark,
-    }
+    };
     const resp = await httpInstance.post("/api/query/add", postBody);
     return resp.data;
 }
 
-export async function update(id: number, name: string, account: string, password: string, remark: string): Promise<Resp> {
+export async function update(
+    id: number,
+    name: string,
+    account: string,
+    password: string,
+    remark: string,
+): Promise<Resp> {
     let postBody = {
         id,
         name,
         account,
         password,
         remark,
-    }
+    };
     const resp = await httpInstance.post("/api/query/update", postBody);
     return resp.data;
 }
