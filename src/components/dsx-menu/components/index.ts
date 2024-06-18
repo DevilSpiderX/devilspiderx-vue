@@ -1,4 +1,4 @@
-import type { VNodeChild } from "vue";
+import type { VNode } from "vue";
 import DSXMenuIcon from "./DSXMenuIcon";
 import DSXMenuItem from "./DSXMenuItem.vue";
 
@@ -12,5 +12,5 @@ export interface DSXMenuItemProps {
 }
 
 export interface DSXMenuIconProps {
-    icon: VNodeChild;
+    icon: VNode | string;
 }

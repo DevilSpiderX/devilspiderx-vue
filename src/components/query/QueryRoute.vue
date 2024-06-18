@@ -1,21 +1,26 @@
-<script setup>
+<script setup lang="ts">
 import SearchNoResultSvg from "@/assets/搜索无结果.svg";
 import { DSXMenu } from "@/components/dsx-menu";
 import { add as addApi, deleteApi, update as updateApi } from "@/scripts/http/query-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
-import { Message, Modal } from "@arco-design/web-vue";
-import { computed, h, nextTick, reactive, ref } from "vue";
+import { debounce } from "@/util/util";
+import { Table as ATable, Message, Modal, TableColumnData, TableSortable } from "@arco-design/web-vue";
+import { AxiosError } from "axios";
+import { computed, h, reactive, ref, toRaw } from "vue";
 import { AddModal, DisplayModal, QueryTd, UpdateModal } from "./components";
-import { usePasswordSearch } from "./hooks/password-search";
+import { FormType } from "./components/AddModal.vue";
+import { PasswordDataType, usePasswordSearch } from "./hooks/password-search";
 import { useTableBodyScrollWrap } from "./hooks/table-body-scroll-wrap";
 import { useTableMenu } from "./hooks/table-menu";
-import { debounce } from "@/util/util";
 
 const appConfigs = useAppConfigs();
 
-const sortable = {
+const sortable: TableSortable = {
     sortDirections: ["ascend", "descend"],
-    sorter: (a, b, { dataIndex, direction }) => {
+    sorter: (_a, _b, { dataIndex, direction }) => {
+        const a = _a as PasswordDataType;
+        const b = _b as PasswordDataType;
+
         if (a.id < 0 && b.id < 0) {
             return 0;
         } else if (a.id < 0) {
@@ -35,29 +40,15 @@ const sortable = {
     },
 };
 
-const tableColumns = reactive([
+const tableColumns = reactive<TableColumnData[]>([
     { title: "名称", dataIndex: "name", ellipsis: true, tooltip: { position: "tl" }, sortable },
     { title: "账号", dataIndex: "account", ellipsis: true, tooltip: true, sortable },
     { title: "密码", dataIndex: "password", ellipsis: true, tooltip: true, sortable },
     { title: "备注", dataIndex: "remark", ellipsis: true, tooltip: { position: "tr" }, sortable },
 ]);
 
-/**
- * @template T
- * @typedef {import("vue").Ref<T>} Ref
- */
-
-/**
- * @typedef {import("@arco-design/web-vue").Table} ATable
- */
-
-/** @type {Ref<InstanceType<ATable> | null>} */
-const pwdTableRef = ref(null);
+const pwdTableRef = ref<InstanceType<typeof ATable> | null>(null);
 const { tableBodyScrollWrap, setTableScrollTop } = useTableBodyScrollWrap(pwdTableRef);
-
-/**
- * @typedef {import("./hooks/password-search").PasswordDataType} PasswordDataType
- */
 
 const {
     key,
@@ -81,7 +72,6 @@ const tableClientDataMinCount = computed(() => {
 
 const tableData = computed({
     get: () => {
-        /** @type {PasswordDataType[]} */
         const data = passwordData.value.map(v => v);
         const len = data.length;
         if (len === 0) {
@@ -112,11 +102,11 @@ const tablePaginationProps = reactive({
     total: tablePaginationTotal,
     pageSize: tablePaginationPageSize,
     current: tablePaginationCurrent,
-    "onUpdate:current": newCurrent => (tablePaginationCurrent.value = newCurrent),
+    "onUpdate:current": (newCurrent: number) => (tablePaginationCurrent.value = newCurrent),
     hideOnSinglePage: true,
     simple: computed(() => appConfigs.client.width < 450),
     pageSizeOptions: [10, 20, 30, 40, 50, 200, 500, 1000],
-    onChange: async current => {
+    onChange: async (current: number) => {
         if (import.meta.env.DEV) {
             console.log(`table page change:${current}`);
         }
@@ -125,11 +115,17 @@ const tablePaginationProps = reactive({
     },
 });
 
-function onTablePaginationPageSizeChange(newPageSize) {
+type TablePageSizeSelectType =
+    | string
+    | number
+    | boolean
+    | Record<string, any>
+    | (string | number | boolean | Record<string, any>)[];
+function onTablePaginationPageSizeChange(newPageSize: TablePageSizeSelectType) {
     if (import.meta.env.DEV) {
         console.log(`table page size change:${newPageSize}`);
     }
-    tablePaginationProps.pageSize = newPageSize;
+    tablePaginationProps.pageSize = newPageSize as number;
     search_debounce();
 }
 
@@ -168,19 +164,23 @@ async function onSearch() {
         await search_debounce(0);
         setTableScrollTop(0);
     } catch (error) {
-        console.error("(Search)", `url:${error.config?.url}`, error);
+        if (error instanceof AxiosError) {
+            console.error("(Search)", `url:${error.config?.url}`, error);
+        } else {
+            console.error("(Search)", error);
+        }
     }
 }
 
 const { tableMenu, tableMenuIcons, tableMenuItemStyle } = useTableMenu();
 
-/**
- * @param {import("@arco-design/web-vue").TableColumnData} column
- * @param {PasswordDataType} record
- * @param {number} rowIndex
- * @param {MouseEvent} event
- */
-function onTableCellContextmenu(column, record, rowIndex, event) {
+function onTableCellContextmenu(
+    _column: TableColumnData,
+    record: PasswordDataType,
+    rowIndex: number,
+    event: MouseEvent,
+) {
+    const column = _column as TableColumnData & { dataIndex: string };
     const recordIndex = tablePaginationProps.pageSize * (tablePaginationProps.current - 1) + rowIndex;
 
     tableMenu.menus = [
@@ -252,9 +252,7 @@ function onTableCellContextmenu(column, record, rowIndex, event) {
             label: "编辑",
             onClick: async () => {
                 updateModal.visible = true;
-                updateModal.data = {};
-                await nextTick();
-                updateModal.data = record;
+                updateModal.data = structuredClone(toRaw(record));
             },
             style: tableMenuItemStyle,
             icon: tableMenuIcons.pen_to_square,
@@ -295,11 +293,8 @@ const addModal = reactive({
 
 /**
  * 提交添加
- *
- * @param {import("./components/AddModal.vue").FormType}
- * @param {() => void} clearData
  */
-async function onAddSubmit({ name, account, password, remark }, clearData) {
+async function onAddSubmit({ name, account, password, remark }: FormType, clearData: () => void) {
     try {
         const resp = await addApi(name, account, password, remark);
         console.log("addPasswords:", resp);
@@ -318,7 +313,11 @@ async function onAddSubmit({ name, account, password, remark }, clearData) {
                     await search_debounce(0);
                     setTableScrollTop(0);
                 } catch (error) {
-                    console.error("(add_submit)", `url:${error.config?.url}`, error);
+                    if (error instanceof AxiosError) {
+                        console.error("(add_submit)", `url:${error.config?.url}`, error);
+                    } else {
+                        console.error("(add_submit)", error);
+                    }
                 }
                 break;
             }
@@ -332,22 +331,30 @@ async function onAddSubmit({ name, account, password, remark }, clearData) {
             }
         }
     } catch (error) {
-        console.error("(add_submit)", `url:${error.config?.url}`, error);
+        if (error instanceof AxiosError) {
+            console.error("(add_submit)", `url:${error.config?.url}`, error);
+        } else {
+            console.error("(add_submit)", error);
+        }
         Message.error("服务器错误");
     }
 }
 
 const updateModal = reactive({
     visible: false,
-    data: {},
+    data: {
+        id: -1,
+        name: "",
+        account: "",
+        password: "",
+        remark: "",
+    },
 });
 
 /**
  * 提交修改
- *
- * @param {PasswordDataType}
  */
-function onUpdateSubmit({ id, name, account, password, remark }) {
+function onUpdateSubmit({ id, name, account, password, remark }: PasswordDataType) {
     Modal.confirm({
         title: "提示",
         content: "确认修改？",
@@ -365,7 +372,11 @@ function onUpdateSubmit({ id, name, account, password, remark }) {
                     try {
                         await search_debounce();
                     } catch (error) {
-                        console.error("(okUpdate)", `url:${error.config?.url}`, error);
+                        if (error instanceof AxiosError) {
+                            console.error("(okUpdate)", `url:${error.config?.url}`, error);
+                        } else {
+                            console.error("(okUpdate)", error);
+                        }
                     }
                     break;
                 }
@@ -382,13 +393,10 @@ function onUpdateSubmit({ id, name, account, password, remark }) {
 
 const displayModal = reactive({
     visible: false,
-    data: {},
+    data: { name: "", account: "", password: "", remark: "" },
 });
 
-/**
- * @param {PasswordDataType} record
- */
-function onTableCellDblclick(record) {
+function onTableCellDblclick(record: PasswordDataType) {
     displayModal.data = record;
     displayModal.visible = true;
 }
@@ -507,7 +515,7 @@ function onTableCellDblclick(record) {
     <!-- 更新信息模态框 -->
     <UpdateModal
         v-model:visible="updateModal.visible"
-        :data="updateModal.data"
+        v-model:data="updateModal.data"
         @submit="onUpdateSubmit" />
     <!-- 展示信息模态框 -->
     <DisplayModal

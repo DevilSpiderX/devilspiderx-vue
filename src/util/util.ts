@@ -8,23 +8,23 @@ function sleep(duration: number): Promise<number> {
     });
 }
 
-function debounce<T, U extends (...args: any) => T>(callback: U, ms?: number) {
+function debounce<T extends (...args: any) => any>(callback: T, ms?: number) {
     let timer: NodeJS.Timeout | undefined;
 
-    function _debounce(this: ThisType<U>, ...args: Parameters<U>): Promise<T> {
-        return new Promise((resolve, reject) => {
+    const _debounce = (...args: Parameters<T>) => {
+        return new Promise<Awaited<ReturnType<T>>>((resolve, reject) => {
             if (timer !== undefined) {
                 clearTimeout(timer);
             }
             timer = setTimeout(() => {
                 try {
-                    resolve(callback.apply(this, args));
+                    resolve(callback.apply(_debounce, args));
                 } catch (error) {
                     reject(error);
                 }
             }, ms);
         });
-    }
+    };
 
     _debounce.cancel = () => {
         if (timer !== undefined) {
