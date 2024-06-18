@@ -112,18 +112,16 @@ const tablePaginationProps = reactive({
     total: tablePaginationTotal,
     pageSize: tablePaginationPageSize,
     current: tablePaginationCurrent,
-    "onUpdate:current": newCurrent => {
-        tablePaginationProps.current = newCurrent;
-        setTableScrollTop(0);
-    },
+    "onUpdate:current": newCurrent => (tablePaginationCurrent.value = newCurrent),
     hideOnSinglePage: true,
     simple: computed(() => appConfigs.client.width < 450),
     pageSizeOptions: [10, 20, 30, 40, 50, 200, 500, 1000],
-    onChange: current => {
+    onChange: async current => {
         if (import.meta.env.DEV) {
             console.log(`table page change:${current}`);
         }
-        search_debounce();
+        await search_debounce();
+        setTableScrollTop(0);
     },
 });
 
