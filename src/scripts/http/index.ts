@@ -1,12 +1,8 @@
 import httpInstance from "./http-instance";
 
 export { httpInstance };
-export interface Resp {
-    code: number;
-    msg: string;
-    data: any;
-    dataCount?: number;
-}
+
+export type Resp = RespType<any>;
 
 export interface RespType<T> {
     code: number;

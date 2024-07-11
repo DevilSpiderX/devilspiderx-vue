@@ -92,7 +92,6 @@ const tableData = computed({
                 disabled: true,
             });
         }
-        data.splice = (start, deleteCount) => passwordData.value.splice(start, deleteCount);
         return data;
     },
     set: data => (passwordData.value = data),
@@ -181,7 +180,6 @@ function onTableCellContextmenu(
     event: MouseEvent,
 ) {
     const column = _column as TableColumnData & { dataIndex: string };
-    const recordIndex = tablePaginationProps.pageSize * (tablePaginationProps.current - 1) + rowIndex;
 
     tableMenu.menus = [
         //判断是内容是网址的时候才会出现
@@ -230,10 +228,11 @@ function onTableCellContextmenu(
                         const resp = await deleteApi(record.id);
                         switch (resp.code) {
                             case 0: {
-                                tableData.value.splice(recordIndex, 1);
+                                tablePaginationTotal.value--;
                                 if (tablePaginationProps.current > tablePaginationPageCount.value) {
                                     tablePaginationProps.current--;
                                 }
+                                search_debounce();
                                 break;
                             }
                             case 1: {
