@@ -14,11 +14,6 @@ body {
     color: var(--color-text-1);
 }
 
-@font-face {
-    font-family: "MiSans Normal";
-    src: url("./assets/fonts/MiSans/MiSans-Normal.ttf");
-}
-
 body.no-scrollbar::-webkit-scrollbar {
     display: none;
 }

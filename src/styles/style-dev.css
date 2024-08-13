@@ -1,0 +1,6 @@
+@import url("@/assets/fontawesome/css/all.min.css");
+
+@font-face {
+    font-family: "MiSans Normal";
+    src: url("@/assets/fonts/MiSans/MiSans-Normal.ttf");
+}
