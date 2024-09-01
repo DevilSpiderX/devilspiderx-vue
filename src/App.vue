@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from "vue";
-import { status as statusApi } from "./scripts/http/user-api";
+import { status as statusApi } from "./api/user-api";
 import { useAppConfigs } from "./store/AppConfigsStore";
 import { useUserStore } from "./store/UserStore";
 
@@ -12,7 +12,7 @@ async function checkUserStatus() {
     try {
         const resp = await statusApi();
         console.log("user_status:", resp);
-        Object.assign(userStore, resp.data);
+        Object.assign(userStore, resp);
     } catch (ignored) {
         userStore.admin = false;
         userStore.login = false;

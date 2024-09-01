@@ -7,14 +7,14 @@ import { IconMoonFill, IconSunFill, IconUp } from "@arco-design/web-vue/es/icon"
 import "@arco-design/web-vue/es/tooltip/style/css";
 import { computed, onMounted, ref, toRef } from "vue";
 import { useRouter } from "vue-router";
-import { downloadHistoryApi, uploadHistoryApi } from "./scripts/fjrc-api";
+import { downloadHistoryApi, uploadHistoryApi } from "./api/fjrc-api";
 import { useFjrcStore } from "./stores/FjrcStore";
 
 const props = defineProps({
     onlineCount: {
         type: Number,
-        default: 0
-    }
+        default: 0,
+    },
 });
 
 const emits = defineEmits(["onlineCountRefresh"]);
@@ -36,77 +36,76 @@ function pushToTopic(bank = "A") {
 const buttonList = ref([
     {
         label: "财务会计部",
-        onClick: () => pushToTopic('A')
+        onClick: () => pushToTopic("A"),
     },
     {
         label: "运营管理部",
-        onClick: () => pushToTopic('B')
+        onClick: () => pushToTopic("B"),
     },
     {
         label: "办公室",
-        onClick: () => pushToTopic('C')
+        onClick: () => pushToTopic("C"),
     },
     {
         label: "法律合规类",
-        onClick: () => pushToTopic('D')
+        onClick: () => pushToTopic("D"),
     },
     {
         label: "风险管理类",
-        onClick: () => pushToTopic('E')
+        onClick: () => pushToTopic("E"),
     },
     {
         label: "金融市场类",
-        onClick: () => pushToTopic('F')
+        onClick: () => pushToTopic("F"),
     },
     {
         label: "普惠金融部",
-        onClick: () => pushToTopic('G')
+        onClick: () => pushToTopic("G"),
     },
     {
         label: "审计部",
-        onClick: () => pushToTopic('H')
+        onClick: () => pushToTopic("H"),
     },
     {
         label: "财务会计类(客户经理)",
-        onClick: () => pushToTopic('I')
+        onClick: () => pushToTopic("I"),
     },
     {
         label: "法律合规类(客户经理)",
-        onClick: () => pushToTopic('J')
+        onClick: () => pushToTopic("J"),
     },
     {
         label: "风险管理类(客户经理)",
-        onClick: () => pushToTopic('K')
+        onClick: () => pushToTopic("K"),
     },
     {
         label: "纪检类(客户经理)",
-        onClick: () => pushToTopic('L')
+        onClick: () => pushToTopic("L"),
     },
     {
         label: "金融市场类(客户经理)",
-        onClick: () => pushToTopic('M')
+        onClick: () => pushToTopic("M"),
     },
     {
         label: "普惠金融类(客户经理)",
-        onClick: () => pushToTopic('N')
+        onClick: () => pushToTopic("N"),
     },
     {
         label: "审计类(客户经理)",
-        onClick: () => pushToTopic('O')
+        onClick: () => pushToTopic("O"),
     },
     {
         label: "运营管理类(客户经理)",
-        onClick: () => pushToTopic('P')
+        onClick: () => pushToTopic("P"),
     },
-
 ]);
 
 const historyModal = ref({
     form: { key: toRef(fjrcStore, "historyKey") },
     visible: false,
     buttons: {
-        loading: false
-    }
+        loading: false,
+    },
 });
 
 const modalButtonEnabled = computed(() => historyModal.value.form.key.length >= 8);
@@ -118,24 +117,20 @@ const modalInputStatus = computed(() => {
 async function onUploadButtonClick() {
     historyModal.value.buttons.loading = true;
     const resp = await uploadHistoryApi(historyModal.value.form.key, JSON.stringify(fjrcStore.history));
-    if (resp.code === 0) {
+    if (resp) {
         Message.success("上传成功");
     } else {
-        Message.error(`上传失败，错误代码${resp.code}`);
+        Message.error("上传失败");
     }
-    setTimeout(() => historyModal.value.buttons.loading = false, 3000);
+    setTimeout(() => (historyModal.value.buttons.loading = false), 3000);
 }
 
 async function onDownloadButtonClick() {
     historyModal.value.buttons.loading = true;
     const resp = await downloadHistoryApi(historyModal.value.form.key);
-    if (resp.code === 0) {
-        Message.success("下载成功");
-        fjrcStore.history = JSON.parse(resp.data.value);
-    } else {
-        Message.error(`下载失败，错误代码${resp.code}`);
-    }
-    setTimeout(() => historyModal.value.buttons.loading = false, 3000);
+    Message.success("下载成功");
+    fjrcStore.history = JSON.parse(resp.value);
+    setTimeout(() => (historyModal.value.buttons.loading = false), 3000);
 }
 
 const refreshButtonSpining = ref(false);
@@ -160,11 +155,13 @@ function onFillScrollbarScroll({ target }) {
         sessionStorage.setItem("FjrcIndexScrollTop", target.scrollTop);
     }
 }
-
 </script>
 
 <template>
-    <AScrollbar :class="$style.fillScrollbar" :outer-class="$style.fillScrollbarOut" ref="fillScrollbarRef"
+    <AScrollbar
+        :class="$style.fillScrollbar"
+        :outer-class="$style.fillScrollbarOut"
+        ref="fillScrollbarRef"
         @scroll="onFillScrollbarScroll">
         <ALayout>
             <ALayoutHeader>
@@ -174,23 +171,36 @@ function onFillScrollbarScroll({ target }) {
                     </template>
                     <template #extra>
                         <ASpace>
-                            <APopover position="br" :popup-container="`.${$style.fillScrollbar}`">
+                            <APopover
+                                position="br"
+                                :popup-container="`.${$style.fillScrollbar}`">
                                 <div class="dot-outer">
-                                    <span class="dot" :class="props.onlineCount < 1 ? 'dot-red' : 'dot-green'" />
+                                    <span
+                                        class="dot"
+                                        :class="props.onlineCount < 1 ? 'dot-red' : 'dot-green'" />
                                 </div>
                                 <template #content>
                                     当前在线人数：<ATag color="arcoblue">{{ props.onlineCount }}</ATag>
-                                    <button class="refresh-btn" @click="onRefreshButtonClick">
-                                        <i class="fa-solid fa-arrows-rotate" :class="{ 'fa-spin': refreshButtonSpining }" />
+                                    <button
+                                        class="refresh-btn"
+                                        @click="onRefreshButtonClick">
+                                        <i
+                                            class="fa-solid fa-arrows-rotate"
+                                            :class="{ 'fa-spin': refreshButtonSpining }" />
                                     </button>
                                 </template>
                             </APopover>
                             <IconHover>
-                                <span class="history-btn" tabindex="0" @click="historyModal.visible = true">
+                                <span
+                                    class="history-btn"
+                                    tabindex="0"
+                                    @click="historyModal.visible = true">
                                     <i class="fa-duotone fa-cloud-arrow-up" />
                                 </span>
                             </IconHover>
-                            <ASwitch v-model="appConfigs.darkTheme" :disabled="appConfigs.themeFollowSystem"
+                            <ASwitch
+                                v-model="appConfigs.darkTheme"
+                                :disabled="appConfigs.themeFollowSystem"
                                 checked-color="#2f2f2f">
                                 <template #unchecked-icon>
                                     <span style="color: var(--color-text-3)">
@@ -207,14 +217,31 @@ function onFillScrollbarScroll({ target }) {
                     </template>
                 </APageHeader>
             </ALayoutHeader>
-            <ALayoutContent style="padding:20px 15px;">
+            <ALayoutContent style="padding: 20px 15px">
                 <ARow justify="center">
-                    <ACol :xs="24" :sm="21" :md="16" :lg="14" :xl="12" :xxl="10">
-                        <ASpace direction="vertical" fill size="large">
+                    <ACol
+                        :xs="24"
+                        :sm="21"
+                        :md="16"
+                        :lg="14"
+                        :xl="12"
+                        :xxl="10">
+                        <ASpace
+                            direction="vertical"
+                            fill
+                            size="large">
                             <template v-for="(btn, index) in buttonList">
-                                <AButton v-if="!btn.hidden" class="my-button" :class="btn.class" long :key="index"
-                                    @contextmenu.prevent.stop @click="btn.onClick">
-                                    <template #icon v-if="btn.icon">
+                                <AButton
+                                    v-if="!btn.hidden"
+                                    class="my-button"
+                                    :class="btn.class"
+                                    long
+                                    :key="index"
+                                    @contextmenu.prevent.stop
+                                    @click="btn.onClick">
+                                    <template
+                                        #icon
+                                        v-if="btn.icon">
                                         <Icon :icon="btn.icon" />
                                     </template>
                                     {{ btn.label }}
@@ -226,18 +253,34 @@ function onFillScrollbarScroll({ target }) {
             </ALayoutContent>
         </ALayout>
     </AScrollbar>
-    <AModal :modal-class="$style.historyModal" v-model:visible="historyModal.visible" :footer="false" title="同步历史记录"
+    <AModal
+        :modal-class="$style.historyModal"
+        v-model:visible="historyModal.visible"
+        :footer="false"
+        title="同步历史记录"
         width="90%">
-        <AForm :model="historyModal.form" auto-label-width>
-            <AFormItem field="key" label="同步码" tooltip="如果同步码与别人相同，则会覆盖别人的历史记录">
-                <AInput v-model="historyModal.form.key" placeholder="设定一个不小于8位的码" :error="modalInputStatus" />
+        <AForm
+            :model="historyModal.form"
+            auto-label-width>
+            <AFormItem
+                field="key"
+                label="同步码"
+                tooltip="如果同步码与别人相同，则会覆盖别人的历史记录">
+                <AInput
+                    v-model="historyModal.form.key"
+                    placeholder="设定一个不小于8位的码"
+                    :error="modalInputStatus" />
             </AFormItem>
             <div class="history-modal-btn-wrap">
-                <AButton :disabled="!modalButtonEnabled" @click="onUploadButtonClick"
+                <AButton
+                    :disabled="!modalButtonEnabled"
+                    @click="onUploadButtonClick"
                     :loading="historyModal.buttons.loading">
                     上 传
                 </AButton>
-                <AButton :disabled="!modalButtonEnabled" @click="onDownloadButtonClick"
+                <AButton
+                    :disabled="!modalButtonEnabled"
+                    @click="onDownloadButtonClick"
                     :loading="historyModal.buttons.loading">
                     下 载
                 </AButton>
@@ -245,7 +288,10 @@ function onFillScrollbarScroll({ target }) {
         </AForm>
     </AModal>
     <ABackTop :target-container="`.${$style.fillScrollbar}`">
-        <AButton class="site-backtop-btn" size="large" shape="circle">
+        <AButton
+            class="site-backtop-btn"
+            size="large"
+            shape="circle">
             <IconUp />
         </AButton>
     </ABackTop>
@@ -266,7 +312,7 @@ function onFillScrollbarScroll({ target }) {
     font-family: "MiSans Normal", system-ui;
     line-height: 1.5;
     height: 60px;
-    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 
 .my-button:focus,
@@ -284,12 +330,12 @@ function onFillScrollbarScroll({ target }) {
 }
 
 /*深色模式*/
-body[arco-theme=dark] .my-button {
-    --color-secondary: rgba(var(--gray-9), .08);
-    --border-color: rgba(var(--gray-9), .1);
+body[arco-theme="dark"] .my-button {
+    --color-secondary: rgba(var(--gray-9), 0.08);
+    --border-color: rgba(var(--gray-9), 0.1);
 }
 
-body[arco-theme=dark] .my-button :deep(img) {
+body[arco-theme="dark"] .my-button :deep(img) {
     filter: invert(100%);
 }
 

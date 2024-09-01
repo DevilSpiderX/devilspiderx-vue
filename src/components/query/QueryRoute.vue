@@ -1,17 +1,18 @@
 <script setup lang="ts">
+import { add as addApi, deleteApi, update as updateApi } from "@/api/query-api";
 import SearchNoResultSvg from "@/assets/搜索无结果.svg";
 import { DSXMenu } from "@/components/dsx-menu";
-import { add as addApi, deleteApi, update as updateApi } from "@/scripts/http/query-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { debounce } from "@/util/util";
 import { Table as ATable, Message, Modal, TableColumnData, TableSortable } from "@arco-design/web-vue";
 import { AxiosError } from "axios";
-import { computed, h, reactive, ref, toRaw } from "vue";
+import { computed, Fragment, h, reactive, ref, toRaw, unref } from "vue";
 import { AddModal, DisplayModal, QueryTd, UpdateModal } from "./components";
 import { FormType } from "./components/AddModal.vue";
-import { PasswordDataType, usePasswordSearch } from "./hooks/password-search";
+import { usePasswordSearch } from "./hooks/password-search";
 import { useTableBodyScrollWrap } from "./hooks/table-body-scroll-wrap";
 import { useTableMenu } from "./hooks/table-menu";
+import type { PasswordDataType } from "./types/password-data";
 
 const appConfigs = useAppConfigs();
 
@@ -72,7 +73,13 @@ const tableClientDataMinCount = computed(() => {
 
 const tableData = computed({
     get: () => {
-        const data = passwordData.value.map(v => v);
+        const data: PasswordDataType[] = passwordData.value.map(v => ({
+            id: v.id,
+            name: v.name,
+            account: v.account || "",
+            password: v.password || "",
+            remark: v.remark || "",
+        }));
         const len = data.length;
         if (len === 0) {
             return [];
@@ -220,25 +227,21 @@ function onTableCellContextmenu(
             onClick: () => {
                 Modal.confirm({
                     title: "提示",
-                    content: `确认删除(${record.name})？`,
+                    // content: `确认删除(${record.name})？`,
+                    content: () => h(Fragment, ["确认删除( ", h("strong", record.name), " )？"]),
                     width: 300,
                     okText: "确定",
                     cancelText: "取消",
                     onOk: async () => {
                         const resp = await deleteApi(record.id);
-                        switch (resp.code) {
-                            case 0: {
-                                tablePaginationTotal.value--;
-                                if (tablePaginationProps.current > tablePaginationPageCount.value) {
-                                    tablePaginationProps.current--;
-                                }
-                                search_debounce();
-                                break;
+                        if (resp) {
+                            tablePaginationTotal.value--;
+                            if (tablePaginationProps.current > tablePaginationPageCount.value) {
+                                tablePaginationProps.current--;
                             }
-                            case 1: {
-                                Message.error("删除失败");
-                                break;
-                            }
+                            search_debounce();
+                        } else {
+                            Message.error("删除失败");
                         }
                     },
                 });
@@ -251,7 +254,8 @@ function onTableCellContextmenu(
             label: "编辑",
             onClick: async () => {
                 updateModal.visible = true;
-                updateModal.data = structuredClone(toRaw(record));
+                const _data = toRaw(unref(record));
+                updateModal.data = structuredClone(_data);
             },
             style: tableMenuItemStyle,
             icon: tableMenuIcons.pen_to_square,
@@ -296,38 +300,32 @@ const addModal = reactive({
 async function onAddSubmit({ name, account, password, remark }: FormType, clearData: () => void) {
     try {
         const resp = await addApi(name, account, password, remark);
-        console.log("addPasswords:", resp);
-        switch (resp.code) {
-            case 0: {
-                const keys = key.value.split(/[.\s]/);
-                if (keys.indexOf(name) === -1) {
-                    key.value = key.value.length === 0 ? name : `${key.value} ${name}`;
-                }
+        if (resp) {
+            const keys = key.value.split(/[.\s]/);
+            if (keys.indexOf(name) === -1) {
+                key.value = key.value.length === 0 ? name : `${key.value} ${name}`;
+            }
 
-                searching.value = true;
-                addModal.visible = false;
-                clearData();
-                Message.success("添加成功");
-                try {
-                    await search_debounce(0);
-                    setTableScrollTop(0);
-                } catch (error) {
-                    if (error instanceof AxiosError) {
-                        console.error("(add_submit)", `url:${error.config?.url}`, error);
-                    } else {
-                        console.error("(add_submit)", error);
-                    }
+            searching.value = true;
+            addModal.visible = false;
+            clearData();
+            Message.success("添加成功");
+            try {
+                await search_debounce(0);
+                setTableScrollTop(0);
+            } catch (error) {
+                if (error instanceof AxiosError) {
+                    console.error("(add_submit)", `url:${error.config?.url}`, error);
+                } else {
+                    console.error("(add_submit)", error);
                 }
-                break;
             }
-            case 1: {
-                Message.error({
-                    content: () =>
-                        h("span", null, ["添加失败", h("br"), "可能该名称已存在", h("br"), "请尝试换一个名称再添加"]),
-                });
-                addModal.visible = false;
-                break;
-            }
+        } else {
+            Message.error({
+                content: () =>
+                    h("span", null, ["添加失败", h("br"), "可能该名称已存在", h("br"), "请尝试换一个名称再添加"]),
+            });
+            addModal.visible = false;
         }
     } catch (error) {
         if (error instanceof AxiosError) {
@@ -362,29 +360,21 @@ function onUpdateSubmit({ id, name, account, password, remark }: PasswordDataTyp
         cancelText: "取消",
         onOk: async () => {
             const resp = await updateApi(id, name, account, password, remark);
-            console.log("updatePasswords:", resp);
-            switch (resp.code) {
-                case 0: {
-                    searching.value = true;
-                    updateModal.visible = false;
-                    Message.success("修改成功");
-                    try {
-                        await search_debounce();
-                    } catch (error) {
-                        if (error instanceof AxiosError) {
-                            console.error("(okUpdate)", `url:${error.config?.url}`, error);
-                        } else {
-                            console.error("(okUpdate)", error);
-                        }
+            if (resp) {
+                updateModal.visible = false;
+                Message.success("修改成功");
+                for (const _data of passwordData.value) {
+                    if (id === _data.id) {
+                        _data.name = name;
+                        _data.account = account;
+                        _data.password = password;
+                        _data.remark = remark;
+                        break;
                     }
-                    break;
                 }
-                case 1: {
-                    console.log("updatePasswords:", `修改失败，返回信息：${resp.msg}`);
-                    Message.error("修改失败");
-                    Message.error("可能存在相同名称的数据");
-                    break;
-                }
+            } else {
+                Message.error("修改失败");
+                Message.error("可能存在相同名称的数据");
             }
         },
     });

@@ -1,12 +1,4 @@
-export interface ValuesType {
-    cpu?: CpuValueType;
-    memory?: MemoryValueType;
-    networks?: NetworkValueType[];
-    disks?: DiskValueType[];
-    os?: OSValueType;
-}
-
-export interface CpuValueType {
+export interface CpuVo {
     name: string;
     physicalNum: number;
     logicalNum: number;
@@ -15,25 +7,25 @@ export interface CpuValueType {
     cpuTemperature: number;
 }
 
-export interface MemoryValueType {
+export interface MemoryVo {
     total: number;
     used: number;
     free: number;
 }
 
-export interface NetworkValueType {
+export interface NetworkVo {
     name: string;
-    displayName?: string;
-    macAddr?: string;
+    displayName: string;
+    macAddr: string;
     bytesSent: number;
     bytesRecv: number;
     uploadSpeed: number;
     downloadSpeed: number;
-    IPv4addr?: string[];
-    IPv6addr?: string[];
+    IPv4addr: string[];
+    IPv6addr: string[];
 }
 
-export interface DiskValueType {
+export interface DiskVo {
     label: string;
     mount: string;
     fSType: string;
@@ -43,8 +35,12 @@ export interface DiskValueType {
     used: number;
 }
 
-export interface OSValueType {
-    bitness: number;
+export interface OsVo {
     name: string;
+    bitness: number;
     processCount: number;
+}
+
+export interface TokenVo {
+    token: string;
 }

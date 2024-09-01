@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
 import { useModalWidth } from "@/hooks/modal-width";
+import type { MyPasswordsVo } from "@/types/query";
+import { computed, ref } from "vue";
 
-export type FormType = {
-    name: string;
-    account: string;
-    password: string;
-    remark: string;
-};
+export type FormType = Omit<Required<MyPasswordsVo>, "id">;
 
 const props = defineProps<{
     visible: boolean;

@@ -1,19 +1,18 @@
-import router from "@/router";
 import {
     cpu as cpuApi,
     disks as disksApi,
     memory as memoryApi,
     networks as networksApi,
     os as osApi,
-    token as tokenApi
-} from "@/scripts/http/server-info-api";
-import { status as statusApi } from "@/scripts/http/user-api";
+    token as tokenApi,
+} from "@/api/server-info-api";
+import { status as statusApi } from "@/api/user-api";
+import router from "@/router";
 import { sleep } from "@/util/util";
 import { Message } from "@arco-design/web-vue";
 import type { Ref } from "vue";
 import { h, onUnmounted, ref } from "vue";
-import type { ValuesType } from "../scripts/interface";
-
+import type { ValuesType } from "../types/type";
 
 class ServerInfoReceiver {
     token: string;
@@ -39,7 +38,7 @@ class ServerInfoReceiver {
         Message.success({
             id: "server-info-receiver",
             content: "推送服务接入成功",
-            duration: 1000
+            duration: 1000,
         });
         console.log(`${Date()}\nWebSocket成功接入服务器`);
         this.setCD(cd);
@@ -49,12 +48,12 @@ class ServerInfoReceiver {
         Message.success({
             id: "server-info-receiver",
             content: "推送服务已关闭",
-            duration: 1000
+            duration: 1000,
         });
         console.log(`${Date()}\nWebSocket连接已关闭(code${ev.code}:${ev.reason})`);
         if (ev.code === 1000) {
             statusApi().then(resp => {
-                if (resp.code !== 0 || !resp.data.login) {
+                if (!resp.login) {
                     router.push({ name: "login" });
                 }
             });
@@ -64,12 +63,8 @@ class ServerInfoReceiver {
     onError(event: Event) {
         Message.error({
             id: "server-info-receiver",
-            content: () => h("span", null, [
-                "连接服务发生错误",
-                h("br"),
-                "使用Http请求获取信息"
-            ]),
-            duration: 1000
+            content: () => h("span", null, ["连接服务发生错误", h("br"), "使用Http请求获取信息"]),
+            duration: 1000,
         });
         console.log(event);
         console.log(Date() + "\nWebSocket连接发生错误，使用Http请求获取信息");
@@ -106,29 +101,19 @@ class ServerInfoReceiver {
     async getHardware() {
         while (!this.closed) {
             cpuApi().then(resp => {
-                if (resp.code === 0) {
-                    this.values.value.cpu = resp.data;
-                }
+                this.values.value.cpu = resp;
             });
             memoryApi().then(resp => {
-                if (resp.code === 0) {
-                    this.values.value.memory = resp.data;
-                }
+                this.values.value.memory = resp;
             });
             networksApi().then(resp => {
-                if (resp.code === 0) {
-                    this.values.value.networks = resp.data;
-                }
+                this.values.value.networks = resp;
             });
             disksApi().then(resp => {
-                if (resp.code === 0) {
-                    this.values.value.disks = resp.data;
-                }
+                this.values.value.disks = resp;
             });
             osApi().then(resp => {
-                if (resp.code === 0) {
-                    this.values.value.os = resp.data;
-                }
+                this.values.value.os = resp;
             });
             await sleep(this.cd);
         }
@@ -139,16 +124,12 @@ async function generate(receiver: Ref<ServerInfoReceiver | null>, values: Ref<Va
     try {
         const resp = await tokenApi();
         console.log("token:", resp);
-        if (resp.code === 0) {
-            receiver.value = new ServerInfoReceiver(values, resp.data.token, cd);
-        } else {
-            router.push({ name: "login" });
-        }
+        receiver.value = new ServerInfoReceiver(values, resp.token, cd);
     } catch (error: any) {
         console.error("(beforeCreate)", `url:${error.config?.url}`, error);
         Message.error({
             id: "server-info-receiver",
-            content: "服务器错误"
+            content: "服务器错误",
         });
         router.back();
     }
@@ -160,7 +141,7 @@ export function useServerInfoReceiver(cd: number) {
         memory: undefined,
         networks: [],
         disks: [],
-        os: undefined
+        os: undefined,
     });
 
     const receiver: Ref<ServerInfoReceiver | null> = ref(null);
@@ -179,6 +160,6 @@ export function useServerInfoReceiver(cd: number) {
                 receiver.value.setCD(cd);
             }
         },
-        close
-    }
+        close,
+    };
 }

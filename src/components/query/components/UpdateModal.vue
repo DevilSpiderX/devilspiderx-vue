@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { useModalWidth } from "@/hooks/modal-width";
+import type { MyPasswordsVo } from "@/types/query";
 import { computed, ref } from "vue";
-import type { PasswordDataType } from "../hooks/password-search";
+
+type DataType = Required<MyPasswordsVo>;
 
 const props = defineProps<{
     visible: boolean;
-    data: PasswordDataType;
+    data: DataType;
 }>();
 
 const emit = defineEmits<{
-    submit: [form: PasswordDataType];
-    "update:data": [value: PasswordDataType];
+    submit: [form: DataType];
+    "update:data": [value: DataType];
     "update:visible": [value: boolean];
 }>();
 

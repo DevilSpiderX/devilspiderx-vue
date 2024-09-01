@@ -1,13 +1,13 @@
 <script setup lang="ts">
+import type { DiskVo } from "@/types/server-info";
 import { formatBytes } from "@/util/format-util";
 import { computed } from "vue";
-import { DiskValueType } from "../scripts/interface";
 import { colors } from "../scripts/progressColor";
 import BaseCard from "./BaseCard.vue";
 
 const props = withDefaults(
     defineProps<{
-        value: DiskValueType;
+        value: DiskVo;
         diskIndex: number;
     }>(),
     {
@@ -18,14 +18,14 @@ const props = withDefaults(
             name: "",
             total: 1,
             free: 0,
-            used: 0
-        })
-    }
+            used: 0,
+        }),
+    },
 );
 
-const freeStr = computed(() => formatBytes(props.value.free, 2, ' '));
+const freeStr = computed(() => formatBytes(props.value.free, 2, " "));
 
-const totalStr = computed(() => formatBytes(props.value.total, 2, ' '));
+const totalStr = computed(() => formatBytes(props.value.total, 2, " "));
 
 const usedPercent = computed(() => {
     return props.value.used / props.value.total;
@@ -41,7 +41,6 @@ const progressColor = computed(() => {
         return colors[2];
     }
 });
-
 </script>
 
 <template>
@@ -53,7 +52,11 @@ const progressColor = computed(() => {
         </template>
         <div class="my-card-body">
             <div>{{ value.label }}({{ value.mount }})</div>
-            <AProgress :percent="usedPercent" :show-text="false" :stroke-width="22" size="large"
+            <AProgress
+                :percent="usedPercent"
+                :show-text="false"
+                :stroke-width="22"
+                size="large"
                 :color="progressColor" />
             <div>{{ freeStr }}可用，共 {{ totalStr }}</div>
         </div>

@@ -1,14 +1,14 @@
 <script setup lang="ts">
+import type { MemoryVo } from "@/types/server-info";
 import { formatBytes } from "@/util/format-util";
 import { Progress as AProgress } from "@arco-design/web-vue";
 import { computed } from "vue";
-import { MemoryValueType } from "../scripts/interface";
 import { colors } from "../scripts/progressColor";
 import BaseCard from "./BaseCard.vue";
 
 const props = withDefaults(
     defineProps<{
-        value: MemoryValueType;
+        value: MemoryVo;
         processCount: number;
         loading: boolean;
         enabled: boolean;
@@ -17,27 +17,29 @@ const props = withDefaults(
         value: () => ({
             total: 1,
             used: 0,
-            free: 0
+            free: 0,
         }),
         processCount: 0,
         loading: false,
-        enabled: true
-    }
-)
-
-const showValue = computed(() => props.enabled ? props.value :
-    {
-        total: props.value.total,
-        used: 0,
-        free: props.value.total
-    }
+        enabled: true,
+    },
 );
 
-const usedStr = computed(() => formatBytes(showValue.value.used, 2, ' '));
+const showValue = computed(() =>
+    props.enabled
+        ? props.value
+        : {
+              total: props.value.total,
+              used: 0,
+              free: props.value.total,
+          },
+);
 
-const freeStr = computed(() => formatBytes(showValue.value.free, 2, ' '));
+const usedStr = computed(() => formatBytes(showValue.value.used, 2, " "));
 
-const totalStr = computed(() => formatBytes(showValue.value.total, 2, ' '));
+const freeStr = computed(() => formatBytes(showValue.value.free, 2, " "));
+
+const totalStr = computed(() => formatBytes(showValue.value.total, 2, " "));
 
 const usedPercent = computed(() => {
     return showValue.value.used / showValue.value.total;
@@ -54,8 +56,7 @@ const progressColor = computed(() => {
     }
 });
 
-const showProcessCount = computed(() => props.enabled ? props.processCount : 0);
-
+const showProcessCount = computed(() => (props.enabled ? props.processCount : 0));
 </script>
 
 <template>
@@ -66,10 +67,14 @@ const showProcessCount = computed(() => props.enabled ? props.processCount : 0);
             </div>
         </template>
         <div class="my-card-body">
-            <ASkeleton animation :loading="loading">
+            <ASkeleton
+                animation
+                :loading="loading">
                 <ASkeletonLine :rows="3" />
                 <template #content>
-                    <ADescriptions :column="2" :value-style="{ fontSize: '16px' }">
+                    <ADescriptions
+                        :column="2"
+                        :value-style="{ fontSize: '16px' }">
                         <ADescriptionsItem label="已 用">{{ usedStr }}</ADescriptionsItem>
                         <ADescriptionsItem label="剩 余">{{ freeStr }}</ADescriptionsItem>
                         <ADescriptionsItem label="总 量">{{ totalStr }}</ADescriptionsItem>
@@ -77,10 +82,12 @@ const showProcessCount = computed(() => props.enabled ? props.processCount : 0);
                     </ADescriptions>
                     <ADescriptions>
                         <ADescriptionsItem label="使用率">
-                            <AProgress :percent="usedPercent" :stroke-width="22" size="large" :color="progressColor">
-                                <template #text="{ percent }">
-                                    {{ (percent * 100).toFixed(2) }}%
-                                </template>
+                            <AProgress
+                                :percent="usedPercent"
+                                :stroke-width="22"
+                                size="large"
+                                :color="progressColor">
+                                <template #text="{ percent }"> {{ (percent * 100).toFixed(2) }}% </template>
                             </AProgress>
                         </ADescriptionsItem>
                     </ADescriptions>

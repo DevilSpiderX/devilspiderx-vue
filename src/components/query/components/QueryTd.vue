@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { TableColumnData } from "@arco-design/web-vue";
-import { PasswordDataType } from "../hooks/password-search";
+import { PasswordDataType } from "../types/password-data";
 
 type Props = {
     value: {
@@ -8,12 +8,12 @@ type Props = {
         record: PasswordDataType;
         rowIndex: number;
     };
-}
+};
 
 const props = defineProps<Props>();
 const emit = defineEmits<{
-    contextmenu: [column: TableColumnData, record: PasswordDataType, rowIndex: number, event: MouseEvent],
-    dblclick: [record: PasswordDataType, event: MouseEvent]
+    contextmenu: [column: TableColumnData, record: PasswordDataType, rowIndex: number, event: MouseEvent];
+    dblclick: [record: PasswordDataType, event: MouseEvent];
 }>();
 
 function handle_td_contextmenu(event: MouseEvent) {
@@ -28,11 +28,13 @@ function handle_td_dblclick(event: MouseEvent) {
     if (value.record.disabled) return;
     emit("dblclick", value.record, event);
 }
-
 </script>
 
 <template>
-    <td class="query-td" @contextmenu="handle_td_contextmenu" @dblclick="handle_td_dblclick">
+    <td
+        class="query-td"
+        @contextmenu="handle_td_contextmenu"
+        @dblclick="handle_td_dblclick">
         <slot />
     </td>
 </template>

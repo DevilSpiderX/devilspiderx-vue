@@ -1,18 +1,11 @@
-import { Message, TableData } from "@arco-design/web-vue";
+import { get_paging as getApi } from "@/api/query-api";
+import type { MyPasswordsVo } from "@/types/query";
+import { Message } from "@arco-design/web-vue";
 import { computed, onMounted, ref, watchEffect } from "vue";
-import { get_paging as getApi } from "@/scripts/http/query-api";
-
-export interface PasswordDataType extends TableData {
-    id: number;
-    name: string;
-    account: string;
-    password: string;
-    remark: string;
-}
 
 interface StorageType {
     key: string;
-    passwordData: PasswordDataType[];
+    passwordData: MyPasswordsVo[];
     tablePaginationTotal: number;
     tablePaginationCurrent: number;
     tablePaginationPageSize: number;
@@ -22,7 +15,7 @@ const storageName = "PasswordSearch";
 
 export function usePasswordSearch() {
     const key = ref("");
-    const passwordData = ref<PasswordDataType[]>([]);
+    const passwordData = ref<MyPasswordsVo[]>([]);
     const tablePaginationTotal = ref(0);
     const tablePaginationCurrent = ref(1);
     const tablePaginationPageSize = ref(20);
@@ -90,19 +83,12 @@ export function usePasswordSearch() {
                 console.log("(password-search):", resp);
             }
 
-            if (resp.code === 0) {
-                passwordData.value = resp.data;
-                tablePaginationTotal.value = resp.dataCount ?? resp.data.length;
-                if (setPageFlag) {
-                    tablePaginationCurrent.value = page + 1;
-                }
-                return Promise.resolve();
-            } else {
-                const error = new Error(`code not equals 0,code=${resp.code}`);
-                error.name = `${resp.code}`;
-                clear();
-                return Promise.reject(error);
+            passwordData.value = resp.list;
+            tablePaginationTotal.value = resp.total;
+            if (setPageFlag) {
+                tablePaginationCurrent.value = page + 1;
             }
+            return Promise.resolve();
         } catch (error) {
             Message.error("查询出现错误");
             clear();

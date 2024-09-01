@@ -3,12 +3,12 @@ import {
     restartClient as restartClientApi,
     start as startApi,
     state as stateApi,
-    stop as stopApi
-} from "@/scripts/http/v2ray-api";
+    stop as stopApi,
+} from "@/api/v2ray-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { useUserStore } from "@/store/UserStore";
 import { sleep } from "@/util/util";
-import { Message } from '@arco-design/web-vue';
+import { Message } from "@arco-design/web-vue";
 import { onMounted, ref } from "vue";
 import { MySwitch } from "./components";
 
@@ -21,9 +21,8 @@ onMounted(async () => {
     try {
         const resp = await stateApi();
         console.log("v2rayState:", resp);
-        switchStatus.value = resp.data;
-    } catch (ignored) {
-    }
+        switchStatus.value = resp;
+    } catch (ignored) {}
 });
 
 async function on_switch_clicked() {
@@ -31,36 +30,36 @@ async function on_switch_clicked() {
         if (switchStatus.value) {
             const resp = await stopApi();
             console.log("v2rayStop:", resp);
-            switch (resp.code) {
+            switch (resp) {
                 case 0: {
                     switchStatus.value = false;
                     break;
                 }
                 case 1: {
-                    Message.error(resp.msg);
+                    Message.error("v2ray关闭失败");
                     break;
                 }
                 case 2: {
                     switchStatus.value = false;
-                    Message.error(resp.msg);
+                    Message.error("v2ray没有运行");
                     break;
                 }
             }
         } else {
             const resp = await startApi();
             console.log("v2rayStart:", resp);
-            switch (resp.code) {
+            switch (resp) {
                 case 0: {
                     switchStatus.value = true;
                     break;
                 }
                 case 1: {
-                    Message.error(resp.msg);
+                    Message.error("v2ray启动失败");
                     break;
                 }
                 case 2: {
                     switchStatus.value = true;
-                    Message.error(resp.msg);
+                    Message.error("v2ray正在运行");
                     break;
                 }
             }
@@ -73,7 +72,7 @@ async function on_switch_clicked() {
 
 const settingsDrawer = ref({
     visible: false,
-    loadding: false
+    loadding: false,
 });
 
 async function restartV2rayClient() {
@@ -82,7 +81,6 @@ async function restartV2rayClient() {
     await sleep(1000);
     settingsDrawer.value.loadding = false;
 }
-
 </script>
 
 <template>
@@ -94,7 +92,11 @@ async function restartV2rayClient() {
                 </template>
                 <template #extra>
                     <ASpace>
-                        <AButton v-if="userStore.admin" type="text" shape="circle" style="color:var(--color-text-2)"
+                        <AButton
+                            v-if="userStore.admin"
+                            type="text"
+                            shape="circle"
+                            style="color: var(--color-text-2)"
                             @click="settingsDrawer.visible = true">
                             <i class="fa-solid fa-gear"></i>
                         </AButton>
@@ -107,10 +109,12 @@ async function restartV2rayClient() {
                 <ACol :style="{ marginTop: '5rem', maxWidth: '480px' }">
                     <ACard style="box-shadow: var(--el-box-shadow-light)">
                         <template #title>
-                            <div style="font-weight: 700;font-size: 1.4rem;text-align: center;">V2Ray开关</div>
+                            <div style="font-weight: 700; font-size: 1.4rem; text-align: center">V2Ray开关</div>
                         </template>
                         <div class="card-body">
-                            <MySwitch v-model:modal-status="switchStatus" @click="on_switch_clicked" />
+                            <MySwitch
+                                v-model:modal-status="switchStatus"
+                                @click="on_switch_clicked" />
                         </div>
                     </ACard>
                 </ACol>
@@ -118,10 +122,24 @@ async function restartV2rayClient() {
         </ALayoutContent>
     </ALayout>
 
-    <ADrawer v-model:visible="settingsDrawer.visible" title="设置" :footer="false">
-        <ASpace direction="vertical" fill>
-            <APopconfirm content="确认重启服务？" position="bottom" type="warning" @ok="restartV2rayClient">
-                <AButton type="primary" long status="warning" size="large" :loading="settingsDrawer.loadding">
+    <ADrawer
+        v-model:visible="settingsDrawer.visible"
+        title="设置"
+        :footer="false">
+        <ASpace
+            direction="vertical"
+            fill>
+            <APopconfirm
+                content="确认重启服务？"
+                position="bottom"
+                type="warning"
+                @ok="restartV2rayClient">
+                <AButton
+                    type="primary"
+                    long
+                    status="warning"
+                    size="large"
+                    :loading="settingsDrawer.loadding">
                     <template #icon>
                         <i class="fa-solid fa-plug-circle-bolt fa-fw"></i>
                     </template>

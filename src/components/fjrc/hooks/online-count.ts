@@ -1,5 +1,5 @@
 import { onMounted, onUnmounted, ref } from "vue";
-import { getOnlineCountApi } from "../scripts/fjrc-api";
+import { getOnlineCountApi } from "../api/fjrc-api";
 import { useFjrcStore } from "../stores/FjrcStore";
 
 export function useOnlineCount() {
@@ -9,12 +9,9 @@ export function useOnlineCount() {
     async function refresh() {
         const fingerprint = fjrcStore.fingerprint;
         const resp = await getOnlineCountApi(fingerprint);
-        if (resp.code === 0) {
-            const data = resp.data;
-            fjrcStore.fingerprint = data.fingerprint;
-            onlineCount.value = data.count;
-        }
-        return resp.code === 0;
+        fjrcStore.fingerprint = resp.fingerprint;
+        onlineCount.value = resp.count;
+        return true;
     }
 
     let intervalId: NodeJS.Timeout | undefined;
@@ -29,6 +26,6 @@ export function useOnlineCount() {
 
     return {
         onlineCount,
-        refresh
+        refresh,
     };
 }

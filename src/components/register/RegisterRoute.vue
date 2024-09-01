@@ -1,5 +1,5 @@
 <script setup>
-import { register as registerApi } from "@/scripts/http/user-api";
+import { register as registerApi } from "@/api/user-api";
 import { Message } from "@arco-design/web-vue";
 import { reactive } from "vue";
 import { useRouter } from "vue-router";
@@ -8,7 +8,7 @@ const inputStatus = reactive([false, false, false]);
 const form = reactive({
     uid: "",
     pwd: "",
-    pwd_a: ""
+    pwd_a: "",
 });
 const router = useRouter();
 
@@ -39,7 +39,7 @@ async function form_submit() {
     try {
         const resp = await registerApi(uid, pwd);
         console.log("Register:", resp);
-        switch (resp["code"]) {
+        switch (resp.status) {
             case 0: {
                 router.push({ name: "login" });
                 break;
@@ -68,7 +68,7 @@ async function form_submit() {
 }
 
 const running = reactive({
-    show: false
+    show: false,
 });
 
 function running_start() {
@@ -85,39 +85,69 @@ function running_stop() {
         <ALayoutContent style="padding: 0">
             <ARow justify="center">
                 <ACol class="register-col">
-                    <AForm :model="form" @submit="form_submit">
-                        <h1 style="text-align: center;font-size: 2.5rem">
-                            注&nbsp;&nbsp;册
-                        </h1>
-                        <AFormItem field="uid" hide-label>
-                            <AInput v-model="form.uid" class="my-input" placeholder="账号" allow-clear
-                                :input-attrs="{ style: { 'font-size': '1.1rem' } }" :error="inputStatus[0]">
+                    <AForm
+                        :model="form"
+                        @submit="form_submit">
+                        <h1 style="text-align: center; font-size: 2.5rem">注&nbsp;&nbsp;册</h1>
+                        <AFormItem
+                            field="uid"
+                            hide-label>
+                            <AInput
+                                v-model="form.uid"
+                                class="my-input"
+                                placeholder="账号"
+                                allow-clear
+                                :input-attrs="{ style: { 'font-size': '1.1rem' } }"
+                                :error="inputStatus[0]">
                                 <template #prefix>
                                     <span><i class="fa-solid fa-user fa-fw"></i></span>
                                 </template>
                             </AInput>
                         </AFormItem>
-                        <AFormItem field="pwd" hide-label>
-                            <AInputPassword v-model="form.pwd" class="my-input" placeholder="密码" allow-clear
-                                :input-attrs="{ style: { 'font-size': '1.1rem' } }" :error="inputStatus[1]">
+                        <AFormItem
+                            field="pwd"
+                            hide-label>
+                            <AInputPassword
+                                v-model="form.pwd"
+                                class="my-input"
+                                placeholder="密码"
+                                allow-clear
+                                :input-attrs="{ style: { 'font-size': '1.1rem' } }"
+                                :error="inputStatus[1]">
                                 <template #prefix>
                                     <span><i class="fa-duotone fa-key fa-fw"></i></span>
                                 </template>
                             </AInputPassword>
                         </AFormItem>
-                        <AFormItem field="pwd_a" hide-label>
-                            <AInputPassword v-model="form.pwd_a" class="my-input" placeholder="再次输入密码" allow-clear
-                                :input-attrs="{ style: { 'font-size': '1.1rem' } }" :error="inputStatus[2]">
+                        <AFormItem
+                            field="pwd_a"
+                            hide-label>
+                            <AInputPassword
+                                v-model="form.pwd_a"
+                                class="my-input"
+                                placeholder="再次输入密码"
+                                allow-clear
+                                :input-attrs="{ style: { 'font-size': '1.1rem' } }"
+                                :error="inputStatus[2]">
                                 <template #prefix>
                                     <span><i class="fa-duotone fa-key fa-fw"></i></span>
                                 </template>
                             </AInputPassword>
                         </AFormItem>
-                        <ARow class="button-row" justify="space-around">
-                            <AButton type="primary" size="large" html-type="submit">
+                        <ARow
+                            class="button-row"
+                            justify="space-around">
+                            <AButton
+                                type="primary"
+                                size="large"
+                                html-type="submit">
                                 注 册
                             </AButton>
-                            <AButton type="primary" size="large" html-type="button" @click="$router.back()">
+                            <AButton
+                                type="primary"
+                                size="large"
+                                html-type="button"
+                                @click="$router.back()">
                                 返 回
                             </AButton>
                         </ARow>
@@ -127,7 +157,9 @@ function running_stop() {
         </ALayoutContent>
     </ALayout>
 
-    <div v-show="running.show" class="running">
+    <div
+        v-show="running.show"
+        class="running">
         <i class="fas fa-spinner fa-spin" />
     </div>
 </template>

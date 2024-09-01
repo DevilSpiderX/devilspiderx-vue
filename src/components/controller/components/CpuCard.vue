@@ -1,13 +1,13 @@
 <script setup lang="ts">
+import type { CpuVo } from "@/types/server-info";
 import { Progress as AProgress } from "@arco-design/web-vue";
 import { computed } from "vue";
-import { CpuValueType } from "../scripts/interface";
 import { colors } from "../scripts/progressColor";
 import BaseCard from "./BaseCard.vue";
 
 const props = withDefaults(
     defineProps<{
-        value: CpuValueType;
+        value: CpuVo;
         loading: boolean;
         enabled: boolean;
     }>(),
@@ -18,19 +18,21 @@ const props = withDefaults(
             logicalNum: 0,
             usedRate: 0,
             is64bit: true,
-            cpuTemperature: 0
+            cpuTemperature: 0,
         }),
         loading: false,
-        enabled: true
-    }
+        enabled: true,
+    },
 );
 
-const showValue = computed(() => props.enabled ? props.value :
-    {
-        ...props.value,
-        usedRate: 0,
-        cpuTemperature: 0
-    }
+const showValue = computed(() =>
+    props.enabled
+        ? props.value
+        : {
+              ...props.value,
+              usedRate: 0,
+              cpuTemperature: 0,
+          },
 );
 
 const progressColor = computed(() => {
@@ -42,8 +44,7 @@ const progressColor = computed(() => {
     } else {
         return colors[2];
     }
-})
-
+});
 </script>
 
 <template>
@@ -54,11 +55,17 @@ const progressColor = computed(() => {
             </div>
         </template>
         <div class="my-card-body">
-            <ASkeleton animation :loading="loading">
+            <ASkeleton
+                animation
+                :loading="loading">
                 <ASkeletonLine :rows="4" />
                 <template #content>
-                    <ADescriptions :column="2" :value-style="{ fontSize: '16px' }">
-                        <ADescriptionsItem label="名 称" :span="2">
+                    <ADescriptions
+                        :column="2"
+                        :value-style="{ fontSize: '16px' }">
+                        <ADescriptionsItem
+                            label="名 称"
+                            :span="2">
                             <span style="font-size: 14px">{{ showValue.name }}</span>
                         </ADescriptionsItem>
                         <ADescriptionsItem label="物理核心数">{{ showValue.physicalNum }}</ADescriptionsItem>
@@ -67,11 +74,15 @@ const progressColor = computed(() => {
                         <ADescriptionsItem label="温 度">{{ showValue.cpuTemperature }} ℃</ADescriptionsItem>
                     </ADescriptions>
                     <ADescriptions>
-                        <ADescriptionsItem label="使用率" :span="2">
-                            <AProgress :percent="showValue.usedRate" :stroke-width="22" size="large" :color="progressColor">
-                                <template #text="{ percent }">
-                                    {{ (percent * 100).toFixed(2) }}%
-                                </template>
+                        <ADescriptionsItem
+                            label="使用率"
+                            :span="2">
+                            <AProgress
+                                :percent="showValue.usedRate"
+                                :stroke-width="22"
+                                size="large"
+                                :color="progressColor">
+                                <template #text="{ percent }"> {{ (percent * 100).toFixed(2) }}% </template>
                             </AProgress>
                         </ADescriptionsItem>
                     </ADescriptions>

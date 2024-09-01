@@ -6,22 +6,22 @@ import { computed, h, onMounted, ref, toRef, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import FjrcTopic from "./FjrcTopic.vue";
 import IndexButtonList from "./IndexButtonList.vue";
-import { getTopicApi, getTopicCountApi } from "./scripts/fjrc-api";
+import { getTopicApi, getTopicCountApi } from "./api/fjrc-api";
 import { useFjrcStore } from "./stores/FjrcStore";
 
 const props = defineProps({
     bank: {
         type: String,
-        required: true
+        required: true,
     },
     id: {
         type: Number,
-        required: true
+        required: true,
     },
     onlineCount: {
         type: Number,
-        default: 0
-    }
+        default: 0,
+    },
 });
 
 const emits = defineEmits(["onlineCountRefresh"]);
@@ -49,8 +49,8 @@ const TITLE_NAME = {
     M: "金融市场类(客户经理)",
     N: "普惠金融类(客户经理)",
     O: "审计类(客户经理)",
-    P: "运营管理类(客户经理)"
-}
+    P: "运营管理类(客户经理)",
+};
 
 function getTitleName(bank) {
     const bankID = bank.toUpperCase();
@@ -59,7 +59,6 @@ function getTitleName(bank) {
     }
     return TITLE_NAME.A;
 }
-
 
 const defaultTopic = {
     itemBank: "题库",
@@ -71,14 +70,12 @@ const defaultTopic = {
     b: "加载中...",
     c: "加载中...",
     d: "加载中...",
-}
+};
 
 const topic = ref(defaultTopic);
 async function getTopic(bank, id) {
     const resp = await getTopicApi(bank, id);
-    if (resp.code === 0) {
-        topic.value = resp.data
-    }
+    topic.value = resp;
 }
 
 const loading = ref(true);
@@ -103,8 +100,8 @@ watchEffect(async () => {
 const count = ref(0);
 async function getCount(bank) {
     const resp = await getTopicCountApi(bank);
-    if (resp.code === 0 && count.value != resp.data.count) {
-        count.value = resp.data.count;
+    if (count.value != resp.count) {
+        count.value = resp.count;
     }
 }
 
@@ -115,7 +112,7 @@ onMounted(() => {
 });
 
 const drawer = ref({
-    visible: false
+    visible: false,
 });
 
 const indexButtonTypes = ref({});
@@ -143,7 +140,7 @@ async function goTopic(id) {
 }
 
 function onFjrcTopicAnswer(right, answer) {
-    history.value[props.id] = { right, answer }
+    history.value[props.id] = { right, answer };
 }
 
 const fjrcTopicKey = ref(Symbol(props.id));
@@ -161,7 +158,7 @@ const fjrcTopicBinds = computed(() => ({
     key: fjrcTopicKey.value,
     topic: topic.value,
     count: count.value,
-    loading: loading.value
+    loading: loading.value,
 }));
 
 const correctRate = computed(() => {
@@ -176,7 +173,7 @@ const correctRate = computed(() => {
     }
 
     if (all === 0) {
-        return -1
+        return -1;
     }
 
     return success / all;
@@ -194,26 +191,18 @@ function getCorrectRateColor(correctRate) {
 
 function resetHistory() {
     Modal.confirm({
-        content: () => h(
-            "div",
-            { style: { width: "100%", textAlign: "center" } },
-            "确认重置记录？"
-        ),
+        content: () => h("div", { style: { width: "100%", textAlign: "center" } }, "确认重置记录？"),
         width: "auto",
         onOk: () => {
             history.value = [];
             fjrcTopicKey.value = Symbol(props.id);
-        }
+        },
     });
 }
 
 function resetErrorHistory() {
     Modal.confirm({
-        content: () => h(
-            "div",
-            { style: { width: "100%", textAlign: "center" } },
-            "确认重置错题记录？"
-        ),
+        content: () => h("div", { style: { width: "100%", textAlign: "center" } }, "确认重置错题记录？"),
         width: "auto",
         onOk: () => {
             const resetCurrent = history.value[props.id] && !history.value[props.id].right;
@@ -225,7 +214,7 @@ function resetErrorHistory() {
             }
 
             if (resetCurrent) fjrcTopicKey.value = Symbol(props.id);
-        }
+        },
     });
 }
 
@@ -242,7 +231,6 @@ function onRefreshButtonClick() {
         refreshButtonSpining.value = false;
     });
 }
-
 </script>
 
 <template>
@@ -257,20 +245,32 @@ function onRefreshButtonClick() {
                         <ASpace>
                             <APopover position="br">
                                 <div class="dot-outer">
-                                    <span class="dot" :class="props.onlineCount < 1 ? 'dot-red' : 'dot-green'" />
+                                    <span
+                                        class="dot"
+                                        :class="props.onlineCount < 1 ? 'dot-red' : 'dot-green'" />
                                 </div>
                                 <template #content>
                                     当前在线人数：<ATag color="arcoblue">{{ props.onlineCount }}</ATag>
-                                    <button class="refresh-btn" @click="onRefreshButtonClick">
-                                        <i class="fa-solid fa-arrows-rotate" :class="{ 'fa-spin': refreshButtonSpining }" />
+                                    <button
+                                        class="refresh-btn"
+                                        @click="onRefreshButtonClick">
+                                        <i
+                                            class="fa-solid fa-arrows-rotate"
+                                            :class="{ 'fa-spin': refreshButtonSpining }" />
                                     </button>
                                 </template>
                             </APopover>
-                            <ATag v-if="correctRate >= 0" :color="getCorrectRateColor(correctRate)">
+                            <ATag
+                                v-if="correctRate >= 0"
+                                :color="getCorrectRateColor(correctRate)">
                                 {{ (correctRate * 100).toFixed(0) }}%
                             </ATag>
-                            <AButton v-if="appConfigs.client.width < 768" type="text" shape="circle"
-                                style="color:var(--color-text-2)" @click="drawer.visible = true">
+                            <AButton
+                                v-if="appConfigs.client.width < 768"
+                                type="text"
+                                shape="circle"
+                                style="color: var(--color-text-2)"
+                                @click="drawer.visible = true">
                                 <i class="fa-solid fa-bars" />
                             </AButton>
                         </ASpace>
@@ -278,39 +278,83 @@ function onRefreshButtonClick() {
                 </APageHeader>
             </ALayoutHeader>
             <ALayoutContent>
-                <FjrcTopic ref="fjrcTopicRef" v-bind="fjrcTopicBinds" @answer="onFjrcTopicAnswer"
+                <FjrcTopic
+                    ref="fjrcTopicRef"
+                    v-bind="fjrcTopicBinds"
+                    @answer="onFjrcTopicAnswer"
                     @reset="onFjrcTopicReset" />
             </ALayoutContent>
         </ALayout>
         <Transition name="sider">
-            <ALayoutSider v-if="appConfigs.client.width >= 768" :width="250">
+            <ALayoutSider
+                v-if="appConfigs.client.width >= 768"
+                :width="250">
                 <div class="arco-drawer-header">
                     <div class="arco-drawer-title">目录</div>
-                    <AButton type="text" size="mini" @click="resetHistory">重置</AButton>
-                    <AButton type="text" size="mini" status="danger" @click="resetErrorHistory">重置错题</AButton>
+                    <AButton
+                        type="text"
+                        size="mini"
+                        @click="resetHistory"
+                        >重置</AButton
+                    >
+                    <AButton
+                        type="text"
+                        size="mini"
+                        status="danger"
+                        @click="resetErrorHistory"
+                        >重置错题</AButton
+                    >
                 </div>
                 <div class="arco-drawer-body">
-                    <IndexButtonList :id="props.id" :count="count" :index-button-types="indexButtonTypes"
-                        :index-button-colors="indexButtonColors" @click="goTopic" />
+                    <IndexButtonList
+                        :id="props.id"
+                        :count="count"
+                        :index-button-types="indexButtonTypes"
+                        :index-button-colors="indexButtonColors"
+                        @click="goTopic" />
                 </div>
             </ALayoutSider>
         </Transition>
     </ALayout>
 
-    <ADrawer v-if="appConfigs.client.width < 768" v-model:visible="drawer.visible" placement="right" :footer="false">
+    <ADrawer
+        v-if="appConfigs.client.width < 768"
+        v-model:visible="drawer.visible"
+        placement="right"
+        :footer="false">
         <template #header>
             <div class="arco-drawer-title">目录</div>
-            <AButton type="text" size="mini" @click="resetHistory">重置</AButton>
-            <AButton type="text" size="mini" status="danger" @click="resetErrorHistory">重置错题</AButton>
-            <div tabindex="-1" role="button" aria-label="Close" class="arco-drawer-close-btn"
+            <AButton
+                type="text"
+                size="mini"
+                @click="resetHistory"
+                >重置</AButton
+            >
+            <AButton
+                type="text"
+                size="mini"
+                status="danger"
+                @click="resetErrorHistory"
+                >重置错题</AButton
+            >
+            <div
+                tabindex="-1"
+                role="button"
+                aria-label="Close"
+                class="arco-drawer-close-btn"
                 @click="drawer.visible = false">
                 <IconHover>
                     <IconClose />
                 </IconHover>
             </div>
         </template>
-        <IndexButtonList v-if="drawer.visible" :id="props.id" :count="count" :index-button-types="indexButtonTypes"
-            :index-button-colors="indexButtonColors" @click="goTopic" />
+        <IndexButtonList
+            v-if="drawer.visible"
+            :id="props.id"
+            :count="count"
+            :index-button-types="indexButtonTypes"
+            :index-button-colors="indexButtonColors"
+            @click="goTopic" />
     </ADrawer>
 </template>
 

@@ -60,7 +60,7 @@ function onCopyButtonClick(value: string) {
         simple
         :footer="false"
         width="auto"
-        :modal-style="{ maxWidth: '80%' }">
+        :modal-style="{ maxWidth: '80%', minWidth: `250px` }">
         <ADescriptions
             :column="1"
             :label-style="style"

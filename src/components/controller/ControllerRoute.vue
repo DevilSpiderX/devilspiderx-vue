@@ -1,9 +1,5 @@
 <script setup>
-import {
-    reboot as rebootApi,
-    shutdown as shutdownApi,
-    stop as stopApi
-} from "@/scripts/http/os-api";
+import { reboot as rebootApi, shutdown as shutdownApi, stop as stopApi } from "@/api/os-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { useUserStore } from "@/store/UserStore";
 import { Scrollbar as AScrollbar, Message } from "@arco-design/web-vue";
@@ -19,8 +15,8 @@ const appConfigs = useAppConfigs(),
 const props = defineProps({
     cd: {
         type: Number,
-        default: 1500
-    }
+        default: 1500,
+    },
 });
 
 const _cd = computed({
@@ -30,7 +26,7 @@ const _cd = computed({
         if (cd !== props.cd) {
             router.replace({ query: { cd } });
         }
-    }
+    },
 });
 
 const { values, setCD } = useServerInfoReceiver(_cd.value);
@@ -52,43 +48,28 @@ const settingsDrawer = reactive({
     loadding: false,
     reboot: async () => {
         settingsDrawer.loadding = true;
-        const resp = await rebootApi();
-        console.log("settingsDrawer.reboot:", resp);
-        if (resp.code === 0) {
-            Message.success("服务器重启成功");
-            settingsDrawer.visible = false;
-            resetValues()
-        } else {
-            Message.error("服务器重启失败");
-        }
+        await rebootApi();
+        Message.success("服务器重启成功");
+        settingsDrawer.visible = false;
+        resetValues();
         settingsDrawer.loadding = false;
     },
     shutdown: async () => {
         settingsDrawer.loadding = true;
-        const resp = await shutdownApi();
-        console.log("settingsDrawer.reboot:", resp);
-        if (resp.code === 0) {
-            Message.success("服务器关机成功");
-            settingsDrawer.visible = false;
-            resetValues()
-        } else {
-            Message.error("服务器关机失败");
-        }
+        await shutdownApi();
+        Message.success("服务器关机成功");
+        settingsDrawer.visible = false;
+        resetValues();
         settingsDrawer.loadding = false;
     },
     stop: async () => {
         settingsDrawer.loadding = true;
-        const resp = await stopApi();
-        console.log("settingsDrawer.reboot:", resp);
-        if (resp.code === 0) {
-            Message.success("停止服务器进程成功");
-            settingsDrawer.visible = false;
-            resetValues()
-        } else {
-            Message.error("停止服务器进程失败");
-        }
+        await stopApi();
+        Message.success("停止服务器进程成功");
+        settingsDrawer.visible = false;
+        resetValues();
         settingsDrawer.loadding = false;
-    }
+    },
 });
 
 const cpuEnabled = ref(true);
@@ -102,7 +83,7 @@ function resetValues() {
 }
 
 /**
- * @typedef {import("./scripts/interface").DiskValueType} DiskValueType
+ * @typedef {import("@/types/server-info").DiskVo} DiskValueType
  */
 
 // 双列
@@ -117,7 +98,7 @@ const doubleColDisks = computed(() => {
         } else {
             result[1].push({ index, disk });
         }
-    })
+    });
     return result;
 });
 
@@ -147,10 +128,9 @@ const tripleColDisks = computed(() => {
         } else {
             result[0].push({ index, disk });
         }
-    })
+    });
     return result;
 });
-
 </script>
 
 <template>
@@ -162,7 +142,11 @@ const tripleColDisks = computed(() => {
                 </template>
                 <template #extra>
                     <ASpace>
-                        <AInputNumber v-if="appConfigs.client.width > 576" v-model="_cd" :min="500" hide-button
+                        <AInputNumber
+                            v-if="appConfigs.client.width > 576"
+                            v-model="_cd"
+                            :min="500"
+                            hide-button
                             :style="{ maxWidth: '12em' }">
                             <template #prefix>
                                 <span>刷新速率</span>
@@ -171,7 +155,11 @@ const tripleColDisks = computed(() => {
                                 <span>ms</span>
                             </template>
                         </AInputNumber>
-                        <AButton v-if="userStore.admin" type="text" shape="circle" style="color:var(--color-text-2)"
+                        <AButton
+                            v-if="userStore.admin"
+                            type="text"
+                            shape="circle"
+                            style="color: var(--color-text-2)"
                             @click="settingsDrawer.visible = true">
                             <i class="fa-solid fa-gear"></i>
                         </AButton>
@@ -180,11 +168,17 @@ const tripleColDisks = computed(() => {
             </APageHeader>
         </ALayoutHeader>
         <ALayoutContent>
-            <AScrollbar class="main-scrollbar" outer-class="main-scrollbar-out" @scroll="on_main_scrollbar_scroll">
-                <ACard class="main-card" :header-style="{ height: 'auto' }" style="background-color: var(--color-bg-1)">
+            <AScrollbar
+                class="main-scrollbar"
+                outer-class="main-scrollbar-out"
+                @scroll="on_main_scrollbar_scroll">
+                <ACard
+                    class="main-card"
+                    :header-style="{ height: 'auto' }"
+                    style="background-color: var(--color-bg-1)">
                     <template #title>
                         <div>
-                            <h1 style="text-align: center;user-select: none;margin: 0;font-size: 1.5rem">
+                            <h1 style="text-align: center; user-select: none; margin: 0; font-size: 1.5rem">
                                 <i class="fa-solid fa-server fa-fw"></i>
                                 服务器状态监控
                             </h1>
@@ -192,104 +186,173 @@ const tripleColDisks = computed(() => {
                     </template>
                     <!-- width < 768px 时单列 -->
                     <template v-if="appConfigs.client.width < 768">
-                        <ARow class="my-row" :gutter="10" align="start">
+                        <ARow
+                            class="my-row"
+                            :gutter="10"
+                            align="start">
                             <ACol class="my-col">
-                                <CpuCard :value="values.cpu" :loading="!values.cpu" :enabled="cpuEnabled" />
+                                <CpuCard
+                                    :value="values.cpu"
+                                    :loading="!values.cpu"
+                                    :enabled="cpuEnabled" />
                             </ACol>
 
                             <ACol class="my-col">
-                                <MemoryCard :value="values.memory" :process-count="values.os?.processCount"
-                                    :loading="!values.memory" :enabled="memoryEnabled" />
+                                <MemoryCard
+                                    :value="values.memory"
+                                    :process-count="values.os?.processCount"
+                                    :loading="!values.memory"
+                                    :enabled="memoryEnabled" />
                             </ACol>
 
                             <ACol class="my-col">
-                                <NetworkCard :values="values.networks" :loading="values.networks.length === 0"
+                                <NetworkCard
+                                    :values="values.networks"
+                                    :loading="values.networks.length === 0"
                                     :enabled="networkEnabled" />
                             </ACol>
 
                             <TransitionGroup name="body">
-                                <ACol v-for="(disk, index) in values.disks" class="my-col" :key="index">
-                                    <DiskCard :value="disk" :disk-index="index" />
+                                <ACol
+                                    v-for="(disk, index) in values.disks"
+                                    class="my-col"
+                                    :key="index">
+                                    <DiskCard
+                                        :value="disk"
+                                        :disk-index="index" />
                                 </ACol>
                             </TransitionGroup>
-
                         </ARow>
                     </template>
                     <!-- 768px <= width < 1200px 时双列 -->
                     <template v-else-if="appConfigs.client.width < 1200">
-                        <ARow class="my-row" :gutter="10" align="start" style="margin-right: 10px;">
+                        <ARow
+                            class="my-row"
+                            :gutter="10"
+                            align="start"
+                            style="margin-right: 10px">
                             <ACol class="my-col">
-                                <CpuCard :value="values.cpu" :loading="!values.cpu" :enabled="cpuEnabled" />
+                                <CpuCard
+                                    :value="values.cpu"
+                                    :loading="!values.cpu"
+                                    :enabled="cpuEnabled" />
                             </ACol>
 
                             <ACol class="my-col">
-                                <NetworkCard :values="values.networks" :loading="values.networks.length === 0"
+                                <NetworkCard
+                                    :values="values.networks"
+                                    :loading="values.networks.length === 0"
                                     :enabled="networkEnabled" />
                             </ACol>
 
                             <TransitionGroup name="body">
-                                <ACol v-for="{ disk, index } in doubleColDisks[1]" class="my-col" :key="index">
-                                    <DiskCard :value="disk" :disk-index="index" />
+                                <ACol
+                                    v-for="{ disk, index } in doubleColDisks[1]"
+                                    class="my-col"
+                                    :key="index">
+                                    <DiskCard
+                                        :value="disk"
+                                        :disk-index="index" />
                                 </ACol>
                             </TransitionGroup>
-
                         </ARow>
 
-                        <ARow class="my-row" :gutter="10" align="start">
+                        <ARow
+                            class="my-row"
+                            :gutter="10"
+                            align="start">
                             <ACol class="my-col">
-                                <MemoryCard :value="values.memory" :process-count="values.os?.processCount"
-                                    :loading="!values.memory" :enabled="memoryEnabled" />
+                                <MemoryCard
+                                    :value="values.memory"
+                                    :process-count="values.os?.processCount"
+                                    :loading="!values.memory"
+                                    :enabled="memoryEnabled" />
                             </ACol>
 
                             <TransitionGroup name="body">
-                                <ACol v-for="{ disk, index } in doubleColDisks[0]" class="my-col" :key="index">
-                                    <DiskCard :value="disk" :disk-index="index" />
+                                <ACol
+                                    v-for="{ disk, index } in doubleColDisks[0]"
+                                    class="my-col"
+                                    :key="index">
+                                    <DiskCard
+                                        :value="disk"
+                                        :disk-index="index" />
                                 </ACol>
                             </TransitionGroup>
-
                         </ARow>
                     </template>
                     <!-- 1200px <= width 时三列-->
                     <template v-else>
-                        <ARow class="my-row" :gutter="10" align="start" style="margin-right: 10px;">
+                        <ARow
+                            class="my-row"
+                            :gutter="10"
+                            align="start"
+                            style="margin-right: 10px">
                             <ACol class="my-col">
-                                <CpuCard :value="values.cpu" :loading="!values.cpu" :enabled="cpuEnabled" />
+                                <CpuCard
+                                    :value="values.cpu"
+                                    :loading="!values.cpu"
+                                    :enabled="cpuEnabled" />
                             </ACol>
 
                             <TransitionGroup name="body">
-                                <ACol v-for="{ disk, index } in tripleColDisks[0]" class="my-col" :key="index">
-                                    <DiskCard :value="disk" :disk-index="index" />
+                                <ACol
+                                    v-for="{ disk, index } in tripleColDisks[0]"
+                                    class="my-col"
+                                    :key="index">
+                                    <DiskCard
+                                        :value="disk"
+                                        :disk-index="index" />
                                 </ACol>
                             </TransitionGroup>
-
                         </ARow>
 
-                        <ARow class="my-row" :gutter="10" align="start" style="margin-right: 10px;">
+                        <ARow
+                            class="my-row"
+                            :gutter="10"
+                            align="start"
+                            style="margin-right: 10px">
                             <ACol class="my-col">
-                                <MemoryCard :value="values.memory" :process-count="values.os?.processCount"
-                                    :loading="!values.memory" :enabled="memoryEnabled" />
+                                <MemoryCard
+                                    :value="values.memory"
+                                    :process-count="values.os?.processCount"
+                                    :loading="!values.memory"
+                                    :enabled="memoryEnabled" />
                             </ACol>
 
                             <TransitionGroup name="body">
-                                <ACol v-for="{ disk, index }  in tripleColDisks[1]" class="my-col" :key="index">
-                                    <DiskCard :value="disk" :disk-index="index" />
+                                <ACol
+                                    v-for="{ disk, index } in tripleColDisks[1]"
+                                    class="my-col"
+                                    :key="index">
+                                    <DiskCard
+                                        :value="disk"
+                                        :disk-index="index" />
                                 </ACol>
                             </TransitionGroup>
-
                         </ARow>
 
-                        <ARow class="my-row" :gutter="10" align="start">
+                        <ARow
+                            class="my-row"
+                            :gutter="10"
+                            align="start">
                             <ACol class="my-col">
-                                <NetworkCard :values="values.networks" :loading="values.networks.length === 0"
+                                <NetworkCard
+                                    :values="values.networks"
+                                    :loading="values.networks.length === 0"
                                     :enabled="networkEnabled" />
                             </ACol>
 
                             <TransitionGroup name="body">
-                                <ACol v-for="{ disk, index } in tripleColDisks[2]" class="my-col" :key="index">
-                                    <DiskCard :value="disk" :disk-index="index" />
+                                <ACol
+                                    v-for="{ disk, index } in tripleColDisks[2]"
+                                    class="my-col"
+                                    :key="index">
+                                    <DiskCard
+                                        :value="disk"
+                                        :disk-index="index" />
                                 </ACol>
                             </TransitionGroup>
-
                         </ARow>
                     </template>
                 </ACard>
@@ -297,9 +360,18 @@ const tripleColDisks = computed(() => {
         </ALayoutContent>
     </ALayout>
 
-    <ADrawer v-model:visible="settingsDrawer.visible" title="服务器操作" :footer="false">
-        <ASpace direction="vertical" fill>
-            <AInputNumber v-if="appConfigs.client.width <= 576" v-model="_cd" :min="500" hide-button>
+    <ADrawer
+        v-model:visible="settingsDrawer.visible"
+        title="服务器操作"
+        :footer="false">
+        <ASpace
+            direction="vertical"
+            fill>
+            <AInputNumber
+                v-if="appConfigs.client.width <= 576"
+                v-model="_cd"
+                :min="500"
+                hide-button>
                 <template #prefix>
                     <span>刷新速率</span>
                 </template>
@@ -308,8 +380,18 @@ const tripleColDisks = computed(() => {
                 </template>
             </AInputNumber>
 
-            <APopconfirm content="确认重启？" position="bottom" type="warning" @ok="settingsDrawer.reboot">
-                <AButton type="primary" long status="warning" size="large" :loading="settingsDrawer.loadding">
+            <APopconfirm
+                v-if="userStore.permissions.includes('system.reboot')"
+                content="确认重启？"
+                position="bottom"
+                type="warning"
+                @ok="settingsDrawer.reboot">
+                <AButton
+                    type="primary"
+                    long
+                    status="warning"
+                    size="large"
+                    :loading="settingsDrawer.loadding">
                     <template #icon>
                         <i class="fa-solid fa-plug-circle-bolt fa-fw"></i>
                     </template>
@@ -317,8 +399,18 @@ const tripleColDisks = computed(() => {
                 </AButton>
             </APopconfirm>
 
-            <APopconfirm content="确认关机？" position="bottom" type="warning" @ok="settingsDrawer.shutdown">
-                <AButton type="primary" long status="danger" size="large" :loading="settingsDrawer.loadding">
+            <APopconfirm
+                v-if="userStore.permissions.includes('system.shutdown')"
+                content="确认关机？"
+                position="bottom"
+                type="warning"
+                @ok="settingsDrawer.shutdown">
+                <AButton
+                    type="primary"
+                    long
+                    status="danger"
+                    size="large"
+                    :loading="settingsDrawer.loadding">
                     <template #icon>
                         <i class="fa-solid fa-power-off fa-fw"></i>
                     </template>
@@ -326,15 +418,22 @@ const tripleColDisks = computed(() => {
                 </AButton>
             </APopconfirm>
 
-            <APopconfirm content="确认停止服务器进程？" position="bottom" @ok="settingsDrawer.stop">
-                <AButton type="primary" long size="large" :loading="settingsDrawer.loadding">
+            <APopconfirm
+                v-if="userStore.permissions.includes('process.shutdown')"
+                content="确认停止服务器进程？"
+                position="bottom"
+                @ok="settingsDrawer.stop">
+                <AButton
+                    type="primary"
+                    long
+                    size="large"
+                    :loading="settingsDrawer.loadding">
                     <template #icon>
                         <i class="fa-solid fa-stop fa-fw"></i>
                     </template>
                     停止
                 </AButton>
             </APopconfirm>
-
         </ASpace>
     </ADrawer>
 </template>
