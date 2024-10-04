@@ -42,11 +42,12 @@ httpInstance.interceptors.response.use(
             case 1003:
             case 1004: {
                 console.error(`code:${code}, msg:${msg}`);
-                Message.error(msg || "Error");
+                Message.error(msg ?? "Error");
                 return Promise.reject(resp.data);
             }
             default: {
                 console.log(`code:${code}, msg:${msg}`);
+                Message.error(msg);
                 return Promise.reject(resp.data);
             }
         }

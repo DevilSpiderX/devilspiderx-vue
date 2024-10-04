@@ -11,7 +11,7 @@ export const useUserStore = defineStore(
         const login = ref<boolean>(false);
         const checkIntervalTime = ref<number>(600 * 1000); //ms
         const avatar = ref<string>();
-        const permissions = ref<string[]>();
+        const permissions = ref<string[]>([]);
 
         return {
             uid,
