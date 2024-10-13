@@ -11,7 +11,3 @@ export async function stop(): Promise<number> {
 export async function state(): Promise<boolean> {
     return httpInstance.post("/api/admin/v2ray/state");
 }
-
-export async function restartClient(): Promise<void> {
-    return httpInstance.post("/api/admin/v2ray/client/restart");
-}

@@ -1,13 +1,11 @@
 <script setup>
 import {
-    restartClient as restartClientApi,
     start as startApi,
     state as stateApi,
     stop as stopApi,
 } from "@/api/v2ray-api";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { useUserStore } from "@/store/UserStore";
-import { sleep } from "@/util/util";
 import { Message } from "@arco-design/web-vue";
 import { onMounted, ref } from "vue";
 import { MySwitch } from "./components";
@@ -75,12 +73,6 @@ const settingsDrawer = ref({
     loadding: false,
 });
 
-async function restartV2rayClient() {
-    settingsDrawer.value.loadding = true;
-    await restartClientApi();
-    await sleep(1000);
-    settingsDrawer.value.loadding = false;
-}
 </script>
 
 <template>
@@ -129,23 +121,6 @@ async function restartV2rayClient() {
         <ASpace
             direction="vertical"
             fill>
-            <APopconfirm
-                content="确认重启服务？"
-                position="bottom"
-                type="warning"
-                @ok="restartV2rayClient">
-                <AButton
-                    type="primary"
-                    long
-                    status="warning"
-                    size="large"
-                    :loading="settingsDrawer.loadding">
-                    <template #icon>
-                        <i class="fa-solid fa-plug-circle-bolt fa-fw"></i>
-                    </template>
-                    重启V2ray服务
-                </AButton>
-            </APopconfirm>
         </ASpace>
     </ADrawer>
 </template>
