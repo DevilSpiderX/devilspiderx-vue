@@ -1,9 +1,11 @@
 <script setup>
 import { register as registerApi } from "@/api/user-api";
+import { getLogger } from "@/plugins/logger";
 import { Message } from "@arco-design/web-vue";
 import { reactive } from "vue";
 import { useRouter } from "vue-router";
 
+const logger = getLogger(import.meta.filePath);
 const inputStatus = reactive([false, false, false]);
 const form = reactive({
     uid: "",
@@ -38,7 +40,7 @@ async function form_submit() {
     running_start();
     try {
         const resp = await registerApi(uid, pwd);
-        console.log("Register:", resp);
+        logger.set(import.meta.codeLineNum).info("Register", resp);
         switch (resp.status) {
             case 0: {
                 router.push({ name: "login" });
@@ -61,7 +63,7 @@ async function form_submit() {
             }
         }
     } catch (error) {
-        console.error("(form_submit)", `url:${error.config?.url}`, error);
+        logger.set(import.meta.codeLineNum).error(`url:${error.config?.url}`, error);
         Message.error("服务器错误");
     }
     running_stop();
@@ -87,18 +89,21 @@ function running_stop() {
                 <ACol class="register-col">
                     <AForm
                         :model="form"
-                        @submit="form_submit">
+                        @submit="form_submit"
+                    >
                         <h1 style="text-align: center; font-size: 2.5rem">注&nbsp;&nbsp;册</h1>
                         <AFormItem
                             field="uid"
-                            hide-label>
+                            hide-label
+                        >
                             <AInput
                                 v-model="form.uid"
                                 class="my-input"
                                 placeholder="账号"
                                 allow-clear
                                 :input-attrs="{ style: { 'font-size': '1.1rem' } }"
-                                :error="inputStatus[0]">
+                                :error="inputStatus[0]"
+                            >
                                 <template #prefix>
                                     <span><i class="fa-solid fa-user fa-fw"></i></span>
                                 </template>
@@ -106,14 +111,16 @@ function running_stop() {
                         </AFormItem>
                         <AFormItem
                             field="pwd"
-                            hide-label>
+                            hide-label
+                        >
                             <AInputPassword
                                 v-model="form.pwd"
                                 class="my-input"
                                 placeholder="密码"
                                 allow-clear
                                 :input-attrs="{ style: { 'font-size': '1.1rem' } }"
-                                :error="inputStatus[1]">
+                                :error="inputStatus[1]"
+                            >
                                 <template #prefix>
                                     <span><i class="fa-duotone fa-key fa-fw"></i></span>
                                 </template>
@@ -121,14 +128,16 @@ function running_stop() {
                         </AFormItem>
                         <AFormItem
                             field="pwd_a"
-                            hide-label>
+                            hide-label
+                        >
                             <AInputPassword
                                 v-model="form.pwd_a"
                                 class="my-input"
                                 placeholder="再次输入密码"
                                 allow-clear
                                 :input-attrs="{ style: { 'font-size': '1.1rem' } }"
-                                :error="inputStatus[2]">
+                                :error="inputStatus[2]"
+                            >
                                 <template #prefix>
                                     <span><i class="fa-duotone fa-key fa-fw"></i></span>
                                 </template>
@@ -136,18 +145,21 @@ function running_stop() {
                         </AFormItem>
                         <ARow
                             class="button-row"
-                            justify="space-around">
+                            justify="space-around"
+                        >
                             <AButton
                                 type="primary"
                                 size="large"
-                                html-type="submit">
+                                html-type="submit"
+                            >
                                 注 册
                             </AButton>
                             <AButton
                                 type="primary"
                                 size="large"
                                 html-type="button"
-                                @click="$router.back()">
+                                @click="$router.back()"
+                            >
                                 返 回
                             </AButton>
                         </ARow>
@@ -159,7 +171,8 @@ function running_stop() {
 
     <div
         v-show="running.show"
-        class="running">
+        class="running"
+    >
         <i class="fas fa-spinner fa-spin" />
     </div>
 </template>

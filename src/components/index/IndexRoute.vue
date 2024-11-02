@@ -88,7 +88,7 @@ async function on_logoutButton_clicked() {
         Message.success("登出成功");
         router.push({ name: "login" });
     } catch (error) {
-        console.error("(on_logoutButton_clicked)", `url:${error.config?.url}`, error);
+        logger.set(import.meta.codeLineNum).error(`url:${error.config?.url}`, error);
         Message.error("登出失败");
     }
 }
@@ -146,7 +146,8 @@ const avatarPreview = ref({
 <template>
     <AScrollbar
         class="fill-scrollbar"
-        outer-class="fill-scrollbar-out">
+        outer-class="fill-scrollbar-out"
+    >
         <ALayout>
             <ALayoutHeader>
                 <APageHeader @back="drawer.visible = true">
@@ -161,8 +162,9 @@ const avatarPreview = ref({
                             <ATag
                                 color="arcoblue"
                                 size="small"
-                                >v{{ appConfigs.appVersion }}</ATag
                             >
+                                v{{ appConfigs.appVersion }}
+                            </ATag>
                         </span>
                     </template>
                     <template #extra>
@@ -170,7 +172,8 @@ const avatarPreview = ref({
                             <ASwitch
                                 v-model="appConfigs.darkTheme"
                                 :disabled="appConfigs.themeFollowSystem"
-                                checked-color="#2f2f2f">
+                                checked-color="#2f2f2f"
+                            >
                                 <template #unchecked-icon>
                                     <span style="color: var(--color-text-3)">
                                         <IconSunFill />
@@ -184,16 +187,19 @@ const avatarPreview = ref({
                             </ASwitch>
                             <ADropdown
                                 trigger="hover"
-                                position="br">
+                                position="br"
+                            >
                                 <AAvatar
                                     v-if="avatarSrc"
                                     style="cursor: pointer"
                                     :image-url="avatarSrc"
                                     @error="on_avatar_error"
-                                    @dblclick="on_avatar_dblclick" />
+                                    @dblclick="on_avatar_dblclick"
+                                />
                                 <AAvatar
                                     v-else
-                                    style="cursor: pointer">
+                                    style="cursor: pointer"
+                                >
                                     <i class="fa-solid fa-user"></i>
                                 </AAvatar>
                                 <template #content>
@@ -229,11 +235,13 @@ const avatarPreview = ref({
                         :md="16"
                         :lg="14"
                         :xl="12"
-                        :xxl="10">
+                        :xxl="10"
+                    >
                         <ASpace
                             direction="vertical"
                             fill
-                            size="large">
+                            size="large"
+                        >
                             <template v-for="(btn, index) in buttonList">
                                 <AButton
                                     v-if="!btn.hidden"
@@ -242,10 +250,12 @@ const avatarPreview = ref({
                                     long
                                     :key="index"
                                     @contextmenu.prevent.stop
-                                    @click="btn.onClick">
+                                    @click="btn.onClick"
+                                >
                                     <template
                                         #icon
-                                        v-if="btn.icon">
+                                        v-if="btn.icon"
+                                    >
                                         <Icon :icon="btn.icon" />
                                     </template>
                                     {{ btn.label }}
@@ -263,14 +273,17 @@ const avatarPreview = ref({
         title="设置"
         v-model:visible="drawer.visible"
         placement="left"
-        :footer="false">
+        :footer="false"
+    >
         <AForm
             :model="drawer.empty_form"
-            auto-label-width>
+            auto-label-width
+        >
             <AFormItem label="深色模式">
                 <ASwitch
                     v-model="appConfigs.darkTheme"
-                    :disabled="appConfigs.themeFollowSystem" />
+                    :disabled="appConfigs.themeFollowSystem"
+                />
             </AFormItem>
             <AFormItem label="主题跟随系统">
                 <ASwitch v-model="appConfigs.themeFollowSystem" />
@@ -284,7 +297,8 @@ const avatarPreview = ref({
     <AImagePreview
         v-model:visible="avatarPreview.visible"
         :src="avatarSrc"
-        :actions-layout="avatarPreview.actions" />
+        :actions-layout="avatarPreview.actions"
+    />
 </template>
 
 <style scoped>

@@ -1,7 +1,9 @@
+import { getLogger } from "@/plugins/logger";
 import router from "@/router";
 import { Message } from "@arco-design/web-vue";
 import axios from "axios";
 
+const logger = getLogger(import.meta.filePath);
 const httpInstance = axios.create({
     baseURL: location.origin,
     timeout: 30_000,
@@ -21,12 +23,12 @@ httpInstance.interceptors.response.use(
                 return data;
             }
             case 1000: {
-                console.error(`请求返回错误:${msg}`);
+                logger.set(import.meta.codeLineNum).error(`请求返回错误:${msg}`);
                 Message.error(msg ? `Error:${msg}` : "Error");
                 return Promise.reject(`请求返回错误:${msg}`);
             }
             case 1001: {
-                console.warn(`请求返回警告:${msg}`);
+                logger.set(import.meta.codeLineNum).warn(`请求返回警告:${msg}`);
                 Message.warning(msg ? `Warning:${msg}` : "Warning");
                 return Promise.reject(`请求返回警告:${msg}`);
             }
@@ -41,12 +43,12 @@ httpInstance.interceptors.response.use(
             }
             case 1003:
             case 1004: {
-                console.error(`code:${code}, msg:${msg}`);
+                logger.set(import.meta.codeLineNum).error(`code:${code}, msg:${msg}`);
                 Message.error(msg ?? "Error");
                 return Promise.reject(resp.data);
             }
             default: {
-                console.log(`code:${code}, msg:${msg}`);
+                logger.set(import.meta.codeLineNum).info(`code:${code}, msg:${msg}`);
                 Message.error(msg);
                 return Promise.reject(resp.data);
             }
@@ -54,7 +56,7 @@ httpInstance.interceptors.response.use(
     },
     error => {
         if (import.meta.env.DEV) {
-            console.error("HTTP请求出现错误", error);
+            logger.set(import.meta.codeLineNum).error("HTTP请求出现错误", error);
         }
         if (error && error.response) {
             switch (error.response.status) {

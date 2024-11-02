@@ -1,7 +1,7 @@
 {
     "singleAttributePerLine": true,
-    "bracketSameLine": true,
     "printWidth": 120,
     "tabWidth": 4,
-    "arrowParens": "avoid"
+    "arrowParens": "avoid",
+    "htmlWhitespaceSensitivity": "ignore"
 }

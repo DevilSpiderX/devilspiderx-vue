@@ -1,7 +1,10 @@
 import { get_paging as getApi } from "@/api/query-api";
+import { getLogger } from "@/plugins/logger";
 import type { MyPasswordsVo } from "@/types/query";
 import { Message } from "@arco-design/web-vue";
 import { computed, onMounted, ref, watchEffect } from "vue";
+
+const logger = getLogger(import.meta.filePath);
 
 interface StorageType {
     key: string;
@@ -79,9 +82,7 @@ export function usePasswordSearch() {
 
         try {
             const resp = await getApi(key.value, length, page);
-            if (import.meta.env.DEV) {
-                console.log("(password-search):", resp);
-            }
+            logger.set(import.meta.codeLineNum).debug("(password-search):", resp);
 
             passwordData.value = resp.list;
             tablePaginationTotal.value = resp.total;

@@ -1,5 +1,6 @@
 <script setup>
 import { login as loginApi } from "@/api/user-api";
+import { getLogger } from "@/plugins/logger";
 import { useUserStore } from "@/store/UserStore";
 import { Message } from "@arco-design/web-vue";
 import Hex from "crypto-js/enc-hex";
@@ -7,6 +8,7 @@ import SHA256 from "crypto-js/sha256";
 import { onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
 
+const logger = getLogger(import.meta.filePath);
 const userStore = useUserStore();
 
 const form = reactive({
@@ -42,7 +44,7 @@ async function form_submit() {
     pwd = SHA256(pwd).toString(Hex);
     try {
         const resp = await loginApi(uid, pwd);
-        console.log("Login:", resp);
+        logger.set(import.meta.codeLineNum).info("Login:", resp);
         switch (resp.status) {
             case 0: {
                 userStore.login = true;
@@ -62,7 +64,7 @@ async function form_submit() {
             }
         }
     } catch (error) {
-        console.error("(form_submit)", `url:${error.config?.url}`, error);
+        logger.set(import.meta.codeLineNum).error(`url:${error.config?.url}`, error);
         Message.error("服务器错误");
     }
     running_stop();
@@ -88,18 +90,21 @@ function running_stop() {
                 <ACol class="register-col">
                     <AForm
                         :model="form"
-                        @submit="form_submit">
+                        @submit="form_submit"
+                    >
                         <h1 style="text-align: center; font-size: 2.5rem">登&nbsp;&nbsp;录</h1>
                         <AFormItem
                             field="uid"
-                            hide-label>
+                            hide-label
+                        >
                             <AInput
                                 v-model="form.uid"
                                 class="my-input"
                                 placeholder="账号"
                                 allow-clear
                                 :input-attrs="{ style: { 'font-size': '1.1rem' } }"
-                                :error="inputStatus[0]">
+                                :error="inputStatus[0]"
+                            >
                                 <template #prefix>
                                     <span><i class="fa-solid fa-user fa-fw"></i></span>
                                 </template>
@@ -107,14 +112,16 @@ function running_stop() {
                         </AFormItem>
                         <AFormItem
                             field="pwd"
-                            hide-label>
+                            hide-label
+                        >
                             <AInputPassword
                                 v-model="form.pwd"
                                 class="my-input"
                                 placeholder="密码"
                                 allow-clear
                                 :input-attrs="{ style: { 'font-size': '1.1rem' } }"
-                                :error="inputStatus[1]">
+                                :error="inputStatus[1]"
+                            >
                                 <template #prefix>
                                     <span><i class="fa-duotone fa-key fa-fw"></i></span>
                                 </template>
@@ -122,18 +129,21 @@ function running_stop() {
                         </AFormItem>
                         <ARow
                             class="button-row"
-                            justify="space-around">
+                            justify="space-around"
+                        >
                             <AButton
                                 type="primary"
                                 size="large"
-                                html-type="submit">
+                                html-type="submit"
+                            >
                                 登 录
                             </AButton>
                             <AButton
                                 type="primary"
                                 size="large"
                                 html-type="button"
-                                @click="$router.push({ name: 'register' })">
+                                @click="$router.push({ name: 'register' })"
+                            >
                                 注 册
                             </AButton>
                         </ARow>
@@ -145,7 +155,8 @@ function running_stop() {
 
     <div
         v-show="running.show"
-        class="running">
+        class="running"
+    >
         <i class="fas fa-spinner fa-spin" />
     </div>
 </template>

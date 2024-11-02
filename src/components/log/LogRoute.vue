@@ -1,5 +1,6 @@
 <script setup>
 import { list as listApi, logFile as logFileApi } from "@/api/log-api";
+import { getLogger } from "@/plugins/logger";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { IconCaretDown, IconCaretUp, IconLoop } from "@arco-design/web-vue/es/icon";
 import { computed, reactive, ref, toRef, watch, watchEffect } from "vue";
@@ -7,6 +8,7 @@ import { useRouter } from "vue-router";
 import { LogMonitor } from "./components";
 import { useLogMonitorRef } from "./hooks/refs";
 
+const logger = getLogger(import.meta.filePath);
 const appConfigs = useAppConfigs();
 
 const log = reactive({
@@ -21,10 +23,10 @@ const router = useRouter();
 (async () => {
     try {
         const resp = await listApi();
-        console.log("logList:", resp);
+        logger.set(import.meta.codeLineNum).info("logList:", resp);
         log.list = resp;
     } catch (error) {
-        console.error("(setup)", `url:${error.config?.url}`, error);
+        logger.set(import.meta.codeLineNum).error(`url:${error.config?.url}`, error);
         router.push({ name: "login" });
     }
 })();
@@ -46,7 +48,7 @@ async function getLog() {
         }
         log.text = resp;
     } catch (error) {
-        console.error("获取日志出现错误", `url:${error.config?.url}`, error);
+        logger.set(import.meta.codeLineNum).error(`获取日志出现错误 url:${error.config?.url}`, error);
         log.text = "";
     }
     log.loading = false;
@@ -84,13 +86,14 @@ const collapseList = reactive({
         <ALayoutHeader>
             <APageHeader @back="$router.push({ name: 'index' })">
                 <template #title>
-                    <span> 日志 </span>
+                    <span>日志</span>
                 </template>
                 <template #extra>
                     <AButton
                         v-if="appConfigs.client.width <= 576"
                         type="text"
-                        @click="collapseList.show = !collapseList.show">
+                        @click="collapseList.show = !collapseList.show"
+                    >
                         <template #icon>
                             <span style="font-size: 1.2rem; color: var(--color-text-2)">
                                 <i class="fa-solid fa-bars fa-fw" />
@@ -102,16 +105,19 @@ const collapseList = reactive({
                         <ASelect
                             v-model="log.name"
                             :options="logSelectOptions"
-                            style="width: 11em" />
+                            style="width: 11em"
+                        />
                         <ATooltip
                             v-if="appConfigs.client.width <= 768"
                             :content="String(log.fontSize)"
-                            mini>
+                            mini
+                        >
                             <AButton
                                 shape="round"
                                 @click="logFontSizeModal.visible = true"
-                                >字体大小</AButton
                             >
+                                字体大小
+                            </AButton>
                         </ATooltip>
                         <AInputNumber
                             v-else
@@ -120,7 +126,8 @@ const collapseList = reactive({
                             :max="50"
                             mode="button"
                             read-only
-                            style="max-width: 13em">
+                            style="max-width: 13em"
+                        >
                             <template #prefix>
                                 <span>字体大小</span>
                             </template>
@@ -128,19 +135,22 @@ const collapseList = reactive({
                         <AButtonGroup shape="round">
                             <ATooltip
                                 content="回到顶部"
-                                position="bottom">
+                                position="bottom"
+                            >
                                 <AButton @click="$refs.logMonitorRef.backTop(true)">
                                     <IconCaretUp />
                                 </AButton>
                             </ATooltip>
                             <AButton
                                 @click="reflush = true"
-                                :loading="reflush">
+                                :loading="reflush"
+                            >
                                 <IconLoop v-show="!reflush" />
                             </AButton>
                             <ATooltip
                                 content="回到底部"
-                                position="br">
+                                position="br"
+                            >
                                 <AButton @click="$refs.logMonitorRef.toBottom(true)">
                                     <IconCaretDown />
                                 </AButton>
@@ -155,15 +165,18 @@ const collapseList = reactive({
             <Transition name="collapse">
                 <div
                     class="collapseList"
-                    v-show="collapseList.show">
+                    v-show="collapseList.show"
+                >
                     <AForm
                         :model="collapseList"
-                        auto-label-width>
+                        auto-label-width
+                    >
                         <AFormItem label="日志：">
                             <ASelect
                                 v-model="log.name"
                                 :options="logSelectOptions"
-                                @change="collapseList.show = false" />
+                                @change="collapseList.show = false"
+                            />
                         </AFormItem>
                         <AFormItem label="字体大小：">
                             <AInputNumber
@@ -171,18 +184,21 @@ const collapseList = reactive({
                                 :min="12"
                                 :max="50"
                                 mode="button"
-                                read-only />
+                                read-only
+                            />
                         </AFormItem>
                         <AFormItem hide-label>
                             <ARow
                                 justify="end"
-                                :style="{ width: '100%' }">
+                                :style="{ width: '100%' }"
+                            >
                                 <AButtonGroup shape="round">
                                     <AButton
                                         @click="
                                             $refs.logMonitorRef.backTop(true);
                                             collapseList.show = false;
-                                        ">
+                                        "
+                                    >
                                         <IconCaretUp />
                                     </AButton>
                                     <AButton
@@ -190,14 +206,16 @@ const collapseList = reactive({
                                             reflush = true;
                                             collapseList.show = false;
                                         "
-                                        :loading="reflush">
+                                        :loading="reflush"
+                                    >
                                         <IconLoop v-show="!reflush" />
                                     </AButton>
                                     <AButton
                                         @click="
                                             $refs.logMonitorRef.toBottom(true);
                                             collapseList.show = false;
-                                        ">
+                                        "
+                                    >
                                         <IconCaretDown />
                                     </AButton>
                                 </AButtonGroup>
@@ -210,7 +228,8 @@ const collapseList = reactive({
         <ALayoutContent>
             <ARow
                 justify="center"
-                style="height: 100%">
+                style="height: 100%"
+            >
                 <ACol
                     style="height: calc(100% - 1px)"
                     :xs="24"
@@ -218,12 +237,14 @@ const collapseList = reactive({
                     :md="22"
                     :lg="21"
                     :xl="20"
-                    :xxl="19">
+                    :xxl="19"
+                >
                     <LogMonitor
                         :text="log.text"
                         :font-size="log.fontSize"
                         ref="logMonitorRef"
-                        :loading="log.loading" />
+                        :loading="log.loading"
+                    />
                 </ACol>
             </ARow>
         </ALayoutContent>
@@ -233,14 +254,16 @@ const collapseList = reactive({
         v-model:visible="logFontSizeModal.visible"
         width="auto"
         simple
-        :footer="false">
+        :footer="false"
+    >
         <AInputNumber
             v-model="log.fontSize"
             :min="12"
             :max="50"
             mode="button"
             read-only
-            style="max-width: 15em" />
+            style="max-width: 15em"
+        />
     </AModal>
 </template>
 

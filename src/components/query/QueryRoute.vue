@@ -2,6 +2,7 @@
 import { add as addApi, deleteApi, update as updateApi } from "@/api/query-api";
 import SearchNoResultSvg from "@/assets/搜索无结果.svg";
 import { DSXMenu } from "@/components/dsx-menu";
+import { getLogger } from "@/plugins/logger";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { debounce } from "@/util/util";
 import { Table as ATable, Message, Modal, TableColumnData, TableSortable } from "@arco-design/web-vue";
@@ -14,6 +15,7 @@ import { useTableBodyScrollWrap } from "./hooks/table-body-scroll-wrap";
 import { useTableMenu } from "./hooks/table-menu";
 import type { PasswordDataType } from "./types/password-data";
 
+const logger = getLogger(import.meta.filePath);
 const appConfigs = useAppConfigs();
 
 const sortable: TableSortable = {
@@ -113,9 +115,7 @@ const tablePaginationProps = reactive({
     simple: computed(() => appConfigs.client.width < 450),
     pageSizeOptions: [10, 20, 30, 40, 50, 200, 500, 1000],
     onChange: async (current: number) => {
-        if (import.meta.env.DEV) {
-            console.log(`table page change:${current}`);
-        }
+        logger.set(import.meta.codeLineNum).debug(`table page change:${current}`);
         await search_debounce();
         setTableScrollTop(0);
     },
@@ -128,9 +128,7 @@ type TablePageSizeSelectType =
     | Record<string, any>
     | (string | number | boolean | Record<string, any>)[];
 function onTablePaginationPageSizeChange(newPageSize: TablePageSizeSelectType) {
-    if (import.meta.env.DEV) {
-        console.log(`table page size change:${newPageSize}`);
-    }
+    logger.set(import.meta.codeLineNum).debug(`table page size change:${newPageSize}`);
     tablePaginationProps.pageSize = newPageSize as number;
     search_debounce();
 }
@@ -171,9 +169,9 @@ async function onSearch() {
         setTableScrollTop(0);
     } catch (error) {
         if (error instanceof AxiosError) {
-            console.error("(Search)", `url:${error.config?.url}`, error);
+            logger.set(import.meta.codeLineNum).error(`url:${error.config?.url}`, error);
         } else {
-            console.error("(Search)", error);
+            logger.set(import.meta.codeLineNum).error("", error);
         }
     }
 }
@@ -315,9 +313,9 @@ async function onAddSubmit({ name, account, password, remark }: FormType, clearD
                 setTableScrollTop(0);
             } catch (error) {
                 if (error instanceof AxiosError) {
-                    console.error("(add_submit)", `url:${error.config?.url}`, error);
+                    logger.set(import.meta.codeLineNum).error(`url:${error.config?.url}`, error);
                 } else {
-                    console.error("(add_submit)", error);
+                    logger.set(import.meta.codeLineNum).error("", error);
                 }
             }
         } else {
@@ -329,9 +327,9 @@ async function onAddSubmit({ name, account, password, remark }: FormType, clearD
         }
     } catch (error) {
         if (error instanceof AxiosError) {
-            console.error("(add_submit)", `url:${error.config?.url}`, error);
+            logger.set(import.meta.codeLineNum).error(`url:${error.config?.url}`, error);
         } else {
-            console.error("(add_submit)", error);
+            logger.set(import.meta.codeLineNum).error("", error);
         }
         Message.error("服务器错误");
     }
@@ -396,17 +394,19 @@ function onTableCellDblclick(record: PasswordDataType) {
         <ALayoutHeader>
             <APageHeader @back="$router.push({ name: 'index' })">
                 <template #title>
-                    <span> 密码查询 </span>
+                    <span>密码查询</span>
                 </template>
                 <template #extra>
                     <ASpace>
                         <span>数据条数:</span>
                         <ASelect
                             :model-value="tablePaginationProps.pageSize"
-                            @update:model-value="onTablePaginationPageSizeChange">
+                            @update:model-value="onTablePaginationPageSizeChange"
+                        >
                             <AOption
                                 v-for="item in tablePaginationProps.pageSizeOptions"
-                                :value="item">
+                                :value="item"
+                            >
                                 {{ item }} 条/页
                             </AOption>
                         </ASelect>
@@ -423,7 +423,8 @@ function onTableCellDblclick(record: PasswordDataType) {
                                 <ACol flex="105px">
                                     <AButton
                                         size="large"
-                                        @click="addModal.visible = true">
+                                        @click="addModal.visible = true"
+                                    >
                                         <template #icon>
                                             <i class="fa-solid fa-plus fa-fw"></i>
                                         </template>
@@ -439,7 +440,8 @@ function onTableCellDblclick(record: PasswordDataType) {
                                         search-button
                                         @keydown.enter="onSearch"
                                         @search="onSearch"
-                                        :loading="searching">
+                                        :loading="searching"
+                                    >
                                         <template #prefix>
                                             <i class="fa-duotone fa-terminal fa-fw"></i>
                                         </template>
@@ -455,10 +457,12 @@ function onTableCellDblclick(record: PasswordDataType) {
                 <ALayoutContent>
                     <ARow
                         justify="center"
-                        style="height: 100%">
+                        style="height: 100%"
+                    >
                         <ACol
                             v-bind="{ xs: 24, sm: 22, md: 20, lg: 18, xl: 16, xxl: 14 }"
-                            style="height: 100%">
+                            style="height: 100%"
+                        >
                             <ATable
                                 ref="pwdTableRef"
                                 :columns="tableColumns"
@@ -467,13 +471,15 @@ function onTableCellDblclick(record: PasswordDataType) {
                                 :scroll="tableScroll"
                                 :loading="searching"
                                 :pagination="tablePaginationProps"
-                                :page-position="tablePagePosition">
+                                :page-position="tablePagePosition"
+                            >
                                 <template #empty>
                                     <AEmpty>
                                         <template #image>
                                             <img
                                                 :src="SearchNoResultSvg"
-                                                style="width: 300px; height: 300px" />
+                                                style="width: 300px; height: 300px"
+                                            />
                                         </template>
                                     </AEmpty>
                                 </template>
@@ -481,7 +487,8 @@ function onTableCellDblclick(record: PasswordDataType) {
                                     <QueryTd
                                         :value="scope"
                                         @contextmenu="onTableCellContextmenu"
-                                        @dblclick="onTableCellDblclick" />
+                                        @dblclick="onTableCellDblclick"
+                                    />
                                 </template>
                             </ATable>
                         </ACol>
@@ -496,20 +503,24 @@ function onTableCellDblclick(record: PasswordDataType) {
         v-bind="tableMenu"
         v-model:visible="tableMenu.visible"
         min-width="100px"
-        :z-index="1002" />
+        :z-index="1002"
+    />
     <!-- 添加信息模态框 -->
     <AddModal
         v-model:visible="addModal.visible"
-        @submit="onAddSubmit" />
+        @submit="onAddSubmit"
+    />
     <!-- 更新信息模态框 -->
     <UpdateModal
         v-model:visible="updateModal.visible"
         v-model:data="updateModal.data"
-        @submit="onUpdateSubmit" />
+        @submit="onUpdateSubmit"
+    />
     <!-- 展示信息模态框 -->
     <DisplayModal
         v-model:visible="displayModal.visible"
-        :data="displayModal.data" />
+        :data="displayModal.data"
+    />
 </template>
 
 <style scoped>

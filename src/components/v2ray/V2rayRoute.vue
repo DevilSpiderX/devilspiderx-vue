@@ -1,15 +1,13 @@
 <script setup>
-import {
-    start as startApi,
-    state as stateApi,
-    stop as stopApi,
-} from "@/api/v2ray-api";
+import { start as startApi, state as stateApi, stop as stopApi } from "@/api/v2ray-api";
+import { getLogger } from "@/plugins/logger";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { useUserStore } from "@/store/UserStore";
 import { Message } from "@arco-design/web-vue";
 import { onMounted, ref } from "vue";
 import { MySwitch } from "./components";
 
+const logger = getLogger(import.meta.filePath);
 const appConfigs = useAppConfigs(),
     userStore = useUserStore();
 
@@ -18,7 +16,7 @@ const switchStatus = ref(false);
 onMounted(async () => {
     try {
         const resp = await stateApi();
-        console.log("v2rayState:", resp);
+        logger.set(import.meta.codeLineNum).info("v2rayState:", resp);
         switchStatus.value = resp;
     } catch (ignored) {}
 });
@@ -27,7 +25,7 @@ async function on_switch_clicked() {
     try {
         if (switchStatus.value) {
             const resp = await stopApi();
-            console.log("v2rayStop:", resp);
+            logger.set(import.meta.codeLineNum).info("v2rayStop:", resp);
             switch (resp) {
                 case 0: {
                     switchStatus.value = false;
@@ -45,7 +43,7 @@ async function on_switch_clicked() {
             }
         } else {
             const resp = await startApi();
-            console.log("v2rayStart:", resp);
+            logger.set(import.meta.codeLineNum).info("v2rayStart:", resp);
             switch (resp) {
                 case 0: {
                     switchStatus.value = true;
@@ -63,7 +61,7 @@ async function on_switch_clicked() {
             }
         }
     } catch (error) {
-        console.error("(on_switch_clicked)", `url:${error.config?.url}`, error);
+        logger.set(import.meta.codeLineNum).error(`url:${error.config?.url}`, error);
         Message.error("服务器错误");
     }
 }
@@ -72,7 +70,6 @@ const settingsDrawer = ref({
     visible: false,
     loadding: false,
 });
-
 </script>
 
 <template>
@@ -80,7 +77,7 @@ const settingsDrawer = ref({
         <ALayoutHeader>
             <APageHeader @back="$router.push({ name: 'index' })">
                 <template #title>
-                    <span> V2Ray </span>
+                    <span>V2Ray</span>
                 </template>
                 <template #extra>
                     <ASpace>
@@ -89,7 +86,8 @@ const settingsDrawer = ref({
                             type="text"
                             shape="circle"
                             style="color: var(--color-text-2)"
-                            @click="settingsDrawer.visible = true">
+                            @click="settingsDrawer.visible = true"
+                        >
                             <i class="fa-solid fa-gear"></i>
                         </AButton>
                     </ASpace>
@@ -106,7 +104,8 @@ const settingsDrawer = ref({
                         <div class="card-body">
                             <MySwitch
                                 v-model:modal-status="switchStatus"
-                                @click="on_switch_clicked" />
+                                @click="on_switch_clicked"
+                            />
                         </div>
                     </ACard>
                 </ACol>
@@ -117,11 +116,12 @@ const settingsDrawer = ref({
     <ADrawer
         v-model:visible="settingsDrawer.visible"
         title="设置"
-        :footer="false">
+        :footer="false"
+    >
         <ASpace
             direction="vertical"
-            fill>
-        </ASpace>
+            fill
+        ></ASpace>
     </ADrawer>
 </template>
 

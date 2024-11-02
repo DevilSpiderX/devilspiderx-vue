@@ -1,5 +1,6 @@
 <script setup>
 import { reboot as rebootApi, shutdown as shutdownApi, stop as stopApi } from "@/api/os-api";
+import { getLogger } from "@/plugins/logger";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { useUserStore } from "@/store/UserStore";
 import { Scrollbar as AScrollbar, Message } from "@arco-design/web-vue";
@@ -7,6 +8,8 @@ import { computed, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { CpuCard, DiskCard, MemoryCard, NetworkCard } from "./components";
 import { useServerInfoReceiver } from "./hooks/server-info-receiver";
+
+const logger = getLogger(import.meta.filePath);
 
 const appConfigs = useAppConfigs(),
     userStore = useUserStore(),
@@ -32,7 +35,7 @@ const _cd = computed({
 const { values, setCD } = useServerInfoReceiver(_cd.value);
 
 watch(_cd, cd => {
-    console.log("更改数据刷新速率", cd, "ms");
+    logger.set(import.meta.codeLineNum).info(`更改数据刷新速率${cd}ms`);
     setCD(cd);
     Message.success(`数据刷新速率：${cd}ms`);
 });
@@ -138,7 +141,7 @@ const tripleColDisks = computed(() => {
         <ALayoutHeader :style="{ zIndex: 101, boxShadow: pageHeaderBoxShadow }">
             <APageHeader @back="$router.push({ name: 'index' })">
                 <template #title>
-                    <span> 控制中心 </span>
+                    <span>控制中心</span>
                 </template>
                 <template #extra>
                     <ASpace>
@@ -147,7 +150,8 @@ const tripleColDisks = computed(() => {
                             v-model="_cd"
                             :min="500"
                             hide-button
-                            :style="{ maxWidth: '12em' }">
+                            :style="{ maxWidth: '12em' }"
+                        >
                             <template #prefix>
                                 <span>刷新速率</span>
                             </template>
@@ -160,7 +164,8 @@ const tripleColDisks = computed(() => {
                             type="text"
                             shape="circle"
                             style="color: var(--color-text-2)"
-                            @click="settingsDrawer.visible = true">
+                            @click="settingsDrawer.visible = true"
+                        >
                             <i class="fa-solid fa-gear"></i>
                         </AButton>
                     </ASpace>
@@ -171,11 +176,13 @@ const tripleColDisks = computed(() => {
             <AScrollbar
                 class="main-scrollbar"
                 outer-class="main-scrollbar-out"
-                @scroll="on_main_scrollbar_scroll">
+                @scroll="on_main_scrollbar_scroll"
+            >
                 <ACard
                     class="main-card"
                     :header-style="{ height: 'auto' }"
-                    style="background-color: var(--color-bg-1)">
+                    style="background-color: var(--color-bg-1)"
+                >
                     <template #title>
                         <div>
                             <h1 style="text-align: center; user-select: none; margin: 0; font-size: 1.5rem">
@@ -189,12 +196,14 @@ const tripleColDisks = computed(() => {
                         <ARow
                             class="my-row"
                             :gutter="10"
-                            align="start">
+                            align="start"
+                        >
                             <ACol class="my-col">
                                 <CpuCard
                                     :value="values.cpu"
                                     :loading="!values.cpu"
-                                    :enabled="cpuEnabled" />
+                                    :enabled="cpuEnabled"
+                                />
                             </ACol>
 
                             <ACol class="my-col">
@@ -202,24 +211,28 @@ const tripleColDisks = computed(() => {
                                     :value="values.memory"
                                     :process-count="values.os?.processCount"
                                     :loading="!values.memory"
-                                    :enabled="memoryEnabled" />
+                                    :enabled="memoryEnabled"
+                                />
                             </ACol>
 
                             <ACol class="my-col">
                                 <NetworkCard
                                     :values="values.networks"
                                     :loading="values.networks.length === 0"
-                                    :enabled="networkEnabled" />
+                                    :enabled="networkEnabled"
+                                />
                             </ACol>
 
                             <TransitionGroup name="body">
                                 <ACol
                                     v-for="(disk, index) in values.disks"
                                     class="my-col"
-                                    :key="index">
+                                    :key="index"
+                                >
                                     <DiskCard
                                         :value="disk"
-                                        :disk-index="index" />
+                                        :disk-index="index"
+                                    />
                                 </ACol>
                             </TransitionGroup>
                         </ARow>
@@ -230,29 +243,34 @@ const tripleColDisks = computed(() => {
                             class="my-row"
                             :gutter="10"
                             align="start"
-                            style="margin-right: 10px">
+                            style="margin-right: 10px"
+                        >
                             <ACol class="my-col">
                                 <CpuCard
                                     :value="values.cpu"
                                     :loading="!values.cpu"
-                                    :enabled="cpuEnabled" />
+                                    :enabled="cpuEnabled"
+                                />
                             </ACol>
 
                             <ACol class="my-col">
                                 <NetworkCard
                                     :values="values.networks"
                                     :loading="values.networks.length === 0"
-                                    :enabled="networkEnabled" />
+                                    :enabled="networkEnabled"
+                                />
                             </ACol>
 
                             <TransitionGroup name="body">
                                 <ACol
                                     v-for="{ disk, index } in doubleColDisks[1]"
                                     class="my-col"
-                                    :key="index">
+                                    :key="index"
+                                >
                                     <DiskCard
                                         :value="disk"
-                                        :disk-index="index" />
+                                        :disk-index="index"
+                                    />
                                 </ACol>
                             </TransitionGroup>
                         </ARow>
@@ -260,23 +278,27 @@ const tripleColDisks = computed(() => {
                         <ARow
                             class="my-row"
                             :gutter="10"
-                            align="start">
+                            align="start"
+                        >
                             <ACol class="my-col">
                                 <MemoryCard
                                     :value="values.memory"
                                     :process-count="values.os?.processCount"
                                     :loading="!values.memory"
-                                    :enabled="memoryEnabled" />
+                                    :enabled="memoryEnabled"
+                                />
                             </ACol>
 
                             <TransitionGroup name="body">
                                 <ACol
                                     v-for="{ disk, index } in doubleColDisks[0]"
                                     class="my-col"
-                                    :key="index">
+                                    :key="index"
+                                >
                                     <DiskCard
                                         :value="disk"
-                                        :disk-index="index" />
+                                        :disk-index="index"
+                                    />
                                 </ACol>
                             </TransitionGroup>
                         </ARow>
@@ -287,22 +309,26 @@ const tripleColDisks = computed(() => {
                             class="my-row"
                             :gutter="10"
                             align="start"
-                            style="margin-right: 10px">
+                            style="margin-right: 10px"
+                        >
                             <ACol class="my-col">
                                 <CpuCard
                                     :value="values.cpu"
                                     :loading="!values.cpu"
-                                    :enabled="cpuEnabled" />
+                                    :enabled="cpuEnabled"
+                                />
                             </ACol>
 
                             <TransitionGroup name="body">
                                 <ACol
                                     v-for="{ disk, index } in tripleColDisks[0]"
                                     class="my-col"
-                                    :key="index">
+                                    :key="index"
+                                >
                                     <DiskCard
                                         :value="disk"
-                                        :disk-index="index" />
+                                        :disk-index="index"
+                                    />
                                 </ACol>
                             </TransitionGroup>
                         </ARow>
@@ -311,23 +337,27 @@ const tripleColDisks = computed(() => {
                             class="my-row"
                             :gutter="10"
                             align="start"
-                            style="margin-right: 10px">
+                            style="margin-right: 10px"
+                        >
                             <ACol class="my-col">
                                 <MemoryCard
                                     :value="values.memory"
                                     :process-count="values.os?.processCount"
                                     :loading="!values.memory"
-                                    :enabled="memoryEnabled" />
+                                    :enabled="memoryEnabled"
+                                />
                             </ACol>
 
                             <TransitionGroup name="body">
                                 <ACol
                                     v-for="{ disk, index } in tripleColDisks[1]"
                                     class="my-col"
-                                    :key="index">
+                                    :key="index"
+                                >
                                     <DiskCard
                                         :value="disk"
-                                        :disk-index="index" />
+                                        :disk-index="index"
+                                    />
                                 </ACol>
                             </TransitionGroup>
                         </ARow>
@@ -335,22 +365,26 @@ const tripleColDisks = computed(() => {
                         <ARow
                             class="my-row"
                             :gutter="10"
-                            align="start">
+                            align="start"
+                        >
                             <ACol class="my-col">
                                 <NetworkCard
                                     :values="values.networks"
                                     :loading="values.networks.length === 0"
-                                    :enabled="networkEnabled" />
+                                    :enabled="networkEnabled"
+                                />
                             </ACol>
 
                             <TransitionGroup name="body">
                                 <ACol
                                     v-for="{ disk, index } in tripleColDisks[2]"
                                     class="my-col"
-                                    :key="index">
+                                    :key="index"
+                                >
                                     <DiskCard
                                         :value="disk"
-                                        :disk-index="index" />
+                                        :disk-index="index"
+                                    />
                                 </ACol>
                             </TransitionGroup>
                         </ARow>
@@ -363,15 +397,18 @@ const tripleColDisks = computed(() => {
     <ADrawer
         v-model:visible="settingsDrawer.visible"
         title="服务器操作"
-        :footer="false">
+        :footer="false"
+    >
         <ASpace
             direction="vertical"
-            fill>
+            fill
+        >
             <AInputNumber
                 v-if="appConfigs.client.width <= 576"
                 v-model="_cd"
                 :min="500"
-                hide-button>
+                hide-button
+            >
                 <template #prefix>
                     <span>刷新速率</span>
                 </template>
@@ -385,13 +422,15 @@ const tripleColDisks = computed(() => {
                 content="确认重启？"
                 position="bottom"
                 type="warning"
-                @ok="settingsDrawer.reboot">
+                @ok="settingsDrawer.reboot"
+            >
                 <AButton
                     type="primary"
                     long
                     status="warning"
                     size="large"
-                    :loading="settingsDrawer.loadding">
+                    :loading="settingsDrawer.loadding"
+                >
                     <template #icon>
                         <i class="fa-solid fa-plug-circle-bolt fa-fw"></i>
                     </template>
@@ -404,13 +443,15 @@ const tripleColDisks = computed(() => {
                 content="确认关机？"
                 position="bottom"
                 type="warning"
-                @ok="settingsDrawer.shutdown">
+                @ok="settingsDrawer.shutdown"
+            >
                 <AButton
                     type="primary"
                     long
                     status="danger"
                     size="large"
-                    :loading="settingsDrawer.loadding">
+                    :loading="settingsDrawer.loadding"
+                >
                     <template #icon>
                         <i class="fa-solid fa-power-off fa-fw"></i>
                     </template>
@@ -422,12 +463,14 @@ const tripleColDisks = computed(() => {
                 v-if="userStore.permissions.includes('process.shutdown')"
                 content="确认停止服务器进程？"
                 position="bottom"
-                @ok="settingsDrawer.stop">
+                @ok="settingsDrawer.stop"
+            >
                 <AButton
                     type="primary"
                     long
                     size="large"
-                    :loading="settingsDrawer.loadding">
+                    :loading="settingsDrawer.loadding"
+                >
                     <template #icon>
                         <i class="fa-solid fa-stop fa-fw"></i>
                     </template>

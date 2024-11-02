@@ -7,12 +7,15 @@ import {
     token as tokenApi,
 } from "@/api/server-info-api";
 import { status as statusApi } from "@/api/user-api";
+import { getLogger } from "@/plugins/logger";
 import router from "@/router";
 import { sleep } from "@/util/util";
 import { Message } from "@arco-design/web-vue";
 import type { Ref } from "vue";
 import { h, onUnmounted, ref } from "vue";
 import type { ValuesType } from "../types/type";
+
+const logger = getLogger(import.meta.filePath);
 
 class ServerInfoReceiver {
     token: string;
@@ -40,7 +43,7 @@ class ServerInfoReceiver {
             content: "推送服务接入成功",
             duration: 1000,
         });
-        console.log(`${Date()}\nWebSocket成功接入服务器`);
+        logger.set(import.meta.codeLineNum).info("WebSocket成功接入服务器");
         this.setCD(cd);
     }
 
@@ -50,7 +53,7 @@ class ServerInfoReceiver {
             content: "推送服务已关闭",
             duration: 1000,
         });
-        console.log(`${Date()}\nWebSocket连接已关闭(code${ev.code}:${ev.reason})`);
+        logger.set(import.meta.codeLineNum).info(`WebSocket连接已关闭(code${ev.code}:${ev.reason})`);
         if (ev.code === 1000) {
             statusApi().then(resp => {
                 if (!resp.login) {
@@ -66,8 +69,7 @@ class ServerInfoReceiver {
             content: () => h("span", null, ["连接服务发生错误", h("br"), "使用Http请求获取信息"]),
             duration: 1000,
         });
-        console.log(event);
-        console.log(Date() + "\nWebSocket连接发生错误，使用Http请求获取信息");
+        logger.set(import.meta.codeLineNum).error("WebSocket连接发生错误，使用Http请求获取信息", event);
         this.getHardware();
     }
 
@@ -123,10 +125,10 @@ class ServerInfoReceiver {
 async function generate(receiver: Ref<ServerInfoReceiver | null>, values: Ref<ValuesType>, cd: number) {
     try {
         const resp = await tokenApi();
-        console.log("token:", resp);
+        logger.set(import.meta.codeLineNum).info("token:", resp);
         receiver.value = new ServerInfoReceiver(values, resp.token, cd);
     } catch (error: any) {
-        console.error("(beforeCreate)", `url:${error.config?.url}`, error);
+        logger.set(import.meta.codeLineNum).error(`url:${error.config?.url}`, error);
         Message.error({
             id: "server-info-receiver",
             content: "服务器错误",
