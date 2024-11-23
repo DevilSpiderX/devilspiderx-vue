@@ -1,18 +1,20 @@
 <script setup lang="ts">
 import { formatBytes } from "@/util/format-util";
+import { isDefined } from "@/util/validate";
 import { TableColumnData, TableData } from "@arco-design/web-vue";
 import { computed, onMounted, ref } from "vue";
 import { getXML as getXMLApi } from "./scripts/api";
 
-type torrent = {
+type Torrent = {
     title: string;
     link: string;
     size: number;
     date: Date;
     success: boolean;
-}
+    downloadLink: string;
+};
 
-const torrentList = ref<torrent[]>([]);
+const torrentList = ref<Torrent[]>([]);
 
 async function getList() {
     loading.value = true;
@@ -20,20 +22,27 @@ async function getList() {
     const parse = new DOMParser();
     const mDom = parse.parseFromString(xmlStr, "text/xml");
     const nodeList = mDom.querySelectorAll("item");
-    torrentList.value = new Array<torrent>(nodeList.length);
-    for (let i = 0; i < nodeList.length; i++) {
-        const node = nodeList.item(i);
+    torrentList.value = [];
+    for (const node of nodeList) {
         const title = node.querySelector("title")?.textContent;
         const link = node.querySelector("link")?.textContent;
         const date = node.querySelector("pubDate")?.textContent;
         const size = node.querySelector("enclosure")?.getAttribute("length");
-        torrentList.value[i] = {
+        let downloadLink: string | undefined = undefined;
+        if (isDefined(title) && isDefined(link)) {
+            const downloadLinkUrl = new URL(`/api/ani/file/${encodeURI(title)}`, location.href);
+            const urlParams = new URLSearchParams({ fileUrl: encodeURI(link) });
+            downloadLinkUrl.search = urlParams.toString();
+            downloadLink = downloadLinkUrl.toString();
+        }
+        torrentList.value.push({
             title: title ?? "加载失败",
             link: link ?? "javascript:void(0)",
             date: date ? new Date(date) : new Date(0),
             size: size ? Number(size) : 0,
-            success: title != null && link != null && date != null && size != null
-        };
+            success: isDefined(title) && isDefined(link) && isDefined(date) && isDefined(size),
+            downloadLink: downloadLink ?? "",
+        });
     }
     loading.value = false;
 }
@@ -48,13 +57,15 @@ function isToday(date: Date) {
 }
 
 function isYesterday(date: Date) {
-    return dateEquals(date, yestDate)
+    return dateEquals(date, yestDate);
 }
 
 function dateEquals(date: Date, anoDate: Date) {
-    return date.getFullYear() === anoDate.getFullYear()
-        && date.getMonth() === anoDate.getMonth()
-        && date.getDate() === anoDate.getDate();
+    return (
+        date.getFullYear() === anoDate.getFullYear() &&
+        date.getMonth() === anoDate.getMonth() &&
+        date.getDate() === anoDate.getDate()
+    );
 }
 
 function formatDate(date: Date) {
@@ -77,13 +88,15 @@ const tableColumns = ref<TableColumnData[]>([
     { title: "资源名称", slotName: "title" },
     { title: "发布时间", dataIndex: "date", cellStyle: { wordBreak: "normal" } },
     {
-        title: "大小", dataIndex: "size", bodyCellStyle: (record) => {
+        title: "大小",
+        dataIndex: "size",
+        bodyCellStyle: record => {
             const { size } = record as Data;
             return {
-                minWidth: `${size.length * 14}px`
-            }
+                minWidth: `${size.length * 14}px`,
+            };
         },
-    }
+    },
 ]);
 
 type Data = TableData & {
@@ -91,7 +104,8 @@ type Data = TableData & {
     link: string;
     date: string;
     size: string;
-}
+    downloadLink: string;
+};
 
 const tableData = computed<Data[]>(() => {
     const list: Data[] = [];
@@ -103,13 +117,13 @@ const tableData = computed<Data[]>(() => {
             link: torrent.link,
             date: formatDate(torrent.date),
             size: formatBytes(torrent.size, 1),
+            downloadLink: torrent.downloadLink,
         });
     }
     return list;
 });
 
 const loading = ref(false);
-
 </script>
 
 <template>
@@ -123,10 +137,21 @@ const loading = ref(false);
             </APageHeader>
         </ALayoutHeader>
         <ALayoutContent :class="$style.content">
-            <AScrollbar :class="$style.fillScrollbar" :outer-class="$style.fillScrollbarOut">
-                <ATable :columns="tableColumns" :data="tableData" :pagination="false" :loading="loading">
+            <AScrollbar
+                :class="$style.fillScrollbar"
+                :outer-class="$style.fillScrollbarOut"
+            >
+                <ATable
+                    :columns="tableColumns"
+                    :data="tableData"
+                    :pagination="false"
+                    :loading="loading"
+                >
                     <template #title="{ record }: { record: Data }">
-                        <ALink :href="record.link" download>
+                        <ALink
+                            :href="record.downloadLink"
+                            download
+                        >
                             {{ record.title }}
                         </ALink>
                     </template>
@@ -135,8 +160,15 @@ const loading = ref(false);
         </ALayoutContent>
     </ALayout>
 
-    <ABackTop :target-container="`.${$style.fillScrollbar}`" :style="{ bottom: '80px' }">
-        <AButton :class="$style.siteBacktopBtn" size="large" shape="circle">
+    <ABackTop
+        :target-container="`.${$style.fillScrollbar}`"
+        :style="{ bottom: '80px' }"
+    >
+        <AButton
+            :class="$style.siteBacktopBtn"
+            size="large"
+            shape="circle"
+        >
             <IconUp />
         </AButton>
     </ABackTop>

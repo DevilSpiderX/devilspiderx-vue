@@ -38,6 +38,7 @@ httpInstance.interceptors.response.use(
                     content: "当前用户未登录",
                 });
 
+                logger.set(import.meta.codeLineNum).error("当前用户未登录");
                 router.push({ name: "login" });
                 return Promise.reject(resp.data);
             }
@@ -48,7 +49,7 @@ httpInstance.interceptors.response.use(
                 return Promise.reject(resp.data);
             }
             default: {
-                logger.set(import.meta.codeLineNum).info(`code:${code}, msg:${msg}`);
+                logger.set(import.meta.codeLineNum).error(`code:${code}, msg:${msg}`);
                 Message.error(msg);
                 return Promise.reject(resp.data);
             }

@@ -1,4 +1,4 @@
-export function isArray(obj: any): obj is Array<any> {
+export function isArray<T>(obj: any): obj is Array<T> {
     if (typeof Array.isArray === "undefined") {
         return Object.prototype.toString.call(obj) === "[object Array]";
     }
@@ -15,4 +15,8 @@ export function isFunction(obj: any): obj is Function {
 
 export function isNumber(obj: any): obj is number {
     return typeof obj === "number";
+}
+
+export function isDefined<T>(obj: T | undefined | null): obj is T {
+    return obj !== undefined && obj !== null;
 }

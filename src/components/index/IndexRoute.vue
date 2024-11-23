@@ -103,7 +103,9 @@ const avatarSrc = computed({
 });
 
 if (avatarSrc.value === undefined) {
-    getAvatarApi().then(resp => (avatarSrc.value = resp));
+    getAvatarApi()
+        .then(resp => (avatarSrc.value = resp))
+        .catch(() => {});
 }
 
 function on_avatar_error() {
