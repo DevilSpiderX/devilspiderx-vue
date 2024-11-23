@@ -49,6 +49,7 @@ async function form_submit() {
             case 0: {
                 userStore.login = true;
                 Object.assign(userStore, resp.data);
+                userStore.avatar = undefined;
                 router.push({ name: "index" });
                 break;
             }
