@@ -85,7 +85,7 @@ export const useAppConfigs = defineStore(
     {
         persist: {
             storage: localStorage,
-            paths: ["darkTheme", "themeFollowSystem", "isTouchDevice", "log", "appVersion"],
+            pick: ["darkTheme", "themeFollowSystem", "isTouchDevice", "log", "appVersion"],
         },
     },
 );

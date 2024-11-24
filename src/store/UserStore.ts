@@ -25,7 +25,7 @@ export const useUserStore = defineStore(
     {
         persist: {
             storage: localStorage,
-            paths: ["uid"],
+            pick: ["uid"],
         },
     },
 );
