@@ -20,7 +20,7 @@ export interface StatusVo {
     login: boolean;
     admin: boolean;
     uid?: string;
-    permissions?: string[];
+    permissions: string[];
 }
 
 export interface UploadAvatarVo {

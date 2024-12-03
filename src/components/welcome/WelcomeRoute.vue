@@ -3,58 +3,68 @@ import faSpider from "@/assets/faSpider.svg";
 import { useAppConfigs } from "@/store/AppConfigsStore";
 import { useUserStore } from "@/store/UserStore";
 import { sleep } from "@/util/util";
-import { computed, ref, watchEffect } from "vue";
+import { computed, onMounted, ref, useTemplateRef } from "vue";
 import { useRouter } from "vue-router";
 
 const appConfigs = useAppConfigs();
 const userStore = useUserStore();
 
-const logo = ref((() => {
-    let hour = new Date().getHours();
-    if (7 <= hour && hour < 12) {
-        return "Morning";
-    } else if (12 <= hour && hour < 19) {
-        return "Afternoon";
-    } else {
-        return "Evening";
-    }
-})());
+const logo = ref(
+    (() => {
+        let hour = new Date().getHours();
+        if (7 <= hour && hour < 12) {
+            return "Morning";
+        } else if (12 <= hour && hour < 19) {
+            return "Afternoon";
+        } else {
+            return "Evening";
+        }
+    })(),
+);
 
 const router = useRouter();
 
-watchEffect(async () => {
-    if (window.appInited.value) {
-        let name = "login";
-        if (userStore.login) {
-            name = "index";
-        }
-        await sleep(400);
-        if (outerRef.value) {
-            aniState.value = true;
-            outerRef.value.addEventListener("animationend", () => {
+onMounted(async () => {
+    await userStore.checkUserStatus();
+    let name = "login";
+    if (userStore.login) {
+        name = "index";
+    }
+    await sleep(400);
+    if (outerRef.value) {
+        aniState.value = true;
+        outerRef.value.addEventListener(
+            "animationend",
+            () => {
                 router.push({ name });
-            }, {
-                once: true
-            });
-        } else {
-            router.push({ name });
-        }
+            },
+            {
+                once: true,
+            },
+        );
+    } else {
+        router.push({ name });
     }
 });
 
-const spiderImgFilter = computed(() => appConfigs.darkTheme ? "invert(100%)" : "");
+const spiderImgFilter = computed(() => (appConfigs.darkTheme ? "invert(100%)" : ""));
 
-const outerRef = ref(null);
+const outerRef = useTemplateRef("outerRef");
 const aniState = ref(false);
-
 </script>
 
 <template>
     <div class="main">
-        <div ref="outerRef" :class='{ "outer-animation": aniState }'>
-            <img class="spider-img" :src="faSpider" />
+        <div
+            ref="outerRef"
+            :class="{ 'outer-animation': aniState }"
+        >
+            <img
+                class="spider-img"
+                :src="faSpider"
+            />
             <p class="logo">
-                Good<br>
+                Good<br />
                 {{ logo }}
             </p>
         </div>
@@ -84,7 +94,7 @@ const aniState = ref(false);
     margin: 2rem 0;
 }
 
-body[arco-theme=dark] .main {
+body[arco-theme="dark"] .main {
     color: #fcfcfc;
 }
 

@@ -1,18 +1,14 @@
+import App from "@/App.vue";
+import "@/guards";
 import logger from "@/plugins/logger";
+import router from "@/router";
+import pinia from "@/store";
+import "@/styles";
 import { createApp } from "vue";
-import App from "./App.vue";
-import router from "./router";
-import pinia from "./store";
-import "./style.css";
-import "./styles/box-shadow.css";
 
 const app = createApp(App);
-app.use(router).use(pinia).use(logger);
+app.use(router);
+app.use(pinia);
+app.use(logger);
 
 app.mount("#app");
-
-if (import.meta.env.DEV) {
-    import("./styles/style-dev.css");
-} else {
-    import("./styles/style-pro.css");
-}

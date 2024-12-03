@@ -39,7 +39,8 @@ httpInstance.interceptors.response.use(
                 });
 
                 logger.set(import.meta.codeLineNum).error("当前用户未登录");
-                router.push({ name: "login" });
+                const from = encodeURI(`${location.pathname}${location.search}${location.hash}`);
+                router.push({ name: "login", query: { from } });
                 return Promise.reject(resp.data);
             }
             case 1003:

@@ -1,12 +1,27 @@
-<script setup>
+<script setup lang="ts">
 import { login as loginApi } from "@/api/user-api";
 import { getLogger } from "@/plugins/logger";
 import { useUserStore } from "@/store/UserStore";
+import { isDefined } from "@/util/validate";
 import { Message } from "@arco-design/web-vue";
+import { AxiosError } from "axios";
 import Hex from "crypto-js/enc-hex";
 import SHA256 from "crypto-js/sha256";
-import { onMounted, reactive } from "vue";
+import { computed, onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
+
+interface Props {
+    from?: string;
+}
+
+const props = defineProps<Props>();
+
+const fromPath = computed(() => {
+    if (isDefined(props.from)) {
+        return decodeURI(props.from);
+    }
+    return null;
+});
 
 const logger = getLogger(import.meta.filePath);
 const userStore = useUserStore();
@@ -50,7 +65,11 @@ async function form_submit() {
                 userStore.login = true;
                 Object.assign(userStore, resp.data);
                 userStore.avatar = undefined;
-                router.push({ name: "index" });
+                if (isDefined(fromPath.value)) {
+                    router.push({ path: fromPath.value });
+                } else {
+                    router.push({ name: "index" });
+                }
                 break;
             }
             case 1: {
@@ -64,7 +83,8 @@ async function form_submit() {
                 break;
             }
         }
-    } catch (error) {
+    } catch (_error) {
+        const error = _error as AxiosError;
         logger.set(import.meta.codeLineNum).error(`url:${error.config?.url}`, error);
         Message.error("服务器错误");
     }

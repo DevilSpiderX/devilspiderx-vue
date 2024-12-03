@@ -1,3 +1,5 @@
+@use "./box-shadow.scss" as boxShadow;
+
 html,
 body,
 div#app {
@@ -12,8 +14,8 @@ body {
     font-family: "MiSans Normal" !important;
     background-color: var(--color-bg-1);
     color: var(--color-text-1);
-}
 
-body.no-scrollbar::-webkit-scrollbar {
-    display: none;
+    &.no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
 }
