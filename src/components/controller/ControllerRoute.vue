@@ -418,7 +418,7 @@ const tripleColDisks = computed(() => {
             </AInputNumber>
 
             <APopconfirm
-                v-if="userStore.permissions.includes('system.reboot')"
+                v-if="userStore.checkPermission(['system.reboot'])"
                 content="确认重启？"
                 position="bottom"
                 type="warning"
@@ -439,7 +439,7 @@ const tripleColDisks = computed(() => {
             </APopconfirm>
 
             <APopconfirm
-                v-if="userStore.permissions.includes('system.shutdown')"
+                v-if="userStore.checkPermission(['system.shutdown'])"
                 content="确认关机？"
                 position="bottom"
                 type="warning"
@@ -460,7 +460,7 @@ const tripleColDisks = computed(() => {
             </APopconfirm>
 
             <APopconfirm
-                v-if="userStore.permissions.includes('process.shutdown')"
+                v-if="userStore.checkPermission(['process.shutdown'])"
                 content="确认停止服务器进程？"
                 position="bottom"
                 @ok="settingsDrawer.stop"

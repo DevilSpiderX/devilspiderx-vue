@@ -63,13 +63,16 @@ async function form_submit() {
         switch (resp.status) {
             case 0: {
                 userStore.login = true;
-                Object.assign(userStore, resp.data);
+                userStore.$patch(state => {
+                    Object.assign(state, resp.data);
+                });
                 userStore.avatar = undefined;
                 if (isDefined(fromPath.value)) {
                     router.push({ path: fromPath.value });
                 } else {
                     router.push({ name: "index" });
                 }
+                userStore.checkUserStatus();
                 break;
             }
             case 1: {

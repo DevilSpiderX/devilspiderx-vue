@@ -2,6 +2,7 @@ export interface LoginDataVo {
     uid: string;
     admin: boolean;
     roles: string[];
+    permissions: string[];
     lastLoginAddr: string;
 }
 

@@ -2,7 +2,7 @@ import { status as statusApi } from "@/api/user-api";
 import { getLogger } from "@/plugins/logger";
 import { isDefined } from "@/util/validate";
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 const logger = getLogger(import.meta.filePath);
 
@@ -14,6 +14,7 @@ export const useUserStore = defineStore(
         const uid = ref<string>();
         const admin = ref<boolean>(false);
         const login = ref<boolean>(false);
+        const roles = ref<string[]>([]);
         const permissions = ref<string[]>([]);
         const avatar = ref<string>();
 
@@ -33,19 +34,34 @@ export const useUserStore = defineStore(
             }
         }
 
+        const checkRegexList = computed(() => {
+            const result: RegExp[] = [];
+            for (const item of permissions.value) {
+                const _item = item.replaceAll(".", "\\.").replaceAll("*", ".+");
+                result.push(new RegExp(`^${_item}$`));
+            }
+            return result;
+        });
+
+        function checkPermission(checkList: string[]) {
+            return checkList.every(item => checkRegexList.value.some(regex => regex.test(item)));
+        }
+
         return {
             uid,
             admin,
             login,
+            roles,
             permissions,
             avatar,
             checkUserStatus,
+            checkPermission,
         };
     },
     {
         persist: {
             storage: localStorage,
-            pick: ["uid"],
+            pick: ["uid", "roles", "permissions", "avatar"],
         },
     },
 );
