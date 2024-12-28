@@ -12,11 +12,14 @@ export const useUserStore = defineStore(
         //setup
 
         const uid = ref<string>();
+        const token = ref<string>();
         const admin = ref<boolean>(false);
         const login = ref<boolean>(false);
         const roles = ref<string[]>([]);
         const permissions = ref<string[]>([]);
         const avatar = ref<string>();
+
+        const hasToken = computed(() => isDefined(token.value) && token.value !== "");
 
         async function checkUserStatus() {
             try {
@@ -27,6 +30,7 @@ export const useUserStore = defineStore(
                 }
                 admin.value = resp.admin;
                 login.value = resp.login;
+                roles.value = resp.roles;
                 permissions.value = resp.permissions;
             } catch (ignored) {
                 admin.value = false;
@@ -49,11 +53,13 @@ export const useUserStore = defineStore(
 
         return {
             uid,
+            token,
             admin,
             login,
             roles,
             permissions,
             avatar,
+            hasToken,
             checkUserStatus,
             checkPermission,
         };
@@ -61,7 +67,7 @@ export const useUserStore = defineStore(
     {
         persist: {
             storage: localStorage,
-            pick: ["uid", "roles", "permissions", "avatar"],
+            pick: ["uid", "token", "roles", "permissions", "avatar"],
         },
     },
 );

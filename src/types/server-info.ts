@@ -40,7 +40,3 @@ export interface OsVo {
     bitness: number;
     processCount: number;
 }
-
-export interface TokenVo {
-    token: string;
-}

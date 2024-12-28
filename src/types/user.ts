@@ -1,5 +1,6 @@
 export interface LoginDataVo {
     uid: string;
+    token: string;
     admin: boolean;
     roles: string[];
     permissions: string[];
@@ -18,9 +19,10 @@ export interface RegisterVo {
 }
 
 export interface StatusVo {
+    uid?: string;
     login: boolean;
     admin: boolean;
-    uid?: string;
+    roles: string[];
     permissions: string[];
 }
 

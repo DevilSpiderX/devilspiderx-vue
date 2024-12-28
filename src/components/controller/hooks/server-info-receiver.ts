@@ -4,11 +4,11 @@ import {
     memory as memoryApi,
     networks as networksApi,
     os as osApi,
-    token as tokenApi,
 } from "@/api/server-info-api";
 import { status as statusApi } from "@/api/user-api";
 import { getLogger } from "@/plugins/logger";
 import router from "@/router";
+import { useUserStore } from "@/store/UserStore.ts";
 import { sleep } from "@/util/util";
 import { Message } from "@arco-design/web-vue";
 import type { Ref } from "vue";
@@ -123,18 +123,10 @@ class ServerInfoReceiver {
 }
 
 async function generate(receiver: Ref<ServerInfoReceiver | null>, values: Ref<ValuesType>, cd: number) {
-    try {
-        const resp = await tokenApi();
-        logger.set(import.meta.codeLineNum).info("token:", resp);
-        receiver.value = new ServerInfoReceiver(values, resp.token, cd);
-    } catch (error: any) {
-        logger.set(import.meta.codeLineNum).error(`url:${error.config?.url}`, error);
-        Message.error({
-            id: "server-info-receiver",
-            content: "服务器错误",
-        });
-        router.back();
-    }
+    const userStore = useUserStore();
+    const token = userStore.hasToken ? userStore.token! : "";
+
+    receiver.value = new ServerInfoReceiver(values, token, cd);
 }
 
 export function useServerInfoReceiver(cd: number) {

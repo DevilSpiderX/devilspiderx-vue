@@ -1,7 +1,7 @@
+import { useUserStore } from "@/store/UserStore.ts";
+import { isString } from "@/util/validate.ts";
 import type { RouteLocationNormalizedGeneric } from "vue-router";
-import router from "./router";
-import { useUserStore } from "./store/UserStore";
-import { isString } from "./util/validate";
+import router from "./index.ts";
 
 function checkUserStatus(to: RouteLocationNormalizedGeneric) {
     if (to.name === "welcome" || to.name === "login") {

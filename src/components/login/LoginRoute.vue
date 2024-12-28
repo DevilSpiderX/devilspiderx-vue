@@ -18,7 +18,7 @@ const props = defineProps<Props>();
 
 const fromPath = computed(() => {
     if (isDefined(props.from)) {
-        return decodeURI(props.from);
+        return decodeURIComponent(props.from);
     }
     return null;
 });
@@ -68,7 +68,7 @@ async function form_submit() {
                 });
                 userStore.avatar = undefined;
                 if (isDefined(fromPath.value)) {
-                    router.push({ path: fromPath.value });
+                    router.push(fromPath.value);
                 } else {
                     router.push({ name: "index" });
                 }

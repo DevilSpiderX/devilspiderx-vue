@@ -1,13 +1,29 @@
 import { getLogger } from "@/plugins/logger";
 import router from "@/router";
+import defaultSettings from "@/settings.ts";
+import { useUserStore } from "@/store/UserStore.ts";
 import { Message } from "@arco-design/web-vue";
-import axios from "axios";
+import axios, { type InternalAxiosRequestConfig } from "axios";
 
 const logger = getLogger(import.meta.filePath);
 const httpInstance = axios.create({
     baseURL: location.origin,
     timeout: 30_000,
 });
+
+httpInstance.interceptors.request.use(
+    (config: InternalAxiosRequestConfig) => {
+        const userStore = useUserStore();
+        if (userStore.hasToken) {
+            config.headers[defaultSettings.tokenName] = userStore.token;
+        }
+
+        return config;
+    },
+    error => {
+        return Promise.reject(error);
+    },
+);
 
 httpInstance.interceptors.response.use(
     resp => {
@@ -37,10 +53,16 @@ httpInstance.interceptors.response.use(
                     id: "resp_code_1002",
                     content: "当前用户未登录",
                 });
-
                 logger.set(import.meta.codeLineNum).error("当前用户未登录");
-                const from = encodeURI(`${location.pathname}${location.search}${location.hash}`);
-                router.push({ name: "login", query: { from } });
+
+                const route = router.currentRoute.value;
+                if (route.name !== "login") {
+                    const from = encodeURIComponent(route.fullPath);
+                    router.push({
+                        name: "login",
+                        query: { from },
+                    });
+                }
                 return Promise.reject(resp.data);
             }
             case 1003:
