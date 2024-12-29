@@ -2,6 +2,7 @@ import { getLogger } from "@/plugins/logger";
 import router from "@/router";
 import defaultSettings from "@/settings.ts";
 import { useUserStore } from "@/store/UserStore.ts";
+import { isBlank } from "@/util/validate.ts";
 import { Message } from "@arco-design/web-vue";
 import axios, { type InternalAxiosRequestConfig } from "axios";
 
@@ -14,7 +15,7 @@ const httpInstance = axios.create({
 httpInstance.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
         const userStore = useUserStore();
-        if (userStore.hasToken) {
+        if (!isBlank(userStore.token)) {
             config.headers[defaultSettings.tokenName] = userStore.token;
         }
 

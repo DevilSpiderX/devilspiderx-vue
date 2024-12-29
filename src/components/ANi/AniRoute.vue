@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import defaultSettings from "@/settings.ts";
+import { useUserStore } from "@/store/UserStore.ts";
 import { formatBytes } from "@/util/format-util";
-import { isDefined } from "@/util/validate";
+import { isBlank, isDefined } from "@/util/validate";
 import { TableColumnData, TableData } from "@arco-design/web-vue";
 import { computed, onMounted, ref } from "vue";
 import { getXML as getXMLApi } from "./scripts/api";
@@ -14,6 +16,7 @@ type Torrent = {
     downloadLink: string;
 };
 
+const userStore = useUserStore();
 const torrentList = ref<Torrent[]>([]);
 
 async function getList() {
@@ -30,8 +33,11 @@ async function getList() {
         const size = node.querySelector("enclosure")?.getAttribute("length");
         let downloadLink: string | undefined = undefined;
         if (isDefined(title) && isDefined(link)) {
-            const downloadLinkUrl = new URL(`/api/ani/file/${encodeURI(title)}`, location.href);
-            const urlParams = new URLSearchParams({ fileUrl: encodeURI(link) });
+            const downloadLinkUrl = new URL(`/api/ani/file/${encodeURIComponent(title)}`, location.href);
+            const urlParams = new URLSearchParams({ fileUrl: link });
+            if (!isBlank(userStore.token)) {
+                urlParams.set(defaultSettings.tokenName, userStore.token);
+            }
             downloadLinkUrl.search = urlParams.toString();
             downloadLink = downloadLinkUrl.toString();
         }

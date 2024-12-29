@@ -9,8 +9,6 @@ const logger = getLogger(import.meta.filePath);
 export const useUserStore = defineStore(
     "userStore",
     () => {
-        //setup
-
         const uid = ref<string>();
         const token = ref<string>();
         const admin = ref<boolean>(false);
@@ -18,8 +16,6 @@ export const useUserStore = defineStore(
         const roles = ref<string[]>([]);
         const permissions = ref<string[]>([]);
         const avatar = ref<string>();
-
-        const hasToken = computed(() => isDefined(token.value) && token.value !== "");
 
         async function checkUserStatus() {
             try {
@@ -59,7 +55,6 @@ export const useUserStore = defineStore(
             roles,
             permissions,
             avatar,
-            hasToken,
             checkUserStatus,
             checkPermission,
         };

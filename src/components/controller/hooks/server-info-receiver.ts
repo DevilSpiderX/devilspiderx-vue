@@ -10,6 +10,7 @@ import { getLogger } from "@/plugins/logger";
 import router from "@/router";
 import { useUserStore } from "@/store/UserStore.ts";
 import { sleep } from "@/util/util";
+import { isBlank } from "@/util/validate.ts";
 import { Message } from "@arco-design/web-vue";
 import type { Ref } from "vue";
 import { h, onUnmounted, ref } from "vue";
@@ -124,7 +125,7 @@ class ServerInfoReceiver {
 
 async function generate(receiver: Ref<ServerInfoReceiver | null>, values: Ref<ValuesType>, cd: number) {
     const userStore = useUserStore();
-    const token = userStore.hasToken ? userStore.token! : "";
+    const token = isBlank(userStore.token) ? "" : userStore.token;
 
     receiver.value = new ServerInfoReceiver(values, token, cd);
 }

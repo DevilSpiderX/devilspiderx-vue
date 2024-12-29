@@ -20,3 +20,10 @@ export function isNumber(obj: any): obj is number {
 export function isDefined<T>(obj: T | undefined | null): obj is T {
     return obj !== undefined && obj !== null;
 }
+
+export function isBlank(obj: string | undefined | null): obj is undefined | null | "" {
+    if (isDefined(obj)) {
+        return obj === "";
+    }
+    return true;
+}
