@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { Message } from "@arco-design/web-vue";
-import { computed } from "vue";
 
 type Props = {
-    visible: boolean;
     data: {
         name: string;
         account: string;
@@ -20,14 +18,8 @@ const props = withDefaults(defineProps<Props>(), {
         remark: "",
     }),
 });
-const emit = defineEmits<{
-    "update:visible": [value: boolean];
-}>();
 
-const _visible = computed({
-    get: () => props.visible,
-    set: value => emit("update:visible", value),
-});
+const visible = defineModel("visible", { default: false });
 
 const style = {
     fontSize: "16px",
@@ -55,23 +47,26 @@ function onCopyButtonClick(value: string) {
 
 <template>
     <AModal
-        v-model:visible="_visible"
+        v-model:visible="visible"
         title="数据详细"
         simple
         :footer="false"
         width="auto"
-        :modal-style="{ maxWidth: '80%', minWidth: `250px` }">
+        :modal-style="{ maxWidth: '80%', minWidth: `250px` }"
+    >
         <ADescriptions
             :column="1"
             :label-style="style"
-            :value-style="style">
+            :value-style="style"
+        >
             <ADescriptionsItem label="名 称">
                 <div :class="$style.descrItem">
                     <span>{{ data.name }}</span>
                     <button
                         v-if="data.name && data.name.length !== 0"
                         :class="$style.copyBtn"
-                        @click="onCopyButtonClick(data.name)">
+                        @click="onCopyButtonClick(data.name)"
+                    >
                         <i class="fa-regular fa-copy" />
                     </button>
                 </div>
@@ -82,7 +77,8 @@ function onCopyButtonClick(value: string) {
                     <button
                         v-if="data.account && data.account.length !== 0"
                         :class="$style.copyBtn"
-                        @click="onCopyButtonClick(data.account)">
+                        @click="onCopyButtonClick(data.account)"
+                    >
                         <i class="fa-regular fa-copy" />
                     </button>
                 </div>
@@ -93,7 +89,8 @@ function onCopyButtonClick(value: string) {
                     <button
                         v-if="data.password && data.password.length !== 0"
                         :class="$style.copyBtn"
-                        @click="onCopyButtonClick(data.password)">
+                        @click="onCopyButtonClick(data.password)"
+                    >
                         <i class="fa-regular fa-copy" />
                     </button>
                 </div>
@@ -104,7 +101,8 @@ function onCopyButtonClick(value: string) {
                     <button
                         v-if="data.remark && data.remark.length !== 0"
                         :class="$style.copyBtn"
-                        @click="onCopyButtonClick(data.remark)">
+                        @click="onCopyButtonClick(data.remark)"
+                    >
                         <i class="fa-regular fa-copy" />
                     </button>
                 </div>

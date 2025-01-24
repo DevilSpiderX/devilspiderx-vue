@@ -163,11 +163,7 @@ async function onSearch() {
         await search_debounce(0);
         setTableScrollTop(0);
     } catch (error) {
-        if (error instanceof AxiosError) {
-            logger.set(import.meta.codeLineNum).error(`url:${error.config?.url}`, error);
-        } else {
-            logger.set(import.meta.codeLineNum).error("", error);
-        }
+        logger.set(import.meta.codeLineNum).error("出现错误", error);
     }
 }
 

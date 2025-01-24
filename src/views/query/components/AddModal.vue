@@ -8,24 +8,14 @@ import { isDefined } from "@/utils/validate.ts";
 import { FieldRule, Message } from "@arco-design/web-vue";
 import { computed, ref, useId, useTemplateRef, watch } from "vue";
 
-export type FormType = Omit<Required<MyPasswordsVo>, "id">;
-
 const logger = getLogger(import.meta.filePath);
 
-const props = defineProps<{
-    visible: boolean;
-}>();
-
 const emit = defineEmits<{
-    "update:visible": [value: boolean];
     success: [name: string];
     error: [error?: any];
 }>();
 
-const _visible = computed({
-    get: () => props.visible,
-    set: value => emit("update:visible", value),
-});
+const visible = defineModel("visible", { default: false });
 
 const defaultForm = {
     name: "",
@@ -33,6 +23,8 @@ const defaultForm = {
     password: "",
     remark: "",
 };
+
+type FormType = Omit<Required<MyPasswordsVo>, "id">;
 
 const form = ref<FormType>(structuredClone(defaultForm));
 
@@ -79,13 +71,13 @@ const { width } = useModalWidth();
 
 function cancel_click() {
     cleanData();
-    _visible.value = false;
+    visible.value = false;
 }
 </script>
 
 <template>
     <AModal
-        v-model:visible="_visible"
+        v-model:visible="visible"
         title="添加密码记录"
         :width="width"
         unmount-on-close
