@@ -1,10 +1,13 @@
-<script setup>
+<script setup lang="ts">
 import { reboot as rebootApi, shutdown as shutdownApi, stop as stopApi } from "@/api/os-api.ts";
 import { getLogger } from "@/plugins/logger.ts";
 import { useAppConfigs } from "@/stores/AppConfigsStore.ts";
 import { useUserStore } from "@/stores/UserStore.ts";
-import { Scrollbar as AScrollbar, Message } from "@arco-design/web-vue";
-import { computed, reactive, ref, watch } from "vue";
+import type { DiskVo } from "@/types/server-info.ts";
+import { debounce } from "@/utils/util.ts";
+import { isDefined } from "@/utils/validate.ts";
+import { Message } from "@arco-design/web-vue";
+import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { CpuCard, DiskCard, MemoryCard, NetworkCard } from "./components/index.ts";
 import { useServerInfoReceiver } from "./hooks/server-info-receiver.ts";
@@ -40,39 +43,59 @@ watch(_cd, cd => {
     Message.success(`数据刷新速率：${cd}ms`);
 });
 
-const pageHeaderBoxShadow = ref();
+const pageHeaderBoxShadow = ref<string | undefined>();
 
-function on_main_scrollbar_scroll(event) {
-    pageHeaderBoxShadow.value = event.target?.scrollTop === 0 ? undefined : "var(--bs-shadow)";
+function onMainScrollbarScroll(event: Event) {
+    if (isDefined(event.target)) {
+        const target = event.target as HTMLElement;
+        pageHeaderBoxShadow.value = target.scrollTop === 0 ? undefined : "var(--bs-shadow)";
+    } else {
+        pageHeaderBoxShadow.value = undefined;
+    }
 }
 
-const settingsDrawer = reactive({
+const settingsDrawer = ref({
     visible: false,
     loadding: false,
-    reboot: async () => {
-        settingsDrawer.loadding = true;
+});
+
+const onSettingsDrawerRebootClick = debounce(async () => {
+    settingsDrawer.value.loadding = true;
+    try {
         await rebootApi();
         Message.success("服务器重启成功");
-        settingsDrawer.visible = false;
+        settingsDrawer.value.visible = false;
         resetValues();
-        settingsDrawer.loadding = false;
-    },
-    shutdown: async () => {
-        settingsDrawer.loadding = true;
+    } catch {
+    } finally {
+        settingsDrawer.value.loadding = false;
+    }
+});
+
+const onSettingsDrawerShutdownClick = debounce(async () => {
+    settingsDrawer.value.loadding = true;
+    try {
         await shutdownApi();
         Message.success("服务器关机成功");
-        settingsDrawer.visible = false;
+        settingsDrawer.value.visible = false;
         resetValues();
-        settingsDrawer.loadding = false;
-    },
-    stop: async () => {
-        settingsDrawer.loadding = true;
+    } catch {
+    } finally {
+        settingsDrawer.value.loadding = false;
+    }
+});
+
+const onSettingsDrawerStopClick = debounce(async () => {
+    settingsDrawer.value.loadding = true;
+    try {
         await stopApi();
         Message.success("停止服务器进程成功");
-        settingsDrawer.visible = false;
+        settingsDrawer.value.visible = false;
         resetValues();
-        settingsDrawer.loadding = false;
-    },
+    } catch {
+    } finally {
+        settingsDrawer.value.loadding = false;
+    }
 });
 
 const cpuEnabled = ref(true);
@@ -85,16 +108,14 @@ function resetValues() {
     networkEnabled.value = false;
 }
 
-/**
- * @typedef {import("@/types/server-info.js").DiskVo} DiskValueType
- */
+type ColDisks = Array<{
+    index: number;
+    disk: DiskVo;
+}>;
 
 // 双列
 const doubleColDisks = computed(() => {
-    /**
-     * @type { {index:number,disk:DiskValueType}[][] }
-     */
-    const result = [[], []];
+    const result: [ColDisks, ColDisks] = [[], []];
     values.value.disks.forEach((disk, index) => {
         if (index % 2 === 0 || index === 1) {
             result[0].push({ index, disk });
@@ -107,10 +128,7 @@ const doubleColDisks = computed(() => {
 
 // 三列
 const tripleColDisks = computed(() => {
-    /**
-     * @type { {index:number,disk:DiskValueType}[][] }
-     */
-    const result = [[], [], []];
+    const result: [ColDisks, ColDisks, ColDisks] = [[], [], []];
     values.value.disks.forEach((disk, index) => {
         switch (index) {
             case 0:
@@ -176,7 +194,7 @@ const tripleColDisks = computed(() => {
             <AScrollbar
                 class="main-scrollbar"
                 outer-class="main-scrollbar-out"
-                @scroll="on_main_scrollbar_scroll"
+                @scroll="onMainScrollbarScroll"
             >
                 <ACard
                     class="main-card"
@@ -210,7 +228,7 @@ const tripleColDisks = computed(() => {
                                 <MemoryCard
                                     :value="values.memory"
                                     :process-count="values.os?.processCount"
-                                    :loading="!values.memory"
+                                    :loading="!isDefined(values.memory)"
                                     :enabled="memoryEnabled"
                                 />
                             </ACol>
@@ -284,7 +302,7 @@ const tripleColDisks = computed(() => {
                                 <MemoryCard
                                     :value="values.memory"
                                     :process-count="values.os?.processCount"
-                                    :loading="!values.memory"
+                                    :loading="!isDefined(values.memory)"
                                     :enabled="memoryEnabled"
                                 />
                             </ACol>
@@ -343,7 +361,7 @@ const tripleColDisks = computed(() => {
                                 <MemoryCard
                                     :value="values.memory"
                                     :process-count="values.os?.processCount"
-                                    :loading="!values.memory"
+                                    :loading="!isDefined(values.memory)"
                                     :enabled="memoryEnabled"
                                 />
                             </ACol>
@@ -422,7 +440,7 @@ const tripleColDisks = computed(() => {
                 content="确认重启？"
                 position="bottom"
                 type="warning"
-                @ok="settingsDrawer.reboot"
+                @ok="onSettingsDrawerRebootClick"
             >
                 <AButton
                     type="primary"
@@ -443,7 +461,7 @@ const tripleColDisks = computed(() => {
                 content="确认关机？"
                 position="bottom"
                 type="warning"
-                @ok="settingsDrawer.shutdown"
+                @ok="onSettingsDrawerShutdownClick"
             >
                 <AButton
                     type="primary"
@@ -463,7 +481,7 @@ const tripleColDisks = computed(() => {
                 v-if="userStore.checkPermission(['process.shutdown'])"
                 content="确认停止服务器进程？"
                 position="bottom"
-                @ok="settingsDrawer.stop"
+                @ok="onSettingsDrawerStopClick"
             >
                 <AButton
                     type="primary"

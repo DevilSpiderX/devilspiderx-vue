@@ -1,6 +1,4 @@
-import { MD5 } from "crypto-js";
-
-function sleep(duration: number): Promise<number> {
+export function sleep(duration: number): Promise<number> {
     return new Promise(resolve => {
         setTimeout(() => {
             resolve(duration);
@@ -8,7 +6,7 @@ function sleep(duration: number): Promise<number> {
     });
 }
 
-function debounce<T extends (...args: any) => any>(callback: T, ms?: number) {
+export function debounce<T extends (...args: any) => any>(callback: T, ms: number = 500) {
     let timer: NodeJS.Timeout | undefined;
 
     const _debounce = (...args: Parameters<T>) => {
@@ -33,18 +31,7 @@ function debounce<T extends (...args: any) => any>(callback: T, ms?: number) {
         timer = undefined;
     };
 
+    _debounce.immediate = callback;
+
     return _debounce;
 }
-
-function getOnlyID(prefix: string, suffixLength?: number) {
-    const _suffix = MD5(prefix + Date.now()).toString();
-    let suffix;
-    if (suffixLength && suffixLength > 0 && suffixLength <= _suffix.length) {
-        suffix = _suffix.substring(0, suffixLength);
-    } else {
-        suffix = _suffix;
-    }
-    return `${prefix}-${suffix}`;
-}
-
-export { debounce, getOnlyID, sleep };

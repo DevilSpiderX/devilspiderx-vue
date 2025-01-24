@@ -1,8 +1,9 @@
-<script setup>
+<script setup lang="ts">
 import { start as startApi, state as stateApi, stop as stopApi } from "@/api/v2ray-api.ts";
 import { getLogger } from "@/plugins/logger.ts";
 import { useAppConfigs } from "@/stores/AppConfigsStore.ts";
 import { useUserStore } from "@/stores/UserStore.ts";
+import { debounce } from "@/utils/util.ts";
 import { Message } from "@arco-design/web-vue";
 import { onMounted, ref } from "vue";
 import { MySwitch } from "./components/index.ts";
@@ -21,7 +22,7 @@ onMounted(async () => {
     } catch (ignored) {}
 });
 
-async function on_switch_clicked() {
+const onSwitchClicked = debounce(async () => {
     try {
         if (switchStatus.value) {
             const resp = await stopApi();
@@ -61,10 +62,10 @@ async function on_switch_clicked() {
             }
         }
     } catch (error) {
-        logger.set(import.meta.codeLineNum).error(`url:${error.config?.url}`, error);
+        logger.set(import.meta.codeLineNum).error(`出现错误`, error);
         Message.error("服务器错误");
     }
-}
+});
 
 const settingsDrawer = ref({
     visible: false,
@@ -104,7 +105,7 @@ const settingsDrawer = ref({
                         <div class="card-body">
                             <MySwitch
                                 v-model:modal-status="switchStatus"
-                                @click="on_switch_clicked"
+                                @click="onSwitchClicked"
                             />
                         </div>
                     </ACard>

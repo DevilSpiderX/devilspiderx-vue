@@ -1,42 +1,43 @@
-<script setup>
+<script setup lang="ts">
 import { register as registerApi } from "@/api/user-api.ts";
 import { getLogger } from "@/plugins/logger.ts";
-import { Message } from "@arco-design/web-vue";
-import { reactive } from "vue";
+import { debounce } from "@/utils/util.ts";
+import { FieldRule, Message } from "@arco-design/web-vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 
 const logger = getLogger(import.meta.filePath);
-const inputStatus = reactive([false, false, false]);
-const form = reactive({
+
+const form = ref({
     uid: "",
     pwd: "",
     pwd_a: "",
 });
+
+const formRules = computed(() => ({
+    uid: <FieldRule<string>>{
+        required: true,
+        message: "请输入账号",
+    },
+    pwd: <FieldRule<string>>{
+        required: true,
+        message: "请输入密码",
+    },
+    pwd_a: <FieldRule<string>>{
+        required: true,
+        message: "请再次输入密码",
+    },
+}));
+
 const router = useRouter();
 
-async function form_submit() {
-    for (const i in inputStatus) inputStatus[i] = false;
-    let uid = form.uid;
-    let pwd = form.pwd;
-    let pwd_a = form.pwd_a;
-    if (uid === "") {
-        inputStatus[0] = true;
-        return;
-    }
-    if (pwd === "") {
-        inputStatus[1] = true;
-        return;
-    }
-    if (pwd_a === "") {
-        inputStatus[2] = true;
-        return;
-    }
+const onFormSubmit = debounce(async () => {
+    const { uid, pwd, pwd_a } = form.value;
     if (pwd !== pwd_a) {
         Message.error("两次输入的密码不相同");
-        inputStatus[1] = true;
-        inputStatus[2] = true;
         return;
     }
+
     running_start();
     try {
         const resp = await registerApi(uid, pwd);
@@ -48,37 +49,35 @@ async function form_submit() {
             }
             case 1: {
                 Message.error("注册失败");
-                for (const i in inputStatus) inputStatus[i] = true;
                 break;
             }
             case 2: {
                 Message.error("用户名已存在\n请换一个用户名");
-                inputStatus[0] = true;
                 break;
             }
             case 1000: {
                 Message.error("账号或者密码未填写");
-                for (const i in inputStatus) inputStatus[i] = true;
                 break;
             }
         }
     } catch (error) {
-        logger.set(import.meta.codeLineNum).error(`url:${error.config?.url}`, error);
+        logger.set(import.meta.codeLineNum).error(`提交表单出现错误`, error);
         Message.error("服务器错误");
+    } finally {
+        running_stop();
     }
-    running_stop();
-}
+});
 
-const running = reactive({
+const running = ref({
     show: false,
 });
 
 function running_start() {
-    running.show = true;
+    running.value.show = true;
 }
 
 function running_stop() {
-    running.show = false;
+    running.value.show = false;
 }
 </script>
 
@@ -89,7 +88,8 @@ function running_stop() {
                 <ACol class="register-col">
                     <AForm
                         :model="form"
-                        @submit="form_submit"
+                        :rules="formRules"
+                        @submit-success="onFormSubmit"
                     >
                         <h1 style="text-align: center; font-size: 2.5rem">注&nbsp;&nbsp;册</h1>
                         <AFormItem
@@ -102,7 +102,6 @@ function running_stop() {
                                 placeholder="账号"
                                 allow-clear
                                 :input-attrs="{ style: { 'font-size': '1.1rem' } }"
-                                :error="inputStatus[0]"
                             >
                                 <template #prefix>
                                     <span><i class="fa-solid fa-user fa-fw"></i></span>
@@ -119,7 +118,6 @@ function running_stop() {
                                 placeholder="密码"
                                 allow-clear
                                 :input-attrs="{ style: { 'font-size': '1.1rem' } }"
-                                :error="inputStatus[1]"
                             >
                                 <template #prefix>
                                     <span><i class="fa-duotone fa-key fa-fw"></i></span>
@@ -136,7 +134,6 @@ function running_stop() {
                                 placeholder="再次输入密码"
                                 allow-clear
                                 :input-attrs="{ style: { 'font-size': '1.1rem' } }"
-                                :error="inputStatus[2]"
                             >
                                 <template #prefix>
                                     <span><i class="fa-duotone fa-key fa-fw"></i></span>

@@ -21,9 +21,9 @@ const defaultValue: NetworkVo = {
 
 const props = withDefaults(
     defineProps<{
-        values: NetworkVo[];
-        loading: boolean;
-        enabled: boolean;
+        values?: NetworkVo[];
+        loading?: boolean;
+        enabled?: boolean;
     }>(),
     {
         values: () => [],

@@ -1,17 +1,15 @@
-<script setup>
+<script setup lang="ts">
 import { list as listApi, logFile as logFileApi } from "@/api/log-api.ts";
 import { getLogger } from "@/plugins/logger.ts";
 import { useAppConfigs } from "@/stores/AppConfigsStore.ts";
 import { IconCaretDown, IconCaretUp, IconLoop } from "@arco-design/web-vue/es/icon";
-import { computed, reactive, ref, toRef, watch, watchEffect } from "vue";
-import { useRouter } from "vue-router";
+import { computed, onMounted, ref, toRef, useTemplateRef, watch, watchEffect } from "vue";
 import { LogMonitor } from "./components/index.ts";
-import { useLogMonitorRef } from "./hooks/refs.ts";
 
 const logger = getLogger(import.meta.filePath);
 const appConfigs = useAppConfigs();
 
-const log = reactive({
+const log = ref({
     list: ["now.log"],
     name: "now.log",
     text: "",
@@ -19,42 +17,38 @@ const log = reactive({
     loading: false,
 });
 
-const router = useRouter();
-(async () => {
+onMounted(async () => {
     try {
         const resp = await listApi();
         logger.set(import.meta.codeLineNum).info("logList:", resp);
-        log.list = resp;
+        log.value.list = resp;
     } catch (error) {
-        logger.set(import.meta.codeLineNum).error(`url:${error.config?.url}`, error);
-        router.push({ name: "login" });
+        logger.set(import.meta.codeLineNum).error(`获取日志列表出现错误`, error);
     }
-})();
+});
+
 const logSelectOptions = computed(() => {
-    const result = [];
-    for (const logName of log.list) {
+    const result: Array<{ value: string; label: string }> = [];
+    for (const logName of log.value.list) {
         result.push({ value: logName, label: logName.replaceAll(".log", "") });
     }
     return result;
 });
 
 async function getLog() {
-    log.loading = true;
+    log.value.loading = true;
     try {
-        const resp = await logFileApi(log.name);
-        if (Object.hasOwn(resp, "code") && (resp.code === 100 || resp.code === 101)) {
-            router.push({ name: "login" });
-            return;
-        }
-        log.text = resp;
+        const resp = await logFileApi(log.value.name);
+        log.value.text = resp;
     } catch (error) {
-        logger.set(import.meta.codeLineNum).error(`获取日志出现错误 url:${error.config?.url}`, error);
-        log.text = "";
+        logger.set(import.meta.codeLineNum).error(`获取日志出现错误`, error);
+        log.value.text = "";
+    } finally {
+        log.value.loading = false;
     }
-    log.loading = false;
 }
 
-const logMonitorRef = useLogMonitorRef();
+const logMonitorRef = useTemplateRef("logMonitorRef");
 
 watchEffect(async () => {
     await getLog();
@@ -71,11 +65,11 @@ watch(reflush, async reflushVal => {
     }
 });
 
-const logFontSizeModal = reactive({
+const logFontSizeModal = ref({
     visible: false,
 });
 
-const collapseList = reactive({
+const collapseList = ref({
     show: false,
     form: {},
 });
@@ -125,7 +119,6 @@ const collapseList = reactive({
                             :min="12"
                             :max="50"
                             mode="button"
-                            read-only
                             style="max-width: 13em"
                         >
                             <template #prefix>
@@ -137,7 +130,7 @@ const collapseList = reactive({
                                 content="回到顶部"
                                 position="bottom"
                             >
-                                <AButton @click="$refs.logMonitorRef.backTop(true)">
+                                <AButton @click="logMonitorRef?.backTop(true)">
                                     <IconCaretUp />
                                 </AButton>
                             </ATooltip>
@@ -151,7 +144,7 @@ const collapseList = reactive({
                                 content="回到底部"
                                 position="br"
                             >
-                                <AButton @click="$refs.logMonitorRef.toBottom(true)">
+                                <AButton @click="logMonitorRef?.toBottom(true)">
                                     <IconCaretDown />
                                 </AButton>
                             </ATooltip>
@@ -168,7 +161,7 @@ const collapseList = reactive({
                     v-show="collapseList.show"
                 >
                     <AForm
-                        :model="collapseList"
+                        :model="collapseList.form"
                         auto-label-width
                     >
                         <AFormItem label="日志：">
@@ -184,7 +177,6 @@ const collapseList = reactive({
                                 :min="12"
                                 :max="50"
                                 mode="button"
-                                read-only
                             />
                         </AFormItem>
                         <AFormItem hide-label>
@@ -195,7 +187,7 @@ const collapseList = reactive({
                                 <AButtonGroup shape="round">
                                     <AButton
                                         @click="
-                                            $refs.logMonitorRef.backTop(true);
+                                            logMonitorRef?.backTop(true);
                                             collapseList.show = false;
                                         "
                                     >
@@ -212,7 +204,7 @@ const collapseList = reactive({
                                     </AButton>
                                     <AButton
                                         @click="
-                                            $refs.logMonitorRef.toBottom(true);
+                                            logMonitorRef?.toBottom(true);
                                             collapseList.show = false;
                                         "
                                     >
@@ -240,9 +232,9 @@ const collapseList = reactive({
                     :xxl="19"
                 >
                     <LogMonitor
+                        ref="logMonitorRef"
                         :text="log.text"
                         :font-size="log.fontSize"
-                        ref="logMonitorRef"
                         :loading="log.loading"
                     />
                 </ACol>
@@ -261,7 +253,6 @@ const collapseList = reactive({
             :min="12"
             :max="50"
             mode="button"
-            read-only
             style="max-width: 15em"
         />
     </AModal>

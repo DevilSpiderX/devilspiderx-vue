@@ -2,12 +2,12 @@
 import { login as loginApi } from "@/api/user-api.ts";
 import { getLogger } from "@/plugins/logger.ts";
 import { useUserStore } from "@/stores/UserStore.ts";
+import { debounce } from "@/utils/util.ts";
 import { isDefined } from "@/utils/validate.ts";
-import { Message } from "@arco-design/web-vue";
-import { AxiosError } from "axios";
+import { FieldRule, Message } from "@arco-design/web-vue";
 import Hex from "crypto-js/enc-hex";
 import SHA256 from "crypto-js/sha256";
-import { computed, onMounted, reactive } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 interface Props {
@@ -26,39 +26,39 @@ const fromPath = computed(() => {
 const logger = getLogger(import.meta.filePath);
 const userStore = useUserStore();
 
-const form = reactive({
+const form = ref({
     uid: "",
     pwd: "",
 });
 
+const formRules = computed(() => ({
+    uid: <FieldRule<string>>{
+        required: true,
+        message: "请输入账号",
+    },
+    pwd: <FieldRule<string>>{
+        required: true,
+        message: "请输入密码",
+    },
+}));
+
 onMounted(() => {
     const loginUid = userStore.uid;
     if (loginUid !== undefined) {
-        form.uid = loginUid;
+        form.value.uid = loginUid;
     }
 });
 
-const inputStatus = reactive([false, false]);
 const router = useRouter();
 
-async function form_submit() {
-    for (const i in inputStatus) inputStatus[i] = false;
-    let uid = form.uid;
-    let pwd = form.pwd;
-    if (uid === "") {
-        inputStatus[0] = true;
-        return;
-    }
-    if (pwd === "") {
-        inputStatus[1] = true;
-        return;
-    }
+const onFormSubmit = debounce(async () => {
+    const { uid, pwd } = form.value;
     userStore.uid = uid;
 
     running_start();
-    pwd = SHA256(pwd).toString(Hex);
+    const _pwd = SHA256(pwd).toString(Hex);
     try {
-        const resp = await loginApi(uid, pwd);
+        const resp = await loginApi(uid, _pwd);
         logger.set(import.meta.codeLineNum).info("Login:", resp);
         switch (resp.status) {
             case 0: {
@@ -77,33 +77,31 @@ async function form_submit() {
             }
             case 1: {
                 Message.error("密码错误");
-                inputStatus[1] = true;
                 break;
             }
             case 2: {
                 Message.error("账号不存在");
-                for (const i in inputStatus) inputStatus[i] = false;
                 break;
             }
         }
-    } catch (_error) {
-        const error = _error as AxiosError;
-        logger.set(import.meta.codeLineNum).error(`url:${error.config?.url}`, error);
+    } catch (error) {
+        logger.set(import.meta.codeLineNum).error(`登录出错`, error);
         Message.error("服务器错误");
+    } finally {
+        running_stop();
     }
-    running_stop();
-}
+});
 
-const running = reactive({
+const running = ref({
     show: false,
 });
 
 function running_start() {
-    running.show = true;
+    running.value.show = true;
 }
 
 function running_stop() {
-    running.show = false;
+    running.value.show = false;
 }
 </script>
 
@@ -114,7 +112,8 @@ function running_stop() {
                 <ACol class="register-col">
                     <AForm
                         :model="form"
-                        @submit="form_submit"
+                        :rules="formRules"
+                        @submit-success="onFormSubmit"
                     >
                         <h1 style="text-align: center; font-size: 2.5rem">登&nbsp;&nbsp;录</h1>
                         <AFormItem
@@ -127,7 +126,6 @@ function running_stop() {
                                 placeholder="账号"
                                 allow-clear
                                 :input-attrs="{ style: { 'font-size': '1.1rem' } }"
-                                :error="inputStatus[0]"
                             >
                                 <template #prefix>
                                     <span><i class="fa-solid fa-user fa-fw"></i></span>
@@ -144,7 +142,6 @@ function running_stop() {
                                 placeholder="密码"
                                 allow-clear
                                 :input-attrs="{ style: { 'font-size': '1.1rem' } }"
-                                :error="inputStatus[1]"
                             >
                                 <template #prefix>
                                     <span><i class="fa-duotone fa-key fa-fw"></i></span>

@@ -7,9 +7,9 @@ import BaseCard from "./BaseCard.vue";
 
 const props = withDefaults(
     defineProps<{
-        value: CpuVo;
-        loading: boolean;
-        enabled: boolean;
+        value?: CpuVo;
+        loading?: boolean;
+        enabled?: boolean;
     }>(),
     {
         value: () => ({
@@ -57,15 +57,18 @@ const progressColor = computed(() => {
         <div class="my-card-body">
             <ASkeleton
                 animation
-                :loading="loading">
+                :loading="loading"
+            >
                 <ASkeletonLine :rows="4" />
                 <template #content>
                     <ADescriptions
                         :column="2"
-                        :value-style="{ fontSize: '16px' }">
+                        :value-style="{ fontSize: '16px' }"
+                    >
                         <ADescriptionsItem
                             label="名 称"
-                            :span="2">
+                            :span="2"
+                        >
                             <span style="font-size: 14px">{{ showValue.name }}</span>
                         </ADescriptionsItem>
                         <ADescriptionsItem label="物理核心数">{{ showValue.physicalNum }}</ADescriptionsItem>
@@ -76,12 +79,14 @@ const progressColor = computed(() => {
                     <ADescriptions>
                         <ADescriptionsItem
                             label="使用率"
-                            :span="2">
+                            :span="2"
+                        >
                             <AProgress
                                 :percent="showValue.usedRate"
                                 :stroke-width="22"
                                 size="large"
-                                :color="progressColor">
+                                :color="progressColor"
+                            >
                                 <template #text="{ percent }"> {{ (percent * 100).toFixed(2) }}% </template>
                             </AProgress>
                         </ADescriptionsItem>

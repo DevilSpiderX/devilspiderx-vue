@@ -103,21 +103,23 @@ class ServerInfoReceiver {
 
     async getHardware() {
         while (!this.closed) {
-            cpuApi().then(resp => {
-                this.values.value.cpu = resp;
-            });
-            memoryApi().then(resp => {
-                this.values.value.memory = resp;
-            });
-            networksApi().then(resp => {
-                this.values.value.networks = resp;
-            });
-            disksApi().then(resp => {
-                this.values.value.disks = resp;
-            });
-            osApi().then(resp => {
-                this.values.value.os = resp;
-            });
+            await Promise.allSettled([
+                cpuApi().then(resp => {
+                    this.values.value.cpu = resp;
+                }),
+                memoryApi().then(resp => {
+                    this.values.value.memory = resp;
+                }),
+                networksApi().then(resp => {
+                    this.values.value.networks = resp;
+                }),
+                disksApi().then(resp => {
+                    this.values.value.disks = resp;
+                }),
+                osApi().then(resp => {
+                    this.values.value.os = resp;
+                }),
+            ]);
             await sleep(this.cd);
         }
     }

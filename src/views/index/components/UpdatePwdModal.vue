@@ -1,6 +1,7 @@
-<script setup>
+<script setup lang="ts">
 import { updatePassword as updatePasswordApi } from "@/api/user-api.ts";
 import { useAppConfigs } from "@/stores/AppConfigsStore.ts";
+import { debounce } from "@/utils/util.ts";
 import { Message } from "@arco-design/web-vue";
 import Hex from "crypto-js/enc-hex";
 import SHA256 from "crypto-js/sha256";
@@ -33,7 +34,7 @@ function cleanData() {
     };
 }
 
-async function on_form_submit() {
+const onFormSubmit=debounce(async()=>{
     if (form.value.oldPassword === "" || form.value.password === "" || form.value.password2 === "") {
         Message.error("密码不能为空");
         return;
@@ -51,9 +52,9 @@ async function on_form_submit() {
     Message.success("修改成功");
     cleanData();
     emit("update:visible", false);
-}
+})
 
-function on_cancel_click() {
+function onCancelClick() {
     cleanData();
     _visible.value = false;
 }
@@ -66,18 +67,22 @@ const error = computed(() => form.value.password2 !== "" && form.value.password 
     <AModal
         v-model:visible="_visible"
         title="修改密码"
-        :width="width">
+        :width="width"
+    >
         <AForm
             :model="form"
-            @submit="on_form_submit">
+            @submit="onFormSubmit"
+        >
             <AFormItem
                 field="oldPassword"
-                hide-label>
+                hide-label
+            >
                 <AInputPassword
                     placeholder="输入旧密码"
                     v-model="form.oldPassword"
                     allow-clear
-                    :error="error">
+                    :error="error"
+                >
                     <template #prefix>
                         <i class="fa-duotone fa-key-skeleton"></i>
                     </template>
@@ -85,12 +90,14 @@ const error = computed(() => form.value.password2 !== "" && form.value.password 
             </AFormItem>
             <AFormItem
                 field="password"
-                hide-label>
+                hide-label
+            >
                 <AInputPassword
                     placeholder="输入新密码"
                     v-model="form.password"
                     allow-clear
-                    :error="error">
+                    :error="error"
+                >
                     <template #prefix>
                         <i class="fa-duotone fa-key"></i>
                     </template>
@@ -98,12 +105,14 @@ const error = computed(() => form.value.password2 !== "" && form.value.password 
             </AFormItem>
             <AFormItem
                 field="password2"
-                hide-label>
+                hide-label
+            >
                 <AInputPassword
                     placeholder="再次输入新密码"
                     v-model="form.password2"
                     allow-clear
-                    :error="error">
+                    :error="error"
+                >
                     <template #prefix>
                         <i class="fa-duotone fa-key"></i>
                     </template>
@@ -111,15 +120,17 @@ const error = computed(() => form.value.password2 !== "" && form.value.password 
             </AFormItem>
             <button
                 type="submit"
-                v-show="false"></button>
+                v-show="false"
+            ></button>
         </AForm>
         <template #footer>
             <AButton
                 type="primary"
-                @click="on_form_submit">
+                @click="onFormSubmit"
+            >
                 修 改
             </AButton>
-            <AButton @click="on_cancel_click">取 消</AButton>
+            <AButton @click="onCancelClick">取 消</AButton>
         </template>
     </AModal>
 </template>

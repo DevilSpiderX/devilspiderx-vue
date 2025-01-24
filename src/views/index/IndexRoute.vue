@@ -6,7 +6,7 @@ import { useAppConfigs } from "@/stores/AppConfigsStore.ts";
 import { useUserStore } from "@/stores/UserStore.ts";
 import { Scrollbar as AScrollbar, Message } from "@arco-design/web-vue";
 import { IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
-import { computed, reactive, ref } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import UpdatePwdModal from "./components/UpdatePwdModal.vue";
 
@@ -14,7 +14,7 @@ const appConfigs = useAppConfigs(),
     userStore = useUserStore(),
     router = useRouter();
 
-const buttonList = reactive([
+const buttonList = ref([
     {
         label: "控制中心",
         icon: <i class="fa-solid fa-sliders"></i>,
@@ -76,7 +76,7 @@ const buttonList = reactive([
     },
 ]);
 
-const drawer = reactive({
+const drawer = ref({
     visible: false,
     empty_form: {},
 });

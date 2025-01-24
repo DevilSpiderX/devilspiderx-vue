@@ -3,7 +3,7 @@ import type { CpuVo, DiskVo, MemoryVo, NetworkVo, OsVo } from "@/types/server-in
 export interface ValuesType {
     cpu?: CpuVo;
     memory?: MemoryVo;
-    networks?: NetworkVo[];
-    disks?: DiskVo[];
+    networks: NetworkVo[];
+    disks: DiskVo[];
     os?: OsVo;
 }

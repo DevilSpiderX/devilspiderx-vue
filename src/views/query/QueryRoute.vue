@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { add as addApi, deleteApi, update as updateApi } from "@/api/query-api.ts";
+import { deleteApi } from "@/api/query-api.ts";
 import SearchNoResultSvg from "@/assets/搜索无结果.svg";
 import { DSXMenu } from "@/components/dsx-menu";
 import { getLogger } from "@/plugins/logger.ts";
 import { useAppConfigs } from "@/stores/AppConfigsStore.ts";
 import { debounce } from "@/utils/util.ts";
-import { Table as ATable, Message, Modal, TableColumnData, TableSortable } from "@arco-design/web-vue";
+import { isDefined } from "@/utils/validate.ts";
+import { Table as ATable, Message, Modal, type TableColumnData, type TableSortable } from "@arco-design/web-vue";
 import { AxiosError } from "axios";
-import { computed, Fragment, h, reactive, ref, toRaw, unref } from "vue";
+import { computed, Fragment, h, ref, watch } from "vue";
 import { AddModal, DisplayModal, QueryTd, UpdateModal } from "./components";
-import { FormType } from "./components/AddModal.vue";
 import { usePasswordSearch } from "./hooks/password-search.ts";
 import { useTableBodyScrollWrap } from "./hooks/table-body-scroll-wrap.ts";
 import { useTableMenu } from "./hooks/table-menu.tsx";
-import type { PasswordDataType } from "./types/password-data.ts";
+import type { DataType, PasswordDataType } from "./types/password-data.ts";
 
 const logger = getLogger(import.meta.filePath);
 const appConfigs = useAppConfigs();
@@ -43,7 +43,7 @@ const sortable: TableSortable = {
     },
 };
 
-const tableColumns = reactive<TableColumnData[]>([
+const tableColumns = ref<TableColumnData[]>([
     { title: "名称", dataIndex: "name", ellipsis: true, tooltip: { position: "tl" }, sortable },
     { title: "账号", dataIndex: "account", ellipsis: true, tooltip: true, sortable },
     { title: "密码", dataIndex: "password", ellipsis: true, tooltip: true, sortable },
@@ -66,6 +66,17 @@ const {
 
 const search_debounce = debounce(search, 100);
 
+watch(tablePaginationPageSize, value => {
+    logger.set(import.meta.codeLineNum).debug(`table page size change:${value}`);
+    search_debounce();
+});
+
+watch(tablePaginationCurrent, async value => {
+    logger.set(import.meta.codeLineNum).debug(`table page change:${value}`);
+    await search_debounce();
+    setTableScrollTop(0);
+});
+
 const tableClientDataMinCount = computed(() => {
     const clientHeight = appConfigs.client.height;
     const availableHeight = tablePaginationPageCount.value > 1 ? clientHeight - 200 : clientHeight - 156;
@@ -86,7 +97,7 @@ const tableData = computed({
         if (len === 0) {
             return [];
         }
-        const pageSize = tablePaginationProps.pageSize;
+        const pageSize = tablePaginationPageSize.value;
         const dataMinCount = tableClientDataMinCount.value;
         const onePageLineCount = Math.min(dataMinCount, pageSize);
 
@@ -106,36 +117,20 @@ const tableData = computed({
     set: data => (passwordData.value = data),
 });
 
-const tablePaginationProps = reactive({
+const tablePaginationProps = ref({
     total: tablePaginationTotal,
     pageSize: tablePaginationPageSize,
+    "onUpdate:pageSize": (newPageSize: number) => (tablePaginationPageSize.value = newPageSize),
     current: tablePaginationCurrent,
     "onUpdate:current": (newCurrent: number) => (tablePaginationCurrent.value = newCurrent),
     hideOnSinglePage: true,
     simple: computed(() => appConfigs.client.width < 450),
     pageSizeOptions: [10, 20, 30, 40, 50, 200, 500, 1000],
-    onChange: async (current: number) => {
-        logger.set(import.meta.codeLineNum).debug(`table page change:${current}`);
-        await search_debounce();
-        setTableScrollTop(0);
-    },
 });
-
-type TablePageSizeSelectType =
-    | string
-    | number
-    | boolean
-    | Record<string, any>
-    | (string | number | boolean | Record<string, any>)[];
-function onTablePaginationPageSizeChange(newPageSize: TablePageSizeSelectType) {
-    logger.set(import.meta.codeLineNum).debug(`table page size change:${newPageSize}`);
-    tablePaginationProps.pageSize = newPageSize as number;
-    search_debounce();
-}
 
 const tablePagePosition = computed(() => (appConfigs.client.width < 450 ? "br" : "bottom"));
 
-const tableScroll = reactive({
+const tableScroll = ref({
     x: computed(() => {
         if (tableData.value.length === 0) {
             return "100%";
@@ -186,7 +181,7 @@ function onTableCellContextmenu(
 ) {
     const column = _column as TableColumnData & { dataIndex: string };
 
-    tableMenu.menus = [
+    tableMenu.value.menus = [
         //判断是内容是网址的时候才会出现
         {
             label: "打开",
@@ -234,8 +229,8 @@ function onTableCellContextmenu(
                         const resp = await deleteApi(record.id);
                         if (resp) {
                             tablePaginationTotal.value--;
-                            if (tablePaginationProps.current > tablePaginationPageCount.value) {
-                                tablePaginationProps.current--;
+                            if (tablePaginationCurrent.value > tablePaginationPageCount.value) {
+                                tablePaginationCurrent.value--;
                             }
                             search_debounce();
                         } else {
@@ -251,9 +246,10 @@ function onTableCellContextmenu(
         {
             label: "编辑",
             onClick: async () => {
-                updateModal.visible = true;
-                const _data = toRaw(unref(record));
-                updateModal.data = structuredClone(_data);
+                updateModal.value = {
+                    visible: true,
+                    data: record,
+                };
             },
             style: tableMenuItemStyle,
             icon: tableMenuIcons.pen_to_square,
@@ -274,12 +270,12 @@ function onTableCellContextmenu(
     //窗体尺寸变化消除右键菜单
     window.addEventListener("resize", closeTableMenu, { once: true });
 
-    tableMenu.event = event;
-    tableMenu.visible = true;
+    tableMenu.value.event = event;
+    tableMenu.value.visible = true;
 }
 
 function closeTableMenu() {
-    tableMenu.visible = false;
+    tableMenu.value.visible = false;
     removeTableMenuListener();
 }
 
@@ -288,54 +284,42 @@ function removeTableMenuListener() {
     window.removeEventListener("resize", closeTableMenu);
 }
 
-const addModal = reactive({
+const addModal = ref({
     visible: false,
 });
 
-/**
- * 提交添加
- */
-async function onAddSubmit({ name, account, password, remark }: FormType, clearData: () => void) {
-    try {
-        const resp = await addApi(name, account, password, remark);
-        if (resp) {
-            const keys = key.value.split(/[.\s]/);
-            if (keys.indexOf(name) === -1) {
-                key.value = key.value.length === 0 ? name : `${key.value} ${name}`;
-            }
+async function onAddModalSuccess(name: string) {
+    const keys = key.value.split(/[.\s]/);
+    if (keys.indexOf(name) === -1) {
+        key.value = key.value.length === 0 ? name : `${key.value} ${name}`;
+    }
 
-            searching.value = true;
-            addModal.visible = false;
-            clearData();
-            Message.success("添加成功");
-            try {
-                await search_debounce(0);
-                setTableScrollTop(0);
-            } catch (error) {
-                if (error instanceof AxiosError) {
-                    logger.set(import.meta.codeLineNum).error(`url:${error.config?.url}`, error);
-                } else {
-                    logger.set(import.meta.codeLineNum).error("", error);
-                }
-            }
-        } else {
-            Message.error({
-                content: () =>
-                    h("span", null, ["添加失败", h("br"), "可能该名称已存在", h("br"), "请尝试换一个名称再添加"]),
-            });
-            addModal.visible = false;
-        }
+    searching.value = true;
+    addModal.value.visible = false;
+    Message.success("添加成功");
+    try {
+        await search_debounce(0);
+        setTableScrollTop(0);
     } catch (error) {
         if (error instanceof AxiosError) {
             logger.set(import.meta.codeLineNum).error(`url:${error.config?.url}`, error);
         } else {
             logger.set(import.meta.codeLineNum).error("", error);
         }
-        Message.error("服务器错误");
     }
 }
 
-const updateModal = reactive({
+function onAddModalError(error: any) {
+    Message.error({
+        content: () => h("span", null, ["添加失败", h("br"), "可能该名称已存在", h("br"), "请尝试换一个名称再添加"]),
+    });
+    if (isDefined(error)) {
+        Message.error({ content: error });
+    }
+    addModal.value.visible = false;
+}
+
+const updateModal = ref({
     visible: false,
     data: {
         id: -1,
@@ -346,46 +330,39 @@ const updateModal = reactive({
     },
 });
 
-/**
- * 提交修改
- */
-function onUpdateSubmit({ id, name, account, password, remark }: PasswordDataType) {
-    Modal.confirm({
-        title: "提示",
-        content: "确认修改？",
-        width: 300,
-        okText: "确定",
-        cancelText: "取消",
-        onOk: async () => {
-            const resp = await updateApi(id, name, account, password, remark);
-            if (resp) {
-                updateModal.visible = false;
-                Message.success("修改成功");
-                for (const _data of passwordData.value) {
-                    if (id === _data.id) {
-                        _data.name = name;
-                        _data.account = account;
-                        _data.password = password;
-                        _data.remark = remark;
-                        break;
-                    }
-                }
-            } else {
-                Message.error("修改失败");
-                Message.error("可能存在相同名称的数据");
-            }
-        },
-    });
+function onUpdateModalSuccess(data: DataType) {
+    updateModal.value.visible = false;
+    Message.success("修改成功");
+    for (const _data of passwordData.value) {
+        if (_data.id === data.id) {
+            _data.name = data.name;
+            _data.account = data.account;
+            _data.password = data.password;
+            _data.remark = data.remark;
+            break;
+        }
+    }
 }
 
-const displayModal = reactive({
+function onUpdateModalError(error: any) {
+    Message.error("修改失败");
+    if (isDefined(error)) {
+        Message.error({ content: error });
+    } else {
+        Message.error("可能存在相同名称的数据");
+    }
+}
+
+const displayModal = ref({
     visible: false,
     data: { name: "", account: "", password: "", remark: "" },
 });
 
 function onTableCellDblclick(record: PasswordDataType) {
-    displayModal.data = record;
-    displayModal.visible = true;
+    displayModal.value = {
+        data: record,
+        visible: true,
+    };
 }
 </script>
 
@@ -399,10 +376,7 @@ function onTableCellDblclick(record: PasswordDataType) {
                 <template #extra>
                     <ASpace>
                         <span>数据条数:</span>
-                        <ASelect
-                            :model-value="tablePaginationProps.pageSize"
-                            @update:model-value="onTablePaginationPageSizeChange"
-                        >
+                        <ASelect v-model="tablePaginationPageSize">
                             <AOption
                                 v-for="item in tablePaginationProps.pageSizeOptions"
                                 :value="item"
@@ -508,13 +482,15 @@ function onTableCellDblclick(record: PasswordDataType) {
     <!-- 添加信息模态框 -->
     <AddModal
         v-model:visible="addModal.visible"
-        @submit="onAddSubmit"
+        @success="onAddModalSuccess"
+        @error="onAddModalError"
     />
     <!-- 更新信息模态框 -->
     <UpdateModal
         v-model:visible="updateModal.visible"
-        v-model:data="updateModal.data"
-        @submit="onUpdateSubmit"
+        :data="updateModal.data"
+        @success="onUpdateModalSuccess"
+        @error="onUpdateModalError"
     />
     <!-- 展示信息模态框 -->
     <DisplayModal

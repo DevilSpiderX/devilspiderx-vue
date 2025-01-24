@@ -1,8 +1,9 @@
-<script setup>
+<script setup lang="ts">
 import faSpider from "@/assets/faSpider.svg";
 import { useAppConfigs } from "@/stores/AppConfigsStore.ts";
 import { useUserStore } from "@/stores/UserStore.ts";
 import { sleep } from "@/utils/util.ts";
+import { isDefined } from "@/utils/validate.ts";
 import { computed, onMounted, ref, useTemplateRef } from "vue";
 import { useRouter } from "vue-router";
 
@@ -11,7 +12,7 @@ const userStore = useUserStore();
 
 const logo = ref(
     (() => {
-        let hour = new Date().getHours();
+        const hour = new Date().getHours();
         if (7 <= hour && hour < 12) {
             return "Morning";
         } else if (12 <= hour && hour < 19) {
@@ -31,7 +32,7 @@ onMounted(async () => {
         name = "index";
     }
     await sleep(400);
-    if (outerRef.value) {
+    if (isDefined(outerRef.value)) {
         aniState.value = true;
         outerRef.value.addEventListener(
             "animationend",

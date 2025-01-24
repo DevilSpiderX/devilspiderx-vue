@@ -8,10 +8,10 @@ import BaseCard from "./BaseCard.vue";
 
 const props = withDefaults(
     defineProps<{
-        value: MemoryVo;
-        processCount: number;
-        loading: boolean;
-        enabled: boolean;
+        value?: MemoryVo;
+        processCount?: number;
+        loading?: boolean;
+        enabled?: boolean;
     }>(),
     {
         value: () => ({

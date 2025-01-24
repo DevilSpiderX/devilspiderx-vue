@@ -7,7 +7,7 @@ import BaseCard from "./BaseCard.vue";
 
 const props = withDefaults(
     defineProps<{
-        value: DiskVo;
+        value?: DiskVo;
         diskIndex: number;
     }>(),
     {
