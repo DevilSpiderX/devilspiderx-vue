@@ -1,4 +1,4 @@
-import { useAppConfigs } from "@/store/AppConfigsStore";
+import { useAppConfigs } from "@/stores/AppConfigsStore";
 import { computed } from "vue";
 
 export function useModalWidth() {

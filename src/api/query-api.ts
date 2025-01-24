@@ -1,4 +1,4 @@
-import { httpInstance } from "@/scripts/http";
+import httpInstance from "./index.ts";
 import type { CommonPage } from "@/types/common-type";
 import type { MyPasswordsVo } from "@/types/query";
 

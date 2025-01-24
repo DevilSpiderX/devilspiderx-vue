@@ -1,4 +1,4 @@
-import { httpInstance } from "@/scripts/http";
+import httpInstance from "./index.ts";
 import type { CpuVo, DiskVo, MemoryVo, NetworkVo, OsVo } from "@/types/server-info";
 
 export async function cpu(): Promise<CpuVo> {

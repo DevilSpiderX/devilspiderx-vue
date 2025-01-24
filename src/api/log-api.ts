@@ -1,4 +1,4 @@
-import { httpInstance } from "@/scripts/http";
+import httpInstance from "./index.ts";
 
 export async function list(): Promise<string[]> {
     return httpInstance.post("/api/admin/log/list");

@@ -1,4 +1,4 @@
-import { httpInstance } from "@/scripts/http";
+import httpInstance from "./index.ts";
 import type { LoginVo, RegisterVo, StatusVo, UploadAvatarVo } from "@/types/user";
 
 export async function login(uid: string, pwd: string): Promise<LoginVo> {

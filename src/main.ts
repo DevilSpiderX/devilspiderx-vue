@@ -1,8 +1,8 @@
 import App from "@/App.vue";
 import logger from "@/plugins/logger.ts";
-import "@/router/guards.ts";
-import router from "@/router/index.ts";
-import pinia from "@/store/index.ts";
+import "@/routers/guards.ts";
+import router from "@/routers/index.ts";
+import pinia from "@/stores/index.ts";
 import "@/styles/index.ts";
 import { createApp } from "vue";
 

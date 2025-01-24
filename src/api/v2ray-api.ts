@@ -1,4 +1,4 @@
-import { httpInstance } from "@/scripts/http";
+import httpInstance from "./index.ts";
 
 export async function start(): Promise<number> {
     return httpInstance.post("/api/admin/v2ray/start");

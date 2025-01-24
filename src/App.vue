@@ -1,5 +1,5 @@
 <script setup>
-import { useAppConfigs } from "./store/AppConfigsStore";
+import { useAppConfigs } from "@/stores/AppConfigsStore";
 
 useAppConfigs();
 </script>

@@ -1,4 +1,4 @@
-import { httpInstance } from "@/scripts/http";
+import httpInstance from "./index.ts";
 
 export async function reboot(): Promise<void> {
     return httpInstance.post("/api/admin/os/reboot");

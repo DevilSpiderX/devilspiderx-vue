@@ -1,17 +1,15 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed } from "vue";
 import type { DSXMenuItemProps as Props } from ".";
 
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
-    (e: "click", event: MouseEvent): void
+    (e: "click", event: MouseEvent): void;
 }>();
 
 const classObj = computed(() => {
-    return [
-        { "dsx-menu-item-disabled": props.disabled }
-    ];
+    return [{ "dsx-menu-item-disabled": props.disabled }];
 });
 
 function item_click(event: MouseEvent) {
@@ -21,22 +19,40 @@ function item_click(event: MouseEvent) {
         emit("click", event);
     }
 }
-
 </script>
 
 <template>
     <template v-if="!disappeared">
-        <div v-if="divider" v-show="!hidden" v-bind="$attrs" class="dsx-menu-item-divider" :class="classObj"
-            @contextmenu.prevent />
-        <div v-else v-show="!hidden" v-bind="$attrs" class="dsx-menu-item" :class="classObj" @click="item_click"
-            @contextmenu.prevent>
-            <div v-if="$slots.icon" class="dsx-menu-item-icon">
+        <div
+            v-if="divider"
+            v-show="!hidden"
+            v-bind="$attrs"
+            class="dsx-menu-item-divider"
+            :class="classObj"
+            @contextmenu.prevent
+        />
+        <div
+            v-else
+            v-show="!hidden"
+            v-bind="$attrs"
+            class="dsx-menu-item"
+            :class="classObj"
+            @click="item_click"
+            @contextmenu.prevent
+        >
+            <div
+                v-if="$slots.icon"
+                class="dsx-menu-item-icon"
+            >
                 <slot name="icon" />
             </div>
             <div class="dsx-menu-item-label">
                 <slot />
             </div>
-            <div v-if="$slots.suffix" class="dsx-menu-item-suffix">
+            <div
+                v-if="$slots.suffix"
+                class="dsx-menu-item-suffix"
+            >
                 <slot name="suffix" />
             </div>
         </div>
@@ -46,7 +62,7 @@ function item_click(event: MouseEvent) {
 <style scoped>
 .dsx-menu-item-divider {
     height: 0;
-    margin: .5rem 0;
+    margin: 0.5rem 0;
     overflow: hidden;
     border-top: 1px solid var(--color-border);
 }
@@ -65,7 +81,7 @@ function item_click(event: MouseEvent) {
     display: flex;
     align-items: center;
     width: 100%;
-    padding: .6rem 1rem;
+    padding: 0.6rem 1rem;
     clear: both;
     font-weight: 400;
     color: var(--color-text);
@@ -110,7 +126,7 @@ function item_click(event: MouseEvent) {
 
 .dsx-menu-item-suffix {
     margin-left: 1.5rem;
-    font-size: .3rem;
+    font-size: 0.3rem;
     color: var(--color-text-suffix);
     white-space: nowrap;
     overflow: hidden;
