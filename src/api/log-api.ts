@@ -5,5 +5,7 @@ export async function list(): Promise<string[]> {
 }
 
 export async function logFile(logName: string): Promise<string> {
-    return httpInstance.get(`/api/admin/log/${logName}`);
+    return httpInstance.get(`/api/admin/log/${logName}`, {
+        responseType: "text",
+    });
 }
