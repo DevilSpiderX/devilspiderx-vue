@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reboot as rebootApi, shutdown as shutdownApi, stop as stopApi } from "@/api/os-api.ts";
+import { useModalWidth } from "@/hooks/modal-width.ts";
 import { getLogger } from "@/plugins/logger.ts";
 import { useAppConfigs } from "@/stores/AppConfigsStore.ts";
 import { useUserStore } from "@/stores/UserStore.ts";
@@ -9,7 +10,7 @@ import { isDefined } from "@/utils/validate.ts";
 import { Message } from "@arco-design/web-vue";
 import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import { CpuCard, DiskCard, MemoryCard, NetworkCard } from "./components/index.ts";
+import { CpuCard, CpuChart, DiskCard, MemoryCard, NetworkCard } from "./components/index.ts";
 import { useServerInfoReceiver } from "./hooks/server-info-receiver.ts";
 
 const logger = getLogger(import.meta.filePath);
@@ -152,6 +153,28 @@ const tripleColDisks = computed(() => {
     });
     return result;
 });
+
+const { width: modalWidth } = useModalWidth();
+
+const cpuChartModal = ref({
+    visible: false,
+    data: {
+        value: 0,
+    },
+});
+
+watch(
+    () => values.value.cpu,
+    value => {
+        cpuChartModal.value.data = {
+            value: isDefined(value) ? value.usedRate : 0,
+        };
+    },
+);
+
+function onCpuCardClickHeader() {
+    cpuChartModal.value.visible = true;
+}
 </script>
 
 <template>
@@ -221,6 +244,7 @@ const tripleColDisks = computed(() => {
                                     :value="values.cpu"
                                     :loading="!values.cpu"
                                     :enabled="cpuEnabled"
+                                    @click-header="onCpuCardClickHeader"
                                 />
                             </ACol>
 
@@ -268,6 +292,7 @@ const tripleColDisks = computed(() => {
                                     :value="values.cpu"
                                     :loading="!values.cpu"
                                     :enabled="cpuEnabled"
+                                    @click-header="onCpuCardClickHeader"
                                 />
                             </ACol>
 
@@ -334,6 +359,7 @@ const tripleColDisks = computed(() => {
                                     :value="values.cpu"
                                     :loading="!values.cpu"
                                     :enabled="cpuEnabled"
+                                    @click-header="onCpuCardClickHeader"
                                 />
                             </ACol>
 
@@ -497,6 +523,16 @@ const tripleColDisks = computed(() => {
             </APopconfirm>
         </ASpace>
     </ADrawer>
+
+    <AModal
+        v-model:visible="cpuChartModal.visible"
+        title="CPU使用率"
+        :footer="false"
+        :width="modalWidth"
+        :body-class="$cpuChartStyle.body"
+    >
+        <CpuChart :data="cpuChartModal.data" />
+    </AModal>
 </template>
 
 <style scoped>
@@ -547,5 +583,13 @@ const tripleColDisks = computed(() => {
 
 .my-row {
     flex: 1;
+}
+</style>
+
+<style lang="scss" module="$cpuChartStyle">
+.body {
+    padding: 0;
+    height: calc(100dvh - 50px);
+    max-height: 400px;
 }
 </style>

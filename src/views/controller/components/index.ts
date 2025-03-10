@@ -1,7 +1,6 @@
-import BaseCard from "./BaseCard.vue";
-import CpuCard from "./CpuCard.vue";
-import DiskCard from "./DiskCard.vue";
-import MemoryCard from "./MemoryCard.vue";
-import NetworkCard from "./NetworkCard.vue";
-
-export { BaseCard, CpuCard, DiskCard, MemoryCard, NetworkCard };
+export { default as BaseCard } from "./BaseCard.vue";
+export { default as CpuCard } from "./CpuCard.vue";
+export { default as CpuChart } from "./CpuChart.vue";
+export { default as DiskCard } from "./DiskCard.vue";
+export { default as MemoryCard } from "./MemoryCard.vue";
+export { default as NetworkCard } from "./NetworkCard.vue";

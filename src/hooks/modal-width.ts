@@ -5,7 +5,7 @@ export function useModalWidth() {
     const appConfigs = useAppConfigs();
 
     const width = computed(() => {
-        let winWidth = appConfigs.client.width;
+        const winWidth = appConfigs.client.width;
         if (winWidth < 576) {
             //xs [0, 576)
             return "90%";
@@ -28,6 +28,6 @@ export function useModalWidth() {
     });
 
     return {
-        width
+        width,
     };
 }

@@ -63,7 +63,7 @@ export const useFjrcStore = defineStore("fjrcStore", () => {
 }, {
     persist: {
         storage: localStorage,
-        paths: [
+        pick: [
             "last",
             "fingerprint",
             "history",

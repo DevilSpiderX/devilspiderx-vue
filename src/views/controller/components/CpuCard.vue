@@ -25,6 +25,10 @@ const props = withDefaults(
     },
 );
 
+const emit = defineEmits<{
+    clickHeader: [];
+}>();
+
 const showValue = computed(() =>
     props.enabled
         ? props.value
@@ -50,7 +54,10 @@ const progressColor = computed(() => {
 <template>
     <BaseCard>
         <template #header>
-            <div class="header">
+            <div
+                class="header"
+                @click="emit('clickHeader')"
+            >
                 <h3><i class="fa-solid fa-microchip fa-fw"></i>CPU</h3>
             </div>
         </template>
@@ -99,4 +106,8 @@ const progressColor = computed(() => {
 
 <style scoped>
 @import url(../styles/card-normal.css);
+
+.header {
+    cursor: pointer;
+}
 </style>
