@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import echarts, { ECOption } from "@/components/echarts/index.ts";
+import { ECOption, getEchartsAsync } from "@/components/echarts/index.ts";
 import { useAppConfigs } from "@/stores/AppConfigsStore.ts";
 import { isDefined } from "@/utils/validate.ts";
 import { EChartsType } from "echarts/core";
@@ -172,9 +172,10 @@ const defaultOption: ECOption = {
     ],
 };
 
-function initMyChart(dom: HTMLElement) {
-    const { clientWidth, clientHeight } = dom;
+async function initMyChart(dom: HTMLElement) {
+    const echarts = await getEchartsAsync();
 
+    const { clientWidth, clientHeight } = dom;
     myChart.value = echarts.init(dom, null, {
         width: clientWidth,
         height: clientHeight,
@@ -219,7 +220,7 @@ watch(
     ></div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .container {
     width: 100%;
     height: 100%;

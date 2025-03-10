@@ -588,7 +588,7 @@ function onCpuCardClickHeader() {
 }
 </style>
 
-<style lang="scss" module="$cpuChartStyle">
+<style module="$cpuChartStyle">
 .body {
     padding: 0;
     height: calc(100dvh - 50px);
