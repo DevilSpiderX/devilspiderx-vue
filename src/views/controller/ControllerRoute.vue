@@ -159,7 +159,8 @@ const { width: modalWidth } = useModalWidth();
 const cpuChartModal = ref({
     visible: false,
     data: {
-        value: 0,
+        usedRate: 0,
+        temperature: 0,
     },
 });
 
@@ -167,7 +168,8 @@ watch(
     () => values.value.cpu,
     value => {
         cpuChartModal.value.data = {
-            value: isDefined(value) ? value.usedRate : 0,
+            usedRate: isDefined(value) ? value.usedRate : 0,
+            temperature: isDefined(value) ? value.cpuTemperature : 0,
         };
     },
 );

@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import echarts, { ECOption } from "@/components/echarts/index.ts";
+import { useAppConfigs } from "@/stores/AppConfigsStore.ts";
 import { isDefined } from "@/utils/validate.ts";
 import { EChartsType } from "echarts/core";
 import { onMounted, onUnmounted, ref, shallowRef, useTemplateRef, watch } from "vue";
 
 const dataMaxCount = 100;
 
+const appConfigs = useAppConfigs();
+
 interface Props {
     data: {
-        value: number;
+        usedRate: number;
+        temperature: number;
     };
 }
 
@@ -16,26 +20,20 @@ const props = defineProps<Props>();
 
 watch(
     () => props.data,
-    ({ value }) => {
+    ({ usedRate, temperature }) => {
         const now = new Date();
-        const { x: xData, line: lineData } = data.value;
-        xData.push(formatDate(now));
-        if (xData.length > dataMaxCount) {
-            xData.shift();
-        }
-        lineData.push(value * 100);
-        if (lineData.length > dataMaxCount) {
-            lineData.shift();
-        }
+        usedRateData.value.shift();
+        usedRateData.value.push({
+            name: now.toString(),
+            value: [now.getTime(), usedRate * 100],
+        });
+        cpuTempData.value.shift();
+        cpuTempData.value.push({
+            name: now.toString(),
+            value: [now.getTime(), temperature],
+        });
     },
 );
-
-function formatDate(date: Date) {
-    const hour = date.getHours().toString().padStart(2, "0");
-    const min = date.getMinutes().toString().padStart(2, "0");
-    const sec = date.getSeconds().toString().padStart(2, "0");
-    return `${hour}:${min}:${sec}`;
-}
 
 const containerRef = useTemplateRef("containerRef");
 
@@ -53,36 +51,41 @@ const containerObserver = new ResizeObserver(() => {
     });
 });
 
-const data = ref<{
-    x: Array<string>;
-    line: Array<number>;
-}>({
-    x: [],
-    line: [],
-});
+type DataItem = {
+    name: string;
+    value: [number, number];
+};
+
+const usedRateData = ref<Array<DataItem>>([]);
+const cpuTempData = ref<Array<DataItem>>([]);
 {
     const now = new Date().getTime();
     for (let i = dataMaxCount; i > 0; i--) {
         const date = new Date(now - i * 1000);
-        data.value.x.push(formatDate(date));
-        data.value.line.push(0);
+        usedRateData.value.push({
+            name: date.toString(),
+            value: [date.getTime(), 0],
+        });
+        cpuTempData.value.push({
+            name: date.toString(),
+            value: [date.getTime(), 0],
+        });
     }
 }
 
 watch(
-    data,
-    ({ x, line }) => {
+    [usedRateData, cpuTempData],
+    ([val0, val1]) => {
         if (!isDefined(myChart.value)) return;
         myChart.value.setOption<ECOption>({
-            xAxis: [
-                {
-                    data: x,
-                },
-            ],
             series: [
                 {
                     name: "使用率",
-                    data: line,
+                    data: val0,
+                },
+                {
+                    name: "温度",
+                    data: val1,
                 },
             ],
         });
@@ -93,17 +96,23 @@ watch(
 );
 
 const defaultOption: ECOption = {
+    darkMode: appConfigs.darkTheme,
+    tooltip: {
+        trigger: "axis",
+    },
     xAxis: [
         {
             name: "时间",
-            type: "category",
-            axisLine: {
-                symbol: ["none", "arrow"],
-            },
+            type: "time",
             axisLabel: {
                 hideOverlap: true,
             },
-            data: data.value.x,
+            axisLine: {
+                symbol: "none",
+            },
+            splitLine: {
+                show: true,
+            },
         },
     ],
     yAxis: [
@@ -117,39 +126,90 @@ const defaultOption: ECOption = {
             },
             axisLine: {
                 show: true,
-                symbol: ["none", "arrow"],
+                symbol: "none",
             },
+            splitLine: {
+                show: false,
+            },
+        },
+        {
+            name: "温度",
+            type: "value",
+            axisLine: {
+                show: true,
+                symbol: "none",
+            },
+            splitLine: {
+                show: false,
+            },
+            scale: true,
         },
     ],
     series: [
         {
             type: "line",
             name: "使用率",
-            data: data.value.line,
-            symbol: "none",
+            data: usedRateData.value,
+            showSymbol: false,
             areaStyle: {},
+            tooltip: {
+                valueFormatter(value) {
+                    return `${(value as number).toFixed(2)}%`;
+                },
+            },
+        },
+        {
+            type: "line",
+            name: "温度",
+            data: cpuTempData.value,
+            showSymbol: false,
+            tooltip: {
+                valueFormatter(value) {
+                    return `${value}℃`;
+                },
+            },
         },
     ],
 };
+
+function initMyChart(dom: HTMLElement) {
+    const { clientWidth, clientHeight } = dom;
+
+    myChart.value = echarts.init(dom, null, {
+        width: clientWidth,
+        height: clientHeight,
+    });
+    myChart.value.setOption(defaultOption);
+}
+
+function disposeMyChart() {
+    if (isDefined(myChart.value)) {
+        myChart.value.dispose();
+    }
+}
 
 onMounted(() => {
     if (!isDefined(containerRef.value)) {
         return;
     }
-    myChart.value = echarts.init(containerRef.value, null, {
-        width: 0,
-        height: 0,
-    });
-    myChart.value.setOption(defaultOption);
+    initMyChart(containerRef.value);
     containerObserver.observe(containerRef.value);
 });
 
 onUnmounted(() => {
-    if (isDefined(myChart.value)) {
-        myChart.value.dispose();
-    }
+    disposeMyChart();
     containerObserver.disconnect();
 });
+
+watch(
+    () => appConfigs.darkTheme,
+    val => {
+        if (!isDefined(myChart.value)) return;
+        myChart.value.setOption({
+            darkMode: val,
+        });
+    },
+);
 </script>
 
 <template>

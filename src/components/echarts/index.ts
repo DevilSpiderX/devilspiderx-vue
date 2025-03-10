@@ -1,15 +1,15 @@
 import type { LineSeriesOption } from "echarts/charts";
 import { LineChart } from "echarts/charts";
-import type { GridComponentOption, TitleComponentOption, TooltipComponentOption } from "echarts/components";
-import { GridComponent, TitleComponent, TooltipComponent } from "echarts/components";
-import type { ComposeOption } from "echarts/core";
+import type { GridComponentOption, TooltipComponentOption } from "echarts/components";
+import { GridComponent, TooltipComponent } from "echarts/components";
+import type { ComposeOption, EChartsCoreOption } from "echarts/core";
 import * as echarts from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
 
-export type ECOption = ComposeOption<
-    LineSeriesOption | TitleComponentOption | TooltipComponentOption | GridComponentOption
->;
+export type ECOption =
+    | EChartsCoreOption
+    | ComposeOption<LineSeriesOption | TooltipComponentOption | GridComponentOption>;
 
-echarts.use([LineChart, TitleComponent, TooltipComponent, GridComponent, CanvasRenderer]);
+echarts.use([LineChart, TooltipComponent, GridComponent, CanvasRenderer]);
 
 export default echarts;
