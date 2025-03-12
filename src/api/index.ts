@@ -1,5 +1,5 @@
 import { getLogger } from "@/plugins/logger";
-import router from "@/routers/index.ts";
+import { toLogin } from "@/routers/index.ts";
 import defaultSettings from "@/settings.ts";
 import { useUserStore } from "@/stores/UserStore.ts";
 import { isBlank } from "@/utils/validate.ts";
@@ -55,15 +55,7 @@ httpInstance.interceptors.response.use(
                     content: "当前用户未登录",
                 });
                 logger.set(import.meta.codeLineNum).error("当前用户未登录");
-
-                const route = router.currentRoute.value;
-                if (route.name !== "login") {
-                    const from = encodeURIComponent(route.fullPath);
-                    router.push({
-                        name: "login",
-                        query: { from },
-                    });
-                }
+                toLogin();
                 return Promise.reject(resp.data);
             }
             case 1003:

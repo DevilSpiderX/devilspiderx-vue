@@ -109,3 +109,14 @@ const router = createRouter({
 });
 
 export default router;
+
+export function toLogin() {
+    const route = router.currentRoute.value;
+    if (route.name !== "login") {
+        const from = encodeURIComponent(route.fullPath);
+        router.push({
+            name: "login",
+            query: { from },
+        });
+    }
+}
