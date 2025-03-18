@@ -1,4 +1,5 @@
 import { status as statusApi } from "@/api/user-api";
+import { eventBus } from "@/plugins/eventBus.ts";
 import { getLogger } from "@/plugins/logger";
 import { isDefined } from "@/utils/validate";
 import { defineStore } from "pinia";
@@ -16,6 +17,7 @@ export const useUserStore = defineStore(
         const roles = ref<string[]>([]);
         const permissions = ref<string[]>([]);
         const avatar = ref<string>();
+        const lastLoginAddr = ref<string>();
 
         async function checkUserStatus() {
             try {
@@ -47,6 +49,16 @@ export const useUserStore = defineStore(
             return checkList.every(item => checkRegexList.value.some(regex => regex.test(item)));
         }
 
+        function $reset() {
+            token.value = undefined;
+            admin.value = false;
+            login.value = false;
+            roles.value = [];
+            permissions.value = [];
+            avatar.value = undefined;
+            lastLoginAddr.value = undefined;
+        }
+
         return {
             uid,
             token,
@@ -55,8 +67,10 @@ export const useUserStore = defineStore(
             roles,
             permissions,
             avatar,
+            lastLoginAddr,
             checkUserStatus,
             checkPermission,
+            $reset,
         };
     },
     {
@@ -66,3 +80,8 @@ export const useUserStore = defineStore(
         },
     },
 );
+
+eventBus.on("InvalidToken", () => {
+    const userStore = useUserStore();
+    userStore.$reset();
+});

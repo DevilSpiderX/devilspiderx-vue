@@ -1,3 +1,4 @@
+import { eventBus } from "@/plugins/eventBus.ts";
 import axios from "axios";
 import { defineStore } from "pinia";
 import { computed, ref, watchEffect } from "vue";
@@ -23,6 +24,7 @@ export const useAppConfigs = defineStore(
             const rect = document.documentElement.getBoundingClientRect();
             client.value.width = rect.width;
             client.value.height = rect.height;
+            eventBus.emit("ClientChange", rect.width, rect.height);
         }).observe(document.documentElement);
 
         /** 是否深色模式 */

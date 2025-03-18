@@ -84,7 +84,7 @@ const drawer = ref({
 async function on_logoutButton_clicked() {
     try {
         await logoutApi();
-        userStore.login = false;
+        userStore.$reset();
         Message.success("登出成功");
         router.push({ name: "login" });
     } catch (error) {

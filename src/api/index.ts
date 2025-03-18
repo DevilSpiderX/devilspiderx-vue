@@ -1,5 +1,5 @@
+import { eventBus } from "@/plugins/eventBus.ts";
 import { getLogger } from "@/plugins/logger";
-import { toLogin } from "@/routers/index.ts";
 import defaultSettings from "@/settings.ts";
 import { useUserStore } from "@/stores/UserStore.ts";
 import { isBlank } from "@/utils/validate.ts";
@@ -55,7 +55,7 @@ httpInstance.interceptors.response.use(
                     content: "当前用户未登录",
                 });
                 logger.set(import.meta.codeLineNum).error("当前用户未登录");
-                toLogin();
+                eventBus.emit("InvalidToken");
                 return Promise.reject(resp.data);
             }
             case 1003:
@@ -82,6 +82,10 @@ httpInstance.interceptors.response.use(
                         id: "resp_error_400",
                         content: "400 Bad Request",
                     });
+                    break;
+                }
+                case 401: {
+                    eventBus.emit("InvalidToken");
                     break;
                 }
                 case 404: {

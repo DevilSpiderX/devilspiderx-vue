@@ -1,5 +1,5 @@
-import WelcomeRoute from "@/views/welcome/WelcomeRoute.vue";
-import { createRouter, createWebHistory, RouteLocationNormalized, RouteRecordRaw } from "vue-router";
+import { eventBus } from "@/plugins/eventBus.ts";
+import { createRouter, createWebHistory, type RouteLocationNormalized, type RouteRecordRaw } from "vue-router";
 
 const routes: RouteRecordRaw[] = [
     {
@@ -11,7 +11,7 @@ const routes: RouteRecordRaw[] = [
     {
         name: "welcome",
         path: "/",
-        component: WelcomeRoute,
+        component: () => import("@/views/welcome/WelcomeRoute.vue"),
     },
     {
         name: "login",
@@ -97,12 +97,6 @@ const routes: RouteRecordRaw[] = [
     },
 ];
 
-if (Object.hasOwn === undefined) {
-    Object.hasOwn = (obj, p) => {
-        return obj.hasOwnProperty(p);
-    };
-}
-
 const router = createRouter({
     history: createWebHistory(),
     routes: routes,
@@ -120,3 +114,7 @@ export function toLogin() {
         });
     }
 }
+
+eventBus.on("InvalidToken", () => {
+    toLogin();
+});

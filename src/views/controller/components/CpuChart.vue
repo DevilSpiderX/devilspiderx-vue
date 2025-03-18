@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ECOption, getEchartsAsync } from "@/components/echarts/index.ts";
+import { ECOption, getEchartsAsync } from "@/libs/echarts";
 import { useAppConfigs } from "@/stores/AppConfigsStore.ts";
 import { isDefined } from "@/utils/validate.ts";
 import { EChartsType } from "echarts/core";
