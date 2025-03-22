@@ -2,7 +2,8 @@ import { eventBus } from "@/plugins/eventBus.ts";
 import { getLogger } from "@/plugins/logger";
 import defaultSettings from "@/settings.ts";
 import { useUserStore } from "@/stores/UserStore.ts";
-import { isBlank } from "@/utils/validate.ts";
+import type { AjaxResp } from "@/types/common-type.ts";
+import { isBlank, isDefined } from "@/utils/validate.ts";
 import { Message } from "@arco-design/web-vue";
 import axios, { type InternalAxiosRequestConfig } from "axios";
 
@@ -28,10 +29,10 @@ httpInstance.interceptors.request.use(
 
 httpInstance.interceptors.response.use(
     resp => {
-        if (!resp.data) {
+        if (!isDefined(resp.data)) {
             Promise.reject("返回值为空");
         }
-        const { code, msg, data } = resp.data;
+        const { code, msg, data } = resp.data as AjaxResp<any>;
         if (code === undefined) {
             return resp.data;
         }

@@ -11,7 +11,7 @@ import { Message } from "@arco-design/web-vue";
 import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { CpuCard, CpuChart, DiskCard, MemoryCard, NetworkCard } from "./components/index.ts";
-import { useServerInfoReceiver } from "./hooks/server-info-receiver.ts";
+import { useServerInfoReceiver } from "./hooks/serverInfoReceiver/index.ts";
 
 const logger = getLogger(import.meta.filePath);
 

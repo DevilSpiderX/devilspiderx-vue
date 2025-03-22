@@ -40,3 +40,11 @@ export interface OsVo {
     bitness: number;
     processCount: number;
 }
+
+export interface ValuesType {
+    cpu?: CpuVo;
+    memory?: MemoryVo;
+    networks: NetworkVo[];
+    disks: DiskVo[];
+    os?: OsVo;
+}
