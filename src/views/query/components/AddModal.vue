@@ -4,9 +4,8 @@ import { useModalWidth } from "@/hooks/modal-width.ts";
 import { getLogger } from "@/plugins/logger.ts";
 import type { MyPasswordsVo } from "@/types/query.ts";
 import { debounce } from "@/utils/util.ts";
-import { isDefined } from "@/utils/validate.ts";
 import { FieldRule, Message } from "@arco-design/web-vue";
-import { computed, ref, useId, useTemplateRef, watch } from "vue";
+import { computed, ref, useId } from "vue";
 
 const logger = getLogger(import.meta.filePath);
 
@@ -35,16 +34,7 @@ const formRules = computed(() => ({
     },
 }));
 
-//Form组件把id属性给占用了，导致无法给<form>设置id值，曲线救国
-const formRef = useTemplateRef("formRef");
 const formId = useId();
-watch(formRef, value => {
-    if (!isDefined(value) || !isDefined(value.$el)) {
-        return;
-    }
-    const el = value.$el as HTMLFormElement;
-    el.id = formId;
-});
 
 function cleanData() {
     Object.assign(form.value, defaultForm);
@@ -83,7 +73,6 @@ function cancel_click() {
         unmount-on-close
     >
         <AForm
-            ref="formRef"
             :id="formId"
             :model="form"
             :rules="formRules"
