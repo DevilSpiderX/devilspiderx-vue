@@ -14,6 +14,7 @@ interface Props {
         usedRate: number;
         temperature: number;
     };
+    visible: boolean;
 }
 
 const props = defineProps<Props>();
@@ -77,6 +78,7 @@ watch(
     [usedRateData, cpuTempData],
     ([val0, val1]) => {
         if (!isDefined(myChart.value)) return;
+        if (!props.visible) return;
         myChart.value.setOption<ECOption>({
             series: [
                 {
@@ -102,7 +104,7 @@ const defaultOption: ECOption = {
     },
     xAxis: [
         {
-            name: "时间",
+            // name: "时间",
             type: "time",
             axisLabel: {
                 hideOverlap: true,
@@ -117,6 +119,7 @@ const defaultOption: ECOption = {
     ],
     yAxis: [
         {
+            id: "usedRate",
             name: "使用率",
             type: "value",
             min: 0,
@@ -133,8 +136,12 @@ const defaultOption: ECOption = {
             },
         },
         {
+            id: "cpuTemp",
             name: "温度",
             type: "value",
+            axisLabel: {
+                formatter: "{value}℃",
+            },
             axisLine: {
                 show: true,
                 symbol: "none",
@@ -149,6 +156,7 @@ const defaultOption: ECOption = {
         {
             type: "line",
             name: "使用率",
+            yAxisId: "usedRate",
             data: usedRateData.value,
             showSymbol: false,
             areaStyle: {},
@@ -161,6 +169,7 @@ const defaultOption: ECOption = {
         {
             type: "line",
             name: "温度",
+            yAxisId: "cpuTemp",
             data: cpuTempData.value,
             showSymbol: false,
             tooltip: {

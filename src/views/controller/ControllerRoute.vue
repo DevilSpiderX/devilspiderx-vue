@@ -533,7 +533,10 @@ function onCpuCardClickHeader() {
         :width="modalWidth"
         :body-class="$cpuChartStyle.body"
     >
-        <CpuChart :data="cpuChartModal.data" />
+        <CpuChart
+            :data="cpuChartModal.data"
+            :visible="cpuChartModal.visible"
+        />
     </AModal>
 </template>
 
