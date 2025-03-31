@@ -2,6 +2,7 @@
 import { getAvatar as getAvatarApi, logout as logoutApi, uploadAvatar as uploadAvatarApi } from "@/api/user-api.ts";
 import v2rayNPngUrl from "@/assets/v2rayN.png";
 import { DSXMenuIcon as Icon } from "@/components/dsx-menu/index.ts";
+import { getLogger } from "@/plugins/logger.ts";
 import { useAppConfigs } from "@/stores/AppConfigsStore.ts";
 import { useUserStore } from "@/stores/UserStore.ts";
 import { Scrollbar as AScrollbar, Message } from "@arco-design/web-vue";
@@ -13,6 +14,8 @@ import UpdatePwdModal from "./components/UpdatePwdModal.vue";
 const appConfigs = useAppConfigs(),
     userStore = useUserStore(),
     router = useRouter();
+
+const logger = getLogger(import.meta.filePath);
 
 const buttonList = ref([
     {

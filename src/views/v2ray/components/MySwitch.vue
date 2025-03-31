@@ -4,14 +4,17 @@ import { computed, CSSProperties, onMounted, ref } from "vue";
 const style = ref<CSSProperties>({});
 
 interface Props {
-    width: string;
-    height: string;
-    fontSize: string;
+    width?: string;
+    height?: string;
+    fontSize?: string;
     modalStatus: boolean;
 }
 
 const props = defineProps<Props>();
-const emit = defineEmits(["update:modalStatus"]);
+const emit = defineEmits<{
+    "update:modalStatus": [modalStatus: boolean];
+    click: [];
+}>();
 
 const status = computed({
     get() {
@@ -42,6 +45,7 @@ onMounted(() => {
         tabindex="0"
         :data-status="status"
         :style="style"
+        @click="emit('click')"
     >
         <div class="switch-container">
             <div class="switch-lever-0">
