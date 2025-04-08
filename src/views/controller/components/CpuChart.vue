@@ -5,8 +5,6 @@ import { isDefined } from "@/utils/validate.ts";
 import { EChartsType } from "echarts/core";
 import { onMounted, onUnmounted, ref, shallowRef, useTemplateRef, watch } from "vue";
 
-const dataMaxCount = 100;
-
 const appConfigs = useAppConfigs();
 
 interface Props {
@@ -15,9 +13,12 @@ interface Props {
         temperature: number;
     };
     visible: boolean;
+    dataMaxCount?: number;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+    dataMaxCount: 100,
+});
 
 watch(
     () => props.data,
@@ -61,7 +62,7 @@ const usedRateData = ref<Array<DataItem>>([]);
 const cpuTempData = ref<Array<DataItem>>([]);
 {
     const now = new Date().getTime();
-    for (let i = dataMaxCount; i > 0; i--) {
+    for (let i = props.dataMaxCount; i > 0; i--) {
         const date = new Date(now - i * 1000);
         usedRateData.value.push({
             name: date.toString(),
@@ -75,10 +76,10 @@ const cpuTempData = ref<Array<DataItem>>([]);
 }
 
 watch(
-    [usedRateData, cpuTempData],
-    ([val0, val1]) => {
+    [usedRateData, cpuTempData, () => props.visible],
+    ([val0, val1, val2]) => {
         if (!isDefined(myChart.value)) return;
-        if (!props.visible) return;
+        if (!val2) return;
         myChart.value.setOption<ECOption>({
             series: [
                 {
@@ -139,6 +140,18 @@ const defaultOption: ECOption = {
             id: "cpuTemp",
             name: "温度",
             type: "value",
+            min: ({ min }) => {
+                if (min < 10) {
+                    return 0;
+                }
+                return 10;
+            },
+            max: ({ max }) => {
+                if (max > 50) {
+                    return null;
+                }
+                return 50;
+            },
             axisLabel: {
                 formatter: "{value}℃",
             },

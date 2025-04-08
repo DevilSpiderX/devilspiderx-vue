@@ -9,7 +9,7 @@ import axios, { type InternalAxiosRequestConfig } from "axios";
 
 const logger = getLogger(import.meta.filePath);
 const httpInstance = axios.create({
-    baseURL: location.origin,
+    baseURL: defaultSettings.apiUrl,
     timeout: 30_000,
 });
 

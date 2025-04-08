@@ -7,12 +7,19 @@ declare module "*.vue" {
 }
 
 interface ImportMetaEnv {
-    readonly VITE_API_BASE_URL: string;
-    readonly VITE_WS_BASE_URL: string;
+    readonly VITE_HOSTNAME: string;
+    readonly VITE_APP_API_URL: string;
+    readonly VITE_APP_WS_URL: string;
 }
 
 interface ImportMeta {
     readonly env: ImportMetaEnv;
+    /**
+     * 当前文件相对于/src的路径
+     */
     readonly filePath: string;
+    /**
+     * 当前代码所在行数
+     */
     readonly codeLineNum: number;
 }

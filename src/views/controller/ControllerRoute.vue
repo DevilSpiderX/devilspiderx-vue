@@ -11,7 +11,7 @@ import { Message } from "@arco-design/web-vue";
 import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { CpuCard, CpuChart, DiskCard, MemoryCard, NetworkCard } from "./components/index.ts";
-import { useServerInfoReceiver } from "./hooks/serverInfoReceiver/index.ts";
+import { useServerInfoReceiver, type ProtocolType } from "./hooks/serverInfoReceiver/index.ts";
 
 const logger = getLogger(import.meta.filePath);
 
@@ -36,7 +36,7 @@ const _cd = computed({
     },
 });
 
-const { values, setCD } = useServerInfoReceiver(_cd.value);
+const { values, protocol: receiverProtocol, setCD, changeProtocol } = useServerInfoReceiver(_cd.value);
 
 watch(_cd, cd => {
     logger.set(import.meta.codeLineNum).info(`更改数据刷新速率${cd}ms`);
@@ -176,6 +176,12 @@ watch(
 
 function onCpuCardClickHeader() {
     cpuChartModal.value.visible = true;
+}
+
+function onReceiverProtocolSelectChange(protocol: string) {
+    const _protocol = protocol as ProtocolType;
+    changeProtocol(_protocol);
+    settingsDrawer.value.visible = false;
 }
 </script>
 
@@ -449,6 +455,17 @@ function onCpuCardClickHeader() {
             direction="vertical"
             fill
         >
+            <ASelect
+                :model-value="receiverProtocol"
+                @update:modelValue="onReceiverProtocolSelectChange"
+            >
+                <template #prefix>
+                    <span>数据接收协议</span>
+                </template>
+                <AOption value="WebSocket">WebSocket</AOption>
+                <AOption value="SSE">SSE</AOption>
+                <AOption value="Ajax">Ajax</AOption>
+            </ASelect>
             <AInputNumber
                 v-if="appConfigs.client.width <= 576"
                 v-model="_cd"

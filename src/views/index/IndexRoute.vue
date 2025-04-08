@@ -3,8 +3,10 @@ import { getAvatar as getAvatarApi, logout as logoutApi, uploadAvatar as uploadA
 import v2rayNPngUrl from "@/assets/v2rayN.png";
 import { DSXMenuIcon as Icon } from "@/components/dsx-menu/index.ts";
 import { getLogger } from "@/plugins/logger.ts";
+import defaultSettings from "@/settings.ts";
 import { useAppConfigs } from "@/stores/AppConfigsStore.ts";
 import { useUserStore } from "@/stores/UserStore.ts";
+import { isDefined } from "@/utils/validate.ts";
 import { Scrollbar as AScrollbar, Message } from "@arco-design/web-vue";
 import { IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
 import { computed, ref } from "vue";
@@ -103,6 +105,13 @@ function on_exit_clicked() {
 const avatarSrc = computed({
     get: () => userStore.avatar,
     set: newAvatar => (userStore.avatar = newAvatar),
+    set: newAvatar => {
+        if (isDefined(newAvatar)) {
+            userStore.avatar = new URL(newAvatar, defaultSettings.apiUrl).toString();
+        } else {
+            userStore.avatar = undefined;
+        }
+    },
 });
 
 if (avatarSrc.value === undefined) {

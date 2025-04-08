@@ -1,5 +1,6 @@
 import { eventBus } from "@/plugins/eventBus.ts";
 import { getLogger } from "@/plugins/logger.ts";
+import defaultSettings from "@/settings.ts";
 import type { ValuesType } from "@/types/server-info.ts";
 import { isDefined } from "@/utils/validate.ts";
 import { Message } from "@arco-design/web-vue";
@@ -10,7 +11,6 @@ const logger = getLogger(import.meta.filePath);
 export class WSServerInfoReceiver implements ServerInfoReceiver {
     errorHandler: ErrorHandler | null;
 
-    private token: string;
     private cd: number;
     private closed: boolean = false;
 
@@ -18,11 +18,11 @@ export class WSServerInfoReceiver implements ServerInfoReceiver {
 
     constructor(token: string, cd: number, errorHandler?: ErrorHandler) {
         this.errorHandler = isDefined(errorHandler) ? errorHandler : null;
-        this.token = token;
         this.cd = cd;
 
-        const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
-        this.websocket = new WebSocket(`${wsProtocol}//${location.host}/websocket/getServerInfo?token=${token}`);
+        const url = new URL("/websocket/getServerInfo", defaultSettings.wsUrl);
+        url.searchParams.append("token", token);
+        this.websocket = new WebSocket(url);
         this.websocket.addEventListener("open", this.onOpen.bind(this));
         this.websocket.addEventListener("close", this.onClose.bind(this));
         this.websocket.addEventListener("error", this.onError.bind(this));
@@ -50,22 +50,12 @@ export class WSServerInfoReceiver implements ServerInfoReceiver {
     }
 
     private onOpen() {
-        Message.success({
-            id: "WebSocketServerInfoReceiver",
-            content: "推送服务接入成功",
-            duration: 1000,
-        });
         logger.set(import.meta.codeLineNum).info("WebSocket成功接入服务器");
         this.setCD(this.cd);
     }
 
     private onClose(ev: CloseEvent) {
         this.close();
-        Message.success({
-            id: "WebSocketServerInfoReceiver",
-            content: "推送服务已关闭",
-            duration: 1000,
-        });
         logger.set(import.meta.codeLineNum).info(`WebSocket连接已关闭(code ${ev.code}: ${ev.reason})`);
         if (ev.code === 3000) {
             eventBus.emit("InvalidToken");

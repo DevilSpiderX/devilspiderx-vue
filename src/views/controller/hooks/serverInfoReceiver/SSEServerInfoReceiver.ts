@@ -52,12 +52,13 @@ export class SSEServerInfoReceiver implements ServerInfoReceiver {
         }
 
         this.abortController = new AbortController();
-        const params = new URLSearchParams({
-            cd: String(this.cd),
-            [defaultSettings.tokenName]: this.token,
-        });
 
-        const eventSource = new EventSource(`/api/ServerInfo/sse?${params.toString()}`);
+        const url = new URL("/api/ServerInfo/sse", defaultSettings.apiUrl);
+        const params = url.searchParams;
+        params.append("cd", String(this.cd));
+        params.append(defaultSettings.tokenName, this.token);
+
+        const eventSource = new EventSource(url);
         this.eventSource = eventSource;
 
         eventSource.addEventListener("error", this.onError.bind(this), { signal: this.abortController.signal });

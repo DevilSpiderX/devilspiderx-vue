@@ -33,7 +33,7 @@ async function getList() {
         const size = node.querySelector("enclosure")?.getAttribute("length");
         let downloadLink: string | undefined = undefined;
         if (isDefined(title) && isDefined(link)) {
-            const downloadLinkUrl = new URL(`/api/ani/file/${encodeURIComponent(title)}`, location.href);
+            const downloadLinkUrl = new URL(`/api/ani/file/${encodeURIComponent(title)}`, defaultSettings.apiUrl);
             const urlParams = new URLSearchParams({ fileUrl: link });
             if (!isBlank(userStore.token)) {
                 urlParams.set(defaultSettings.tokenName, userStore.token);

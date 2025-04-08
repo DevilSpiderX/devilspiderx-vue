@@ -9,8 +9,10 @@ import { LogMonitor } from "./components/index.ts";
 const logger = getLogger(import.meta.filePath);
 const appConfigs = useAppConfigs();
 
+const defaultLogName = "dsx.log";
+
 const logList = ref<string[]>([]);
-const logName = ref<string>("");
+const logName = ref<string>(defaultLogName);
 const logText = ref<string>("");
 const logFontSize = toRef(appConfigs.log, "fontSize");
 const logLoading = ref<boolean>(false);
@@ -23,7 +25,6 @@ onMounted(async () => {
         const resp = await listApi();
         logger.set(import.meta.codeLineNum).info("logList:", resp);
         logList.value = resp;
-        logName.value = resp[resp.length - 1];
     } catch (error) {
         logger.set(import.meta.codeLineNum).error(`获取日志列表出现错误`, error);
     } finally {
@@ -32,6 +33,9 @@ onMounted(async () => {
 });
 
 const logSelectOptions = computed(() => {
+    if (logList.value.length === 0) {
+        return [{ value: defaultLogName, label: defaultLogName.replaceAll(".log", "") }];
+    }
     const result: Array<{ value: string; label: string }> = [];
     for (const logName of logList.value) {
         result.push({ value: logName, label: logName.replaceAll(".log", "") });
@@ -51,6 +55,10 @@ async function getLog(logName: string) {
         logLoading.value = false;
     }
 }
+
+onMounted(() => {
+    getLog(logName.value);
+});
 
 const logMonitorRef = useTemplateRef("logMonitorRef");
 

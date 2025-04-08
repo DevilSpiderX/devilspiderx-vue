@@ -6,9 +6,10 @@ import { getLogger } from "@/plugins/logger.ts";
 import { useAppConfigs } from "@/stores/AppConfigsStore.ts";
 import { debounce } from "@/utils/util.ts";
 import { isDefined } from "@/utils/validate.ts";
-import { Table as ATable, Message, Modal, type TableColumnData, type TableSortable } from "@arco-design/web-vue";
+import { Message, Modal } from "@arco-design/web-vue";
+import type { TableColumnData, TableSortable } from "@arco-design/web-vue/es/table/interface";
 import { AxiosError } from "axios";
-import { computed, Fragment, h, ref, watch } from "vue";
+import { computed, Fragment, h, ref, useTemplateRef, watch } from "vue";
 import { AddModal, DisplayModal, QueryTd, UpdateModal } from "./components";
 import { usePasswordSearch } from "./hooks/password-search.ts";
 import { useTableBodyScrollWrap } from "./hooks/table-body-scroll-wrap.ts";
@@ -50,7 +51,7 @@ const tableColumns = ref<TableColumnData[]>([
     { title: "备注", dataIndex: "remark", ellipsis: true, tooltip: { position: "tr" }, sortable },
 ]);
 
-const pwdTableRef = ref<InstanceType<typeof ATable> | null>(null);
+const pwdTableRef = useTemplateRef("pwdTableRef");
 const { tableBodyScrollWrap, setTableScrollTop } = useTableBodyScrollWrap(pwdTableRef);
 
 const {

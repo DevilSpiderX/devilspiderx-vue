@@ -1,4 +1,5 @@
 import { eventBus } from "@/plugins/eventBus.ts";
+import defaultSettings from "@/settings.ts";
 import axios from "axios";
 import { defineStore } from "pinia";
 import { computed, ref, watchEffect } from "vue";
@@ -8,6 +9,11 @@ const colorMatchMedia = window.matchMedia("(prefers-color-scheme:dark)");
 
 const lightStatusBarColor = "#ffffff",
     darkStatusBarColor = "#17171a";
+
+const httpInstance = axios.create({
+    baseURL: defaultSettings.apiUrl,
+    timeout: 30_000,
+});
 
 export const useAppConfigs = defineStore(
     "appConfigs",
@@ -70,9 +76,12 @@ export const useAppConfigs = defineStore(
         /** 版本号 */
         const appVersion = ref("");
 
-        axios.get("/api/user/status").then(resp => {
-            appVersion.value = resp.headers["application-version"];
-        });
+        httpInstance
+            .head("/api/user/status")
+            .then(resp => {
+                appVersion.value = resp.headers["application-version"];
+            })
+            .catch(() => {});
 
         return {
             client,

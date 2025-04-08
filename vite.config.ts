@@ -6,6 +6,7 @@ import AutoImport from "unplugin-auto-import/vite";
 import { ArcoResolver } from "unplugin-vue-components/resolvers";
 import Components from "unplugin-vue-components/vite";
 import { defineConfig } from "vite";
+import Inspect from "vite-plugin-inspect";
 import { VitePWA } from "vite-plugin-pwa";
 import { VitePluginCodeLine } from "./plugins/codeLine";
 
@@ -50,7 +51,7 @@ export default defineConfig({
             workbox: {
                 cacheId: "DSX-cache",
                 navigateFallback: null,
-                globPatterns: ["**/*.{js,css,html,ttf,png,jpg}"],
+                globPatterns: ["**/*.{js,css,html,svg,png,jpg}"],
                 maximumFileSizeToCacheInBytes: 8000000,
             },
         }),
@@ -58,6 +59,7 @@ export default defineConfig({
             style: "css",
         }),
         VitePluginCodeLine(),
+        Inspect(),
     ],
     css: {
         preprocessorOptions: {
@@ -66,13 +68,5 @@ export default defineConfig({
     },
     server: {
         host: "0.0.0.0",
-        proxy: {
-            "/api": { target: `http://localhost:10048` },
-            "/user/avatar": { target: `http://localhost:10048` },
-            "/websocket": {
-                target: "ws://localhost:10048",
-                ws: true,
-            },
-        },
     },
 });
