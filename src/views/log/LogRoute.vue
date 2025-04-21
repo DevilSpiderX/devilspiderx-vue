@@ -112,7 +112,7 @@ const collapseList = ref({
                         <ASelect
                             v-model="logName"
                             :options="logSelectOptions"
-                            style="width: 11em"
+                            style="width: 14em"
                             :default-active-first-option="false"
                             :loading="logSelectLoading"
                         />
