@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { list as listApi, logFile as logFileApi } from "@/api/log-api.ts";
 import { getLogger } from "@/plugins/logger.ts";
+import defaultSettings from "@/settings.ts";
 import { useAppConfigs } from "@/stores/AppConfigsStore.ts";
 import { IconCaretDown, IconCaretUp, IconLoop } from "@arco-design/web-vue/es/icon";
 import { computed, onMounted, ref, toRef, useTemplateRef, watch } from "vue";
@@ -9,7 +10,7 @@ import { LogMonitor } from "./components/index.ts";
 const logger = getLogger(import.meta.filePath);
 const appConfigs = useAppConfigs();
 
-const defaultLogName = "dsx.log";
+const { defaultLogName } = defaultSettings;
 
 const logList = ref<string[]>([]);
 const logName = ref<string>(defaultLogName);
