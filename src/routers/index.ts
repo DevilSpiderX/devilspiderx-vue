@@ -1,4 +1,3 @@
-import { eventBus } from "@/plugins/eventBus.ts";
 import { createRouter, createWebHistory, type RouteLocationNormalized, type RouteRecordRaw } from "vue-router";
 
 const routes: RouteRecordRaw[] = [
@@ -18,9 +17,12 @@ const routes: RouteRecordRaw[] = [
         path: "/login",
         component: () => import("@/views/login/LoginRoute.vue"),
         meta: { title: "登录" },
-        props: to => ({
-            from: to.query.from,
-        }),
+        props: to => {
+            const from = decodeURIComponent(to.query.from as string);
+            return {
+                from,
+            };
+        },
     },
     {
         name: "register",
@@ -62,34 +64,6 @@ const routes: RouteRecordRaw[] = [
         meta: { title: "日志" },
     },
     {
-        name: "fjrc",
-        path: "/fjrc",
-        component: () => import("@/views/fjrc/Fjrc.vue"),
-        meta: { title: "农商行试题" },
-        children: [
-            {
-                name: "fjrc_index",
-                path: "",
-                component: () => import("@/views/fjrc/FjrcIndex.vue"),
-            },
-            {
-                name: "fjrc_topic",
-                path: ":bank/:id",
-                component: () => import("@/views/fjrc/FjrcTopicRoute.vue"),
-                props: route => ({
-                    bank: route.params.bank,
-                    id: Number(route.params.id),
-                }),
-            },
-        ],
-    },
-    {
-        name: "fjrc_fee_calculator",
-        path: "/fjrc/fee_calculator",
-        component: () => import("@/views/fjrc/FeeCalculator.vue"),
-        meta: { title: "转账手续费计算器" },
-    },
-    {
         name: "ANi",
         path: "/ani",
         component: () => import("@/views/ANi/AniRoute.vue"),
@@ -114,7 +88,3 @@ export function toLogin() {
         });
     }
 }
-
-eventBus.on("InvalidToken", () => {
-    toLogin();
-});

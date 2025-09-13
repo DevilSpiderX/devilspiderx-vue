@@ -1,28 +1,42 @@
-import { useUserStore } from "@/stores/UserStore.ts";
-import { isString } from "@/utils/validate.ts";
+import { eventBus } from "@/plugins/eventBus.ts";
+import { useUserInfoStore } from "@/stores/UserInfo.ts";
+import { isBlank } from "@/utils/validate.ts";
 import type { RouteLocationNormalizedGeneric } from "vue-router";
-import router from "./index.ts";
+import router, { toLogin } from "./index.ts";
 
-function checkUserStatus(to: RouteLocationNormalizedGeneric) {
-    if (to.name === "welcome" || to.name === "login") {
-        return;
+const whiteUrlList: string[] = ["/", "/login"];
+
+async function checkUserStatus(to: RouteLocationNormalizedGeneric) {
+    if (whiteUrlList.includes(to.path)) {
+        return true;
     }
 
-    const userStore = useUserStore();
-    if (userStore.login) {
-        return;
+    const userInfoStore = useUserInfoStore();
+    if (userInfoStore.info.login) {
+        return true;
     }
 
-    userStore.checkUserStatus();
+    await userInfoStore.getInfo();
+    if (userInfoStore.info.login) {
+        return true;
+    }
+    toLogin();
 }
 
-router.beforeEach(function (to, from) {
-    const title = to.meta.title;
-    if (isString(title)) {
-        document.title = `${title} - DevilSpiderX`;
-    } else {
+function setTitle(title?: string) {
+    if (isBlank(title)) {
         document.title = "DevilSpiderX";
+        return;
     }
+    document.title = `${title} - DevilSpiderX`;
+}
 
-    checkUserStatus(to);
+router.beforeEach(async function (to, from) {
+    setTitle(to.meta.title);
+
+    return await checkUserStatus(to);
+});
+
+eventBus.on("InvalidToken", () => {
+    toLogin();
 });

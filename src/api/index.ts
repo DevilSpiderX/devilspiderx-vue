@@ -1,76 +1,69 @@
-import { eventBus } from "@/plugins/eventBus.ts";
+import { BaseException } from "@/error/baseException";
+import { eventBus } from "@/plugins/eventBus";
 import { getLogger } from "@/plugins/logger";
-import defaultSettings from "@/settings.ts";
-import { useUserStore } from "@/stores/UserStore.ts";
-import type { AjaxResp } from "@/types/common-type.ts";
-import { isBlank, isDefined } from "@/utils/validate.ts";
-import { Message } from "@arco-design/web-vue";
+import defaultSettings from "@/settings";
+import { useUserInfoStore } from "@/stores/UserInfo";
+import type { CommonResult } from "@/types/commonTypes";
+import ResultCode from "@/types/resultCode";
+import { isDefined } from "@/utils/validate";
 import axios, { type InternalAxiosRequestConfig } from "axios";
+import { ElMessage } from "element-plus";
 
 const logger = getLogger(import.meta.filePath);
-const httpInstance = axios.create({
+export const instance = axios.create({
     baseURL: defaultSettings.apiUrl,
     timeout: 30_000,
 });
 
-httpInstance.interceptors.request.use(
-    (config: InternalAxiosRequestConfig) => {
-        const userStore = useUserStore();
-        if (!isBlank(userStore.token)) {
-            config.headers[defaultSettings.tokenName] = userStore.token;
+instance.interceptors.request.use(
+    config => {
+        setReqParamsTimestamp(config);
+
+        const userInfoStore = useUserInfoStore();
+        if (isDefined(userInfoStore.token)) {
+            config.headers.set(defaultSettings.tokenName, userInfoStore.token);
         }
 
         return config;
     },
     error => {
-        return Promise.reject(error);
+        if (import.meta.env.DEV) {
+            logger.set(import.meta.codeLineNum).error("HTTP请求出现错误", error);
+        }
+        return Promise.reject(new BaseException(ResultCode.Error, "HTTP请求出现错误", undefined, error));
     },
 );
 
-httpInstance.interceptors.response.use(
+instance.interceptors.response.use(
     resp => {
         if (!isDefined(resp.data)) {
-            Promise.reject("返回值为空");
+            return null;
         }
-        const { code, msg, data } = resp.data as AjaxResp<any>;
+        const { code, msg, data } = resp.data as CommonResult<any>;
         if (code === undefined) {
             return resp.data;
         }
         switch (code) {
-            case 0: {
+            case ResultCode.Success: {
                 return data;
             }
-            case 1000: {
-                logger.set(import.meta.codeLineNum).error(`请求返回错误:${msg}`);
-                Message.error(msg ? `Error:${msg}` : "Error");
-                return Promise.reject(`请求返回错误:${msg}`);
-            }
-            case 1001: {
-                logger.set(import.meta.codeLineNum).warn(`请求返回警告:${msg}`);
-                Message.warning(msg ? `Warning:${msg}` : "Warning");
-                return Promise.reject(`请求返回警告:${msg}`);
-            }
-            case 1002: {
-                Message.error({
-                    id: "resp_code_1002",
-                    content: "当前用户未登录",
+            case ResultCode.NotLogin:
+            case ResultCode.BeReplaced:
+            case ResultCode.KickOut:
+            case ResultCode.TokenFreeze: {
+                ElMessage.error({
+                    message: msg,
+                    grouping: true,
                 });
-                logger.set(import.meta.codeLineNum).error("当前用户未登录");
                 eventBus.emit("InvalidToken");
-                return Promise.reject(resp.data);
-            }
-            case 1003:
-            case 1004: {
-                logger.set(import.meta.codeLineNum).error(`code:${code}, msg:${msg}`);
-                Message.error(msg ?? "Error");
-                return Promise.reject(resp.data);
+                break;
             }
             default: {
                 logger.set(import.meta.codeLineNum).error(`code:${code}, msg:${msg}`);
-                Message.error(msg);
-                return Promise.reject(resp.data);
+                break;
             }
         }
+        return Promise.reject(new BaseException(code, msg, data));
     },
     error => {
         if (import.meta.env.DEV) {
@@ -79,9 +72,9 @@ httpInstance.interceptors.response.use(
         if (error && error.response) {
             switch (error.response.status) {
                 case 400: {
-                    Message.error({
-                        id: "resp_error_400",
-                        content: "400 Bad Request",
+                    ElMessage.error({
+                        message: "400 Bad Request",
+                        grouping: true,
                     });
                     break;
                 }
@@ -90,30 +83,30 @@ httpInstance.interceptors.response.use(
                     break;
                 }
                 case 404: {
-                    Message.error({
-                        id: "resp_error_404",
-                        content: "404 Not Found",
+                    ElMessage.error({
+                        message: "404 Not Found",
+                        grouping: true,
                     });
                     break;
                 }
                 case 405: {
-                    Message.error({
-                        id: "resp_error_405",
-                        content: "405 Method Not Allowed",
+                    ElMessage.error({
+                        message: "405 Method Not Allowed",
+                        grouping: true,
                     });
                     break;
                 }
                 case 500: {
-                    Message.error({
-                        id: "resp_error_500",
-                        content: "500 Internal Server Error",
+                    ElMessage.error({
+                        message: "500 Internal Server Error",
+                        grouping: true,
                     });
                     break;
                 }
                 default: {
-                    Message.error({
-                        id: "resp_error_default",
-                        content: `Error ${error.response.status}`,
+                    ElMessage.error({
+                        message: `Error ${error.response.status}`,
+                        grouping: true,
                     });
                     break;
                 }
@@ -123,4 +116,13 @@ httpInstance.interceptors.response.use(
     },
 );
 
-export default httpInstance;
+function setReqParamsTimestamp(config: InternalAxiosRequestConfig) {
+    if (!(config.params instanceof URLSearchParams)) {
+        if (isDefined(config.params)) {
+            config.params = new URLSearchParams(config.params);
+        } else {
+            config.params = new URLSearchParams();
+        }
+    }
+    config.params.set("timestamp", Date.now().toString());
+}
