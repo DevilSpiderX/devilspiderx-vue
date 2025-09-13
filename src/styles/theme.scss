@@ -1,59 +1,80 @@
 @use "sass:color";
 
 $theme-red: #f53f3f;
-$theme-red-dark: #f76965;
 $theme-orange: #ff7d00;
-$theme-orange-dark: #ff9626;
 $theme-yellow: #fadc19;
-$theme-yellow-dark: #fbe94b;
 $theme-green: #00b42a;
-$theme-green-dark: #27c346;
 $theme-cyan: #14c9c9;
-$theme-cyan-dark: #3fd4cf;
 $theme-blue: #165dff;
-$theme-blue-dark: #3c7eff;
 $theme-purple: #722ed1;
-$theme-purple-dark: #8e51da;
 $theme-gold: #f7ba1e;
-$theme-gold-dark: #f9cc44;
 $theme-gray: #86909c;
-$theme-gray-dark: #929293;
+$theme-darkmode-red: #f76965;
+$theme-darkmode-orange: #ff9626;
+$theme-darkmode-yellow: #fbe94b;
+$theme-darkmode-green: #27c346;
+$theme-darkmode-cyan: #3fd4cf;
+$theme-darkmode-blue: #3c7eff;
+$theme-darkmode-purple: #8e51da;
+$theme-darkmode-gold: #f9cc44;
+$theme-darkmode-gray: #929293;
 
 $colors: (
     "red": (
         "": $theme-red,
-        "dark": $theme-red-dark,
     ),
     "orange": (
         "": $theme-orange,
-        "dark": $theme-orange-dark,
     ),
     "yellow": (
         "": $theme-yellow,
-        "dark": $theme-yellow-dark,
     ),
     "green": (
         "": $theme-green,
-        "dark": $theme-green-dark,
     ),
     "cyan": (
         "": $theme-cyan,
-        "dark": $theme-cyan-dark,
     ),
     "blue": (
         "": $theme-blue,
-        "dark": $theme-blue-dark,
     ),
     "purple": (
         "": $theme-purple,
-        "dark": $theme-purple-dark,
     ),
     "gold": (
         "": $theme-gold,
-        "dark": $theme-gold-dark,
     ),
     "gray": (
         "": $theme-gray,
-        "dark": $theme-gray-dark,
+    ),
+);
+
+$darkmode-colors: (
+    "red": (
+        "": $theme-darkmode-red,
+    ),
+    "orange": (
+        "": $theme-darkmode-orange,
+    ),
+    "yellow": (
+        "": $theme-darkmode-yellow,
+    ),
+    "green": (
+        "": $theme-darkmode-green,
+    ),
+    "cyan": (
+        "": $theme-darkmode-cyan,
+    ),
+    "blue": (
+        "": $theme-darkmode-blue,
+    ),
+    "purple": (
+        "": $theme-darkmode-purple,
+    ),
+    "gold": (
+        "": $theme-darkmode-gold,
+    ),
+    "gray": (
+        "": $theme-darkmode-gray,
     ),
 );

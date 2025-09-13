@@ -4,7 +4,7 @@ import { isBlank } from "@/utils/validate.ts";
 import type { RouteLocationNormalizedGeneric } from "vue-router";
 import router, { toLogin } from "./index.ts";
 
-const whiteUrlList: string[] = ["/", "/login"];
+const whiteUrlList: string[] = ["/login"];
 
 async function checkUserStatus(to: RouteLocationNormalizedGeneric) {
     if (whiteUrlList.includes(to.path)) {

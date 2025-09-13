@@ -3,4 +3,8 @@
 
 :root {
     @include mixin.map-to-css-vars(theme.$colors, ("color"));
+
+    &.dark {
+        @include mixin.map-to-css-vars(theme.$darkmode-colors, ("color"));
+    }
 }

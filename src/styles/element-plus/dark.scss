@@ -1,0 +1,27 @@
+@use "sass:map";
+@use "../theme.scss" as theme;
+
+@forward "element-plus/theme-chalk/src/dark/var.scss" with (
+    $colors: (
+        "primary": (
+            "base": map.get(theme.$darkmode-colors, "blue", ""),
+        ),
+        "success": (
+            "base": map.get(theme.$darkmode-colors, "green", ""),
+        ),
+        "warning": (
+            "base": map.get(theme.$darkmode-colors, "orange", ""),
+        ),
+        "danger": (
+            "base": map.get(theme.$darkmode-colors, "red", ""),
+        ),
+        "error": (
+            "base": map.get(theme.$darkmode-colors, "red", ""),
+        ),
+        "info": (
+            "base": map.get(theme.$darkmode-colors, "gray", ""),
+        ),
+    )
+);
+
+@use "element-plus/theme-chalk/src/dark/css-vars.scss" as *;

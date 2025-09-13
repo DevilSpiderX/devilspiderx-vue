@@ -57,6 +57,11 @@ export default defineConfig({
         VitePluginCodeLine(),
         Inspect(),
     ],
+    css: {
+        modules: {
+            localsConvention: "camelCase",
+        },
+    },
     server: {
         host: "0.0.0.0",
     },

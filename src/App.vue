@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAppStore } from "@/stores/App";
 import { ElConfigProvider } from "element-plus";
-import { zhCn } from "element-plus/es/locale";
+import zhCn from "element-plus/es/locale/lang/zh-cn";
 import WelcomePage from "./components/welcome-page/WelcomePage.vue";
 import { useWelcomePageStore } from "./stores/WelcomePageStore.ts";
 
@@ -15,3 +15,5 @@ const welcomePageStore = useWelcomePageStore();
         <WelcomePage v-else />
     </ElConfigProvider>
 </template>
+
+<style scoped lang="scss"></style>

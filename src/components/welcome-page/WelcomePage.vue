@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import DsxFaSpider from "@/components/icon/DsxFaSpider.vue";
-import { useUserInfoStore } from "@/stores/UserInfo";
 import { useWelcomePageStore } from "@/stores/WelcomePageStore";
 import { sleep } from "@/utils/util.ts";
-import { isDefined } from "@/utils/validate.ts";
+import { isDefined } from "@/utils/validate";
 import { computed, onMounted, ref, useTemplateRef } from "vue";
 
-const userInfoStore = useUserInfoStore();
 const welcomePageStore = useWelcomePageStore();
 
 const outerRef = useTemplateRef("outerRef");
@@ -28,8 +26,7 @@ onMounted(async () => {
     if (welcomePageStore.state) {
         return;
     }
-    await userInfoStore.getInfo();
-    await sleep(400);
+    await sleep(500);
     if (isDefined(outerRef.value)) {
         aniState.value = true;
         outerRef.value.addEventListener(
@@ -96,12 +93,6 @@ onMounted(async () => {
         font-weight: 900;
         font-family: system-ui;
         margin: 2rem 0;
-    }
-}
-
-html.dark {
-    .main {
-        color: #fcfcfc;
     }
 }
 </style>

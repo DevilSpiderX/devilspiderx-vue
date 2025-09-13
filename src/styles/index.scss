@@ -1,5 +1,6 @@
 @use "./color.scss" as *;
 @use "./box.scss" as *;
+@use "element-plus/theme-chalk/src/mixins/function.scss" as elFn;
 
 html,
 body,
@@ -17,8 +18,9 @@ div#app {
 }
 
 body {
-    font-family: "MiSans Normal", serif !important;
-    background-color: white;
+    font-family: "MiSans Normal", sans-serif !important;
+    background-color: elFn.getCssVar("bg", "color");
+    color: elFn.getCssVar("text", "color", "primary");
 
     &.no-scrollbar::-webkit-scrollbar {
         display: none;

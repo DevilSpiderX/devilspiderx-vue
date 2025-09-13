@@ -2,7 +2,6 @@ import { loginApi, statusApi } from "@/api/user";
 import { BaseException } from "@/error/baseException";
 import { eventBus } from "@/plugins/eventBus";
 import { getLogger } from "@/plugins/logger";
-import { debounce } from "@/utils/util";
 import { isDefined } from "@/utils/validate";
 import { ElMessage } from "element-plus";
 import lodash from "lodash";
@@ -41,7 +40,7 @@ export const useUserInfoStore = defineStore(
 
         const info = ref<UserInfo>(lodash.cloneDeep(defaultInfo));
 
-        const getInfo = debounce(async () => {
+        async function getInfo() {
             try {
                 const resp = await statusApi();
                 Object.assign(info.value, resp);
@@ -51,7 +50,7 @@ export const useUserInfoStore = defineStore(
                     ElMessage.error(error.message);
                 }
             }
-        }, 100);
+        }
 
         watch(token, async value => {
             if (isDefined(value)) {
