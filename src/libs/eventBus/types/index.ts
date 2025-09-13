@@ -1,5 +1,3 @@
-import type { ValuesType } from "@/types/server-info.ts";
-
 /**
  * 自定义事件总表
  * 格式：
@@ -7,8 +5,7 @@ import type { ValuesType } from "@/types/server-info.ts";
  **/
 export type EventMap = {
     InvalidToken: [];
-    ClientChange: [width: number, height: number];
-    "SIReceiver:update": [values: ValuesType];
+    ClientResize: [width: number, height: number];
 };
 
 /**

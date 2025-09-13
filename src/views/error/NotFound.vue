@@ -1,34 +1,48 @@
 <script setup lang="ts">
-import { useAppConfigs } from "@/stores/AppConfigsStore.ts";
+import image404 from "@/assets/404.svg";
+import { useAppStore } from "@/stores/App";
 import { computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
-const appConfigs = useAppConfigs();
+const appStore = useAppStore();
 
 const height30 = computed(() => {
-    const height = appConfigs.client.height;
+    const height = appStore.height;
     if (height < 500) return 0;
     return height * 0.2;
 });
+
+const route = useRoute();
+const router = useRouter();
+
+function onBackBtnClick() {
+    router.push("/");
+}
 </script>
 
 <template>
     <div :style="{ paddingTop: height30 + 'px' }">
-        <AResult status="404">
+        <ElResult title="404">
             <template #icon>
                 <img
-                    src="../../assets/404.svg"
+                    :src="image404"
                     width="326"
                     height="205"
                 />
             </template>
-            <template #title>
-                <h1>&nbsp;</h1>
-            </template>
-            <template #subtitle>
+            <template #sub-title>
                 <p style="font-size: 1.3em">
-                    The requested URL <strong>{{ $route.path }}</strong> was not found on this server.
+                    The requested URL <strong>{{ route.path }}</strong> was not found on this server.
                 </p>
             </template>
-        </AResult>
+            <template #extra>
+                <ElButton
+                    type="primary"
+                    @click="onBackBtnClick"
+                >
+                    Back
+                </ElButton>
+            </template>
+        </ElResult>
     </div>
 </template>

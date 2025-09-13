@@ -4,22 +4,45 @@
 @forward "element-plus/theme-chalk/src/common/var.scss" with (
     $colors: (
         "primary": (
-            "base": map.get(theme.$colors, "blue", ""),
+            "base": map.get(theme.$colors, "blue"),
         ),
         "success": (
-            "base": map.get(theme.$colors, "green", ""),
+            "base": map.get(theme.$colors, "green"),
         ),
         "warning": (
-            "base": map.get(theme.$colors, "orange", ""),
+            "base": map.get(theme.$colors, "orange"),
         ),
         "danger": (
-            "base": map.get(theme.$colors, "red", ""),
+            "base": map.get(theme.$colors, "red"),
         ),
         "error": (
-            "base": map.get(theme.$colors, "red", ""),
+            "base": map.get(theme.$colors, "red"),
         ),
         "info": (
-            "base": map.get(theme.$colors, "gray", ""),
+            "base": map.get(theme.$colors, "gray"),
+        ),
+    )
+);
+
+@forward "element-plus/theme-chalk/src/dark/var.scss" with (
+    $colors: (
+        "primary": (
+            "base": map.get(theme.$colors, "blue", "dark"),
+        ),
+        "success": (
+            "base": map.get(theme.$colors, "green", "dark"),
+        ),
+        "warning": (
+            "base": map.get(theme.$colors, "orange", "dark"),
+        ),
+        "danger": (
+            "base": map.get(theme.$colors, "red", "dark"),
+        ),
+        "error": (
+            "base": map.get(theme.$colors, "red", "dark"),
+        ),
+        "info": (
+            "base": map.get(theme.$colors, "gray", "dark"),
         ),
     )
 );

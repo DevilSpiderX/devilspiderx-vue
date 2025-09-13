@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { useAppConfigs } from "@/stores/AppConfigsStore";
+import { useAppStore } from "@/stores/App";
+import { ElConfigProvider } from "element-plus";
+import { zhCn } from "element-plus/es/locale";
 import WelcomePage from "./components/welcome-page/WelcomePage.vue";
 import { useWelcomePageStore } from "./stores/WelcomePageStore.ts";
 
-useAppConfigs();
+useAppStore();
 const welcomePageStore = useWelcomePageStore();
 </script>
 
 <template>
-    <RouterView v-if="welcomePageStore.state" />
-    <WelcomePage v-else />
+    <ElConfigProvider :locale="zhCn">
+        <RouterView v-if="welcomePageStore.state" />
+        <WelcomePage v-else />
+    </ElConfigProvider>
 </template>

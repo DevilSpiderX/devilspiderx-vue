@@ -7,7 +7,7 @@ export function sleep(duration: number): Promise<number> {
 }
 
 export function debounce<T extends (...args: any) => any>(callback: T, ms: number = 500) {
-    let timer: NodeJS.Timeout | undefined;
+    let timer: number | undefined;
 
     const _debounce = (...args: Parameters<T>) => {
         return new Promise<Awaited<ReturnType<T>>>((resolve, reject) => {

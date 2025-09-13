@@ -1,11 +1,11 @@
-import { useAppConfigs } from "@/stores/AppConfigsStore";
+import { useAppStore } from "@/stores/App";
 import { computed } from "vue";
 
 export function useModalWidth() {
-    const appConfigs = useAppConfigs();
+    const appStore = useAppStore();
 
     const width = computed(() => {
-        const winWidth = appConfigs.client.width;
+        const winWidth = appStore.width;
         if (winWidth < 576) {
             //xs [0, 576)
             return "90%";

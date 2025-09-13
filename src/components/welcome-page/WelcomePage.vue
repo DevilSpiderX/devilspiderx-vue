@@ -1,25 +1,13 @@
 <script setup lang="ts">
-import faSpider from "@/assets/faSpider.svg";
-import { getLogger } from "@/plugins/logger.ts";
-import { useAppConfigs } from "@/stores/AppConfigsStore.ts";
-import { useUserStore } from "@/stores/UserStore.ts";
-import { useWelcomePageStore } from "@/stores/WelcomePageStore.ts";
+import DsxFaSpider from "@/components/icon/DsxFaSpider.vue";
+import { useUserInfoStore } from "@/stores/UserInfo";
+import { useWelcomePageStore } from "@/stores/WelcomePageStore";
 import { sleep } from "@/utils/util.ts";
 import { isDefined } from "@/utils/validate.ts";
 import { computed, onMounted, ref, useTemplateRef } from "vue";
 
-const logger = getLogger(import.meta.filePath);
-
-const emit = defineEmits<{
-    over: [];
-}>();
-
-const appConfigs = useAppConfigs();
-const userStore = useUserStore();
+const userInfoStore = useUserInfoStore();
 const welcomePageStore = useWelcomePageStore();
-if (welcomePageStore.state) {
-    emit("over");
-}
 
 const outerRef = useTemplateRef("outerRef");
 
@@ -36,24 +24,17 @@ const logo = computed(() => {
     }
 });
 
-const spiderImgFilter = computed(() => (appConfigs.darkTheme ? "invert(100%)" : ""));
-
 onMounted(async () => {
     if (welcomePageStore.state) {
         return;
     }
-    try {
-        await userStore.checkUserStatus();
-    } catch (error) {
-        logger.set(import.meta.codeLineNum).error("获取用户状态出错", error);
-    }
+    await userInfoStore.getInfo();
     await sleep(400);
     if (isDefined(outerRef.value)) {
         aniState.value = true;
         outerRef.value.addEventListener(
             "animationend",
             () => {
-                emit("over");
                 welcomePageStore.state = true;
             },
             {
@@ -61,7 +42,6 @@ onMounted(async () => {
             },
         );
     } else {
-        emit("over");
         welcomePageStore.state = true;
     }
 });
@@ -73,10 +53,7 @@ onMounted(async () => {
             ref="outerRef"
             :class="{ 'outer-animation': aniState }"
         >
-            <img
-                class="spider-img"
-                :src="faSpider"
-            />
+            <DsxFaSpider class="spider-img" />
             <p class="logo">
                 Good<br />
                 {{ logo }}
@@ -85,45 +62,46 @@ onMounted(async () => {
     </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .main {
     width: 100%;
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-}
 
-.spider-img {
-    width: 20rem;
-    height: 20rem;
-    filter: v-bind(spiderImgFilter);
-}
+    @keyframes gradient-small {
+        from {
+            transform: scale(1);
+        }
 
-.logo {
-    text-align: center;
-    font-size: 3rem;
-    font-weight: 900;
-    font-family: system-ui;
-    margin: 2rem 0;
-}
-
-body[arco-theme="dark"] .main {
-    color: #fcfcfc;
-}
-
-@keyframes gradient-small {
-    from {
-        transform: scale(1);
+        to {
+            transform: scale(0.01);
+        }
     }
 
-    to {
-        transform: scale(0.01);
+    .outer-animation {
+        animation: gradient-small 300ms ease-in-out;
+        animation-fill-mode: forwards;
+    }
+
+    .spider-img {
+        width: 20rem;
+        height: 20rem;
+    }
+
+    .logo {
+        text-align: center;
+        font-size: 3rem;
+        font-weight: 900;
+        font-family: system-ui;
+        margin: 2rem 0;
     }
 }
 
-.outer-animation {
-    animation: gradient-small 300ms ease-in-out;
-    animation-fill-mode: forwards;
+html.dark {
+    .main {
+        color: #fcfcfc;
+    }
 }
 </style>
