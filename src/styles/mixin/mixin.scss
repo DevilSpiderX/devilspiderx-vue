@@ -1,0 +1,16 @@
+@use "sass:meta";
+@use "sass:list";
+@use "./function.scss" as fn;
+
+@mixin map-to-css-vars($map, $path: ()) {
+    @each $key, $value in $map {
+        $new-path: list.append($path, $key);
+
+        @if meta.type-of($value) == "map" {
+            @include map-to-css-vars($value, $new-path);
+        } @else {
+            $var-name: fn.joinVarName($new-path);
+            #{$var-name}: #{$value};
+        }
+    }
+}

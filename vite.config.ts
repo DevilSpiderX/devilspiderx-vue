@@ -1,9 +1,8 @@
-import { vitePluginForArco } from "@arco-plugins/vite-vue";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import path from "path";
 import AutoImport from "unplugin-auto-import/vite";
-import { ArcoResolver } from "unplugin-vue-components/resolvers";
+import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 import Components from "unplugin-vue-components/vite";
 import { defineConfig } from "vite";
 import Inspect from "vite-plugin-inspect";
@@ -21,12 +20,12 @@ export default defineConfig({
         vue(),
         vueJsx(),
         AutoImport({
-            resolvers: [ArcoResolver()],
+            resolvers: [ElementPlusResolver()],
         }),
         Components({
             resolvers: [
-                ArcoResolver({
-                    sideEffect: true,
+                ElementPlusResolver({
+                    importStyle: false,
                 }),
             ],
         }),
@@ -55,17 +54,9 @@ export default defineConfig({
                 maximumFileSizeToCacheInBytes: 8000000,
             },
         }),
-        vitePluginForArco({
-            style: "css",
-        }),
         VitePluginCodeLine(),
         Inspect(),
     ],
-    css: {
-        preprocessorOptions: {
-            scss: { api: "modern-compiler" },
-        },
-    },
     server: {
         host: "0.0.0.0",
     },

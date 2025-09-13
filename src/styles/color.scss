@@ -1,0 +1,6 @@
+@use "./theme.scss" as theme;
+@use "./mixin/mixin.scss" as mixin;
+
+:root {
+    @include mixin.map-to-css-vars(theme.$colors, ("color"));
+}

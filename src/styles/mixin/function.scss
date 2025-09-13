@@ -1,0 +1,26 @@
+// join var name
+// joinVarName(('button', 'text-color')) => '--dsx-button-text-color'
+@function joinVarName($list) {
+    $name: "--dsx";
+    @each $item in $list {
+        @if $item != "" {
+            $name: $name + "-" + $item;
+        }
+    }
+    @return $name;
+}
+
+// getCssVarName('button', 'text-color') => '--sy-button-text-color'
+@function getCssVarName($args...) {
+    @return joinVarName($args);
+}
+
+// getCssVar('button', 'text-color') => var(--sy-button-text-color)
+@function getCssVar($args...) {
+    @return var(#{joinVarName($args)});
+}
+
+// getCssVarWithDefault(('button', 'text-color'), red) => var(--sy-button-text-color, red)
+@function getCssVarWithDefault($args, $default) {
+    @return var(#{joinVarName($args)}, #{$default});
+}

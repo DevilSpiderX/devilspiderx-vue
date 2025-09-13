@@ -1,0 +1,27 @@
+@use "sass:map";
+@use "../theme.scss" as theme;
+
+@forward "element-plus/theme-chalk/src/common/var.scss" with (
+    $colors: (
+        "primary": (
+            "base": map.get(theme.$colors, "blue", ""),
+        ),
+        "success": (
+            "base": map.get(theme.$colors, "green", ""),
+        ),
+        "warning": (
+            "base": map.get(theme.$colors, "orange", ""),
+        ),
+        "danger": (
+            "base": map.get(theme.$colors, "red", ""),
+        ),
+        "error": (
+            "base": map.get(theme.$colors, "red", ""),
+        ),
+        "info": (
+            "base": map.get(theme.$colors, "gray", ""),
+        ),
+    )
+);
+
+@use "element-plus/theme-chalk/src/index.scss" as *;

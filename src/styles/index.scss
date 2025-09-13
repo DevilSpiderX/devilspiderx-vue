@@ -1,4 +1,5 @@
-@use "./box-shadow.scss" as boxShadow;
+@use "./color.scss" as *;
+@use "./box.scss" as *;
 
 html,
 body,
@@ -16,11 +17,15 @@ div#app {
 }
 
 body {
-    font-family: "MiSans Normal" !important;
-    background-color: var(--color-bg-1);
-    color: var(--color-text-1);
+    font-family: "MiSans Normal", serif !important;
+    background-color: white;
 
     &.no-scrollbar::-webkit-scrollbar {
         display: none;
     }
+}
+
+@font-face {
+    font-family: "MiSans Normal";
+    src: url("@/assets/fonts/MiSans/MiSans-Normal.ttf");
 }
